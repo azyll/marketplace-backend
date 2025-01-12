@@ -1,13 +1,13 @@
 # marketplace-backend
 
-## install packages
+### install packages
 npm install
 
-## run server
+### run server
 npm run dev
 
-## run migrations
+### run migrations
 npx sequelize db:migrate
 
-## run seeders
+### run seeders
 npx sequelize db:seed:all
