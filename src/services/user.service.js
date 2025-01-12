@@ -72,7 +72,7 @@ export class UserService {
     return user;
   }
 
-  static async restoreUser(userId, data) {
+  static async restoreUser(userId) {
     const result = await User.update(
       { deletedAt: null },
       {
