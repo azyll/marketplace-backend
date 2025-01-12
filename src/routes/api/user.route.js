@@ -1,10 +1,12 @@
 import express from "express";
 import {
   addUser,
-  deleteUser,
+  archiveUser,
+  updateUser,
   getAllUsers,
   getUser,
-} from "../../controllers/UserController.js";
+  restoreUser,
+} from "../../controllers/user.controller.js";
 
 const router = express.Router();
 
@@ -14,8 +16,10 @@ router.get("/", getAllUsers);
 
 router.post("/", addUser);
 
-router.put("/:id", (req, res) => {});
+router.put("/:id", updateUser);
 
-router.delete("/:id", deleteUser);
+router.delete("/:id", archiveUser);
+
+router.post("/:id/restore", restoreUser);
 
 export default router;
