@@ -1,4 +1,8 @@
 # marketplace-backend
+
+## install packages
+npm install
+
 ## run server
 npm run dev
 
