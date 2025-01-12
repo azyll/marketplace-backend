@@ -1,8 +1,5 @@
 # marketplace-backend
 
-### install packages
-npm install
-
 ### run migrations
 npx sequelize db:migrate
 
