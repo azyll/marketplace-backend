@@ -15,6 +15,7 @@ export default (sequelize) => {
   }
 
   sequelizeJoi(sequelize);
+
   User.init(
     {
       firstName: {
@@ -43,6 +44,11 @@ export default (sequelize) => {
       modelName: "Users",
       defaultScope: {
         attributes: { exclude: ["password"] },
+      },
+      scopes: {
+        withPassword: {
+          attributes: { include: ["password"] },
+        },
       },
     },
   );
