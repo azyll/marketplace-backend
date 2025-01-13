@@ -31,7 +31,7 @@ export const getAllUsers = async (req, res) => {
 
     res.json(users);
   } catch (err) {
-    res.status(500).json({
+    res.status(400).json({
       message: "Failed to fetch users",
       error: err.message,
     });
@@ -46,7 +46,7 @@ export const addUser = async (req, res) => {
 
     res.status(201).json(user);
   } catch (err) {
-    res.status(500).json({
+    res.status(400).json({
       message: "User creation unsuccessful",
       error: err.message,
     });
@@ -63,7 +63,7 @@ export const updateUser = async (req, res) => {
 
     res.status(200).json(newUser);
   } catch (err) {
-    res.status(500).json({
+    res.status(400).json({
       message: "Failed to edit user",
       error: err.message,
     });
@@ -78,7 +78,7 @@ export const archiveUser = async (req, res) => {
 
     res.status(200).json(user);
   } catch (err) {
-    res.status(500).json({
+    res.status(400).json({
       message: "User cannot be deleted",
       error: err.message,
     });
@@ -93,8 +93,33 @@ export const restoreUser = async (req, res) => {
 
     res.status(200).json(user);
   } catch (err) {
-    res.status(500).json({
+    res.status(400).json({
       message: "User cannot be restored",
+      error: err.message,
+    });
+  }
+};
+
+export const updatePassword = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const payload = req.body;
+
+    console.log(payload);
+
+    const user = await UserService.updatePassword(id, payload);
+
+    res.status(200).json(user);
+  } catch (err) {
+    if (err instanceof NotFoundException) {
+      return res.status(err.statusCode).json({
+        message: "Failed to update password",
+        error: err.message,
+      });
+    }
+
+    res.status(400).json({
+      message: "Failed to update password",
       error: err.message,
     });
   }
