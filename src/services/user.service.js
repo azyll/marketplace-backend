@@ -4,6 +4,16 @@ import { NotFoundException } from "../exceptions/notFound.js";
 
 const { User } = DB;
 
+const DEFAULT_FIELDS = [
+  "id",
+  "firstName",
+  "lastName",
+  "email",
+  "createdAt",
+  "updatedAt",
+  "deletedAt",
+];
+
 export class UserService {
   static async getUser(userId) {
     const user = await User.findOne({
@@ -15,6 +25,11 @@ export class UserService {
     return user;
   }
 
+  /**
+   * Get All Users Details
+   * @param query
+   * @returns {Promise<{data: User[], meta: {totalItems: (count), itemsPerPage: (*|number), currentPage: (string|number)}}>}
+   */
   static async getUsers(query) {
     const page = query.page ?? 1;
     const limit = query.limit ?? 10;
@@ -36,16 +51,27 @@ export class UserService {
   }
 
   static async addUser(data) {
-    return User.create(data);
+    const { password, ...user } = (await User.create(data)).toJSON();
+
+    return user;
   }
 
+  /**
+   * Update User Details
+   * @param {string} userId
+   * @param {object} data
+   * @returns {Promise<User>}
+   */
   static async updateUser(userId, data) {
-    const result = await User.update(data, {
+    const { password, ...rest } = data;
+
+    const result = await User.scope("withoutPassword").update(rest, {
       where: {
         id: userId,
       },
-      returning: true,
+      returning: DEFAULT_FIELDS,
     });
+
     const count = result[0];
     const user = result[1][0];
 
@@ -61,7 +87,7 @@ export class UserService {
         where: {
           id: userId,
         },
-        returning: true,
+        returning: DEFAULT_FIELDS,
       },
     );
     const count = result[0];
@@ -80,7 +106,7 @@ export class UserService {
           id: userId,
           deletedAt: { [Op.ne]: null },
         },
-        returning: true,
+        returning: DEFAULT_FIELDS,
       },
     );
     const count = result[0];
@@ -89,5 +115,44 @@ export class UserService {
     if (count <= 0) throw new NotFoundException("User not found", 404);
 
     return user;
+  }
+
+  /**
+   * Update User Password
+   * @param {string} userId
+   * @param {object} data
+   * @returns {Promise<User>}
+   */
+  static async updatePassword(userId, data) {
+    const { oldPassword, newPassword } = data;
+
+    const user = await User.scope("withPassword").findOne({
+      where: { deletedAt: null, id: userId },
+    });
+
+    if (!user) throw new NotFoundException("User not found", 404);
+
+    const isValid = user.authenticate(oldPassword);
+
+    if (!isValid) throw new Error("Invalid Old Password");
+
+    const result = await User.update(
+      { password: newPassword },
+      {
+        where: {
+          id: userId,
+          deletedAt: { [Op.is]: null },
+        },
+        returning: DEFAULT_FIELDS,
+        individualHooks: true,
+      },
+    );
+
+    const count = result[0];
+    const updatedUser = result[1][0];
+
+    if (count <= 0) throw new NotFoundException("User not found", 404);
+
+    return updatedUser;
   }
 }
