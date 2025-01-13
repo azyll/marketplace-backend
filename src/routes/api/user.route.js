@@ -6,7 +6,10 @@ import {
   getAllUsers,
   getUser,
   restoreUser,
+  updatePassword,
 } from "../../controllers/user.controller.js";
+import { validate } from "../../helpers/validation.js";
+import { Joi } from "sequelize-joi";
 
 const router = express.Router();
 
@@ -21,5 +24,14 @@ router.put("/:id", updateUser);
 router.delete("/:id", archiveUser);
 
 router.post("/:id/restore", restoreUser);
+
+router.post(
+  "/:id/update-password",
+  validate({
+    newPassword: Joi.string().required(),
+    oldPassword: Joi.string().required(),
+  }),
+  updatePassword,
+);
 
 export default router;
