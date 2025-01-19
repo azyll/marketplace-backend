@@ -10,6 +10,7 @@ import {
 } from "../../controllers/user.controller.js";
 import { validate } from "../../helpers/validation.js";
 import { Joi } from "sequelize-joi";
+import { auth } from "../../middleware/auth.js";
 
 const router = express.Router();
 

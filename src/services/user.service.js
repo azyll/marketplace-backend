@@ -13,10 +13,30 @@ const DEFAULT_FIELDS = [
   "updatedAt",
   "deletedAt",
 ];
-
+const role = {
+  model: DB.Role,
+  attributes: ["name", "systemTag"],
+  as: "role",
+};
 export class UserService {
+  /**
+   * Get User
+   * @param userId
+   * @returns {Promise<User>}
+   */
+
   static async getUser(userId) {
     const user = await User.findOne({
+      include: [
+        {
+          as: "role",
+          model: DB.Role,
+        },
+        {
+          as: "student",
+          model: DB.Student,
+        },
+      ],
       where: { id: userId, deletedAt: { [Op.is]: null } },
     });
 
@@ -35,6 +55,7 @@ export class UserService {
     const limit = query.limit ?? 10;
 
     const users = User.findAndCountAll({
+      include: role,
       where: { deletedAt: { [Op.is]: null } },
       limit,
       offset: limit * (page - 1),
@@ -50,8 +71,17 @@ export class UserService {
     };
   }
 
+  /**
+   * Add User
+   * @param {object} data
+   * @returns {Promise<Omit<any, "password">>}
+   */
   static async addUser(data) {
-    const { password, ...user } = (await User.create(data)).toJSON();
+    const { password, ...user } = (
+      await User.create(data, {
+        include: role,
+      })
+    ).toJSON();
 
     return user;
   }
@@ -63,9 +93,10 @@ export class UserService {
    * @returns {Promise<User>}
    */
   static async updateUser(userId, data) {
-    const { password, ...rest } = data;
+    const { password, roleId, ...rest } = data;
 
-    const result = await User.scope("withoutPassword").update(rest, {
+    const result = await User.update(rest, {
+      include: role,
       where: {
         id: userId,
       },
@@ -80,6 +111,11 @@ export class UserService {
     return user;
   }
 
+  /**
+   * Archive User
+   * @param userId
+   * @returns {Promise<User>}
+   */
   static async archiveUser(userId) {
     const result = await User.update(
       { deletedAt: new Date() },
@@ -98,6 +134,11 @@ export class UserService {
     return user;
   }
 
+  /**
+   * Restore Archived User
+   * @param userId
+   * @returns {Promise<User>}
+   */
   static async restoreUser(userId) {
     const result = await User.update(
       { deletedAt: null },

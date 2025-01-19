@@ -1,6 +1,8 @@
-import { Model, DataTypes } from "sequelize";
+import { Model, DataTypes, UUIDV4 } from "sequelize";
 import useBcrypt from "sequelize-bcrypt";
 import { Joi, sequelizeJoi } from "sequelize-joi";
+import Role from "./role.js";
+import { v4 as uuid } from "uuid";
 
 export default (sequelize) => {
   class User extends Model {
@@ -10,7 +12,14 @@ export default (sequelize) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // define association here
+      User.belongsTo(models.Role, {
+        foreignKey: "roleId",
+        as: "role",
+      });
+      User.hasOne(models.Student, {
+        foreignKey: "userId",
+        as: "student",
+      });
     }
   }
 
@@ -34,6 +43,13 @@ export default (sequelize) => {
         type: DataTypes.STRING,
         schema: Joi.string().required(),
       },
+      roleId: {
+        type: DataTypes.UUID,
+        references: {
+          model: Role(sequelize),
+          key: "id",
+        },
+      },
       deletedAt: {
         type: DataTypes.DATE,
         schema: Joi.date().allow(null),
@@ -43,7 +59,7 @@ export default (sequelize) => {
       sequelize,
       modelName: "Users",
       defaultScope: {
-        attributes: { exclude: ["password"] },
+        attributes: { exclude: ["password", "roleId"] },
       },
       scopes: {
         withPassword: {
@@ -52,6 +68,8 @@ export default (sequelize) => {
       },
     },
   );
+
+  User.beforeCreate((user) => (user.id = uuid()));
 
   useBcrypt(User, { field: "password", rounds: 12, compare: "authenticate" });
 

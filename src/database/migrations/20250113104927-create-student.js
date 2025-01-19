@@ -3,26 +3,21 @@ import Sequelize, { DataTypes } from "sequelize";
 /** @type {import('sequelize-cli').Migration} */
 export default {
   async up(queryInterface) {
-    await queryInterface.createTable("Users", {
+    await queryInterface.createTable("Students", {
       id: {
         allowNull: false,
         primaryKey: true,
         type: Sequelize.UUID,
         defaultValue: DataTypes.UUIDV4,
       },
-      firstName: {
+      program: {
         type: Sequelize.STRING,
       },
-      lastName: {
-        type: Sequelize.STRING,
+      level: {
+        type: Sequelize.ENUM,
+        values: ["shs", "tertiary"],
       },
-      email: {
-        type: Sequelize.STRING,
-      },
-      password: {
-        type: Sequelize.STRING,
-      },
-      roleId: {
+      userId: {
         type: Sequelize.UUID,
       },
       createdAt: {
@@ -40,6 +35,6 @@ export default {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable("Users");
+    await queryInterface.dropTable("Students");
   },
 };

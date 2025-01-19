@@ -59,7 +59,6 @@ export const updateUser = async (req, res) => {
     const payload = req.body;
 
     const newUser = await UserService.updateUser(id, payload);
-    //di nae-encrypt ung updated password
 
     res.status(200).json(newUser);
   } catch (err) {

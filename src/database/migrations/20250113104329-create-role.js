@@ -3,27 +3,19 @@ import Sequelize, { DataTypes } from "sequelize";
 /** @type {import('sequelize-cli').Migration} */
 export default {
   async up(queryInterface) {
-    await queryInterface.createTable("Users", {
+    await queryInterface.createTable("Roles", {
       id: {
         allowNull: false,
         primaryKey: true,
         type: Sequelize.UUID,
         defaultValue: DataTypes.UUIDV4,
       },
-      firstName: {
+      name: {
         type: Sequelize.STRING,
       },
-      lastName: {
-        type: Sequelize.STRING,
-      },
-      email: {
-        type: Sequelize.STRING,
-      },
-      password: {
-        type: Sequelize.STRING,
-      },
-      roleId: {
-        type: Sequelize.UUID,
+      systemTag: {
+        type: Sequelize.ENUM,
+        values: ["student", "admin", "employee"],
       },
       createdAt: {
         allowNull: false,
@@ -33,13 +25,9 @@ export default {
         allowNull: false,
         type: Sequelize.DATE,
       },
-      deletedAt: {
-        allowNull: true,
-        type: Sequelize.DATE,
-      },
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable("Users");
+    await queryInterface.dropTable("Roles");
   },
 };
