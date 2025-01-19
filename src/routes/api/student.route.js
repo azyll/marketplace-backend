@@ -5,11 +5,14 @@ import {
   createStudent,
   getStudentByUserId,
 } from "../../controllers/student.controller.js";
+import { auth } from "../../middleware/auth.js";
 
 const router = express.Router();
 
+// Create Student
 router.post(
   "/:userId",
+  auth(["admin"]),
   validate({
     program: Joi.string().required(),
     level: Joi.string().required().valid("shs", "tertiary"),
@@ -17,6 +20,11 @@ router.post(
   createStudent,
 );
 
-router.get("/user/:userId", getStudentByUserId);
+// Get Student by UserId
+router.get(
+  "/user/:userId",
+  auth(["student"], { selfOnly: { param: "userId", roles: ["student"] } }),
+  getStudentByUserId,
+);
 
 export default router;

@@ -14,12 +14,16 @@ import { auth } from "../../middleware/auth.js";
 
 const router = express.Router();
 
+// Get User by UserId
 router.get("/:userId", auth(["admin"]), getUser);
 
+// Get All Users
 router.get("/", auth(["admin", "student"]), getAllUsers);
 
+// Create User
 router.post("/", auth(["admin"]), addUser);
 
+// Update User
 router.put(
   "/:userId",
   auth(["admin", "student", "employee"], {
@@ -35,10 +39,13 @@ router.put(
   updateUser,
 );
 
+// Archive User
 router.delete("/:userId", auth(["admin"]), archiveUser);
 
+// Restore User
 router.post("/:userId/restore", auth(["admin"]), restoreUser);
 
+// Update User Password
 router.post(
   "/:userId/update-password",
   auth(["admin", "student", "employee"], {

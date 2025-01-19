@@ -5,6 +5,7 @@ import { Joi } from "sequelize-joi";
 
 const router = express.Router();
 
+// User Login
 router.post(
   "/login",
   validate({
