@@ -3,9 +3,9 @@ import { NotFoundException } from "../exceptions/notFound.js";
 
 export const getUser = async (req, res) => {
   try {
-    const { id } = req.params;
+    const { userId } = req.params;
 
-    const user = await UserService.getUser(id);
+    const user = await UserService.getUser(userId);
 
     res.status(200).json(user);
   } catch (err) {
@@ -55,10 +55,10 @@ export const addUser = async (req, res) => {
 
 export const updateUser = async (req, res) => {
   try {
-    const { id } = req.params;
+    const { userId } = req.params;
     const payload = req.body;
 
-    const newUser = await UserService.updateUser(id, payload);
+    const newUser = await UserService.updateUser(userId, payload);
 
     res.status(200).json(newUser);
   } catch (err) {
@@ -71,9 +71,9 @@ export const updateUser = async (req, res) => {
 
 export const archiveUser = async (req, res) => {
   try {
-    const { id } = req.params;
+    const { userId } = req.params;
 
-    const user = await UserService.archiveUser(id);
+    const user = await UserService.archiveUser(userId);
 
     res.status(200).json(user);
   } catch (err) {
@@ -86,9 +86,9 @@ export const archiveUser = async (req, res) => {
 
 export const restoreUser = async (req, res) => {
   try {
-    const { id } = req.params;
+    const { userId } = req.params;
 
-    const user = await UserService.restoreUser(id);
+    const user = await UserService.restoreUser(userId);
 
     res.status(200).json(user);
   } catch (err) {
@@ -101,12 +101,10 @@ export const restoreUser = async (req, res) => {
 
 export const updatePassword = async (req, res) => {
   try {
-    const { id } = req.params;
+    const { userId } = req.params;
     const payload = req.body;
 
-    console.log(payload);
-
-    const user = await UserService.updatePassword(id, payload);
+    const user = await UserService.updatePassword(userId, payload);
 
     res.status(200).json(user);
   } catch (err) {

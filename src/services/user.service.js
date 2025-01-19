@@ -122,6 +122,9 @@ export class UserService {
       {
         where: {
           id: userId,
+          deletedAt: {
+            [Op.is]: null,
+          },
         },
         returning: DEFAULT_FIELDS,
       },

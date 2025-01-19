@@ -8,26 +8,45 @@ import {
   restoreUser,
   updatePassword,
 } from "../../controllers/user.controller.js";
-import { validate } from "../../helpers/validation.js";
+import { validate } from "../../middleware/validation.js";
 import { Joi } from "sequelize-joi";
 import { auth } from "../../middleware/auth.js";
 
 const router = express.Router();
 
-router.get("/:id", getUser);
+router.get("/:userId", auth(["admin"]), getUser);
 
-router.get("/", getAllUsers);
+router.get("/", auth(["admin", "student"]), getAllUsers);
 
-router.post("/", addUser);
+router.post("/", auth(["admin"]), addUser);
 
-router.put("/:id", updateUser);
+router.put(
+  "/:userId",
+  auth(["admin", "student", "employee"], {
+    selfOnly: {
+      param: "userId",
+      roles: ["employee", "student"],
+    },
+  }),
+  validate({
+    firstName: Joi.string(),
+    lastName: Joi.string(),
+  }),
+  updateUser,
+);
 
-router.delete("/:id", archiveUser);
+router.delete("/:userId", auth(["admin"]), archiveUser);
 
-router.post("/:id/restore", restoreUser);
+router.post("/:userId/restore", auth(["admin"]), restoreUser);
 
 router.post(
-  "/:id/update-password",
+  "/:userId/update-password",
+  auth(["admin", "student", "employee"], {
+    selfOnly: {
+      param: "userId",
+      roles: ["employee", "student"],
+    },
+  }),
   validate({
     newPassword: Joi.string().required(),
     oldPassword: Joi.string().required(),

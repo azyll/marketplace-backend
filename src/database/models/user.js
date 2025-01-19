@@ -1,4 +1,4 @@
-import { Model, DataTypes, UUIDV4 } from "sequelize";
+import { Model, DataTypes } from "sequelize";
 import useBcrypt from "sequelize-bcrypt";
 import { Joi, sequelizeJoi } from "sequelize-joi";
 import Role from "./role.js";
@@ -71,7 +71,7 @@ export default (sequelize) => {
 
   User.beforeCreate((user) => (user.id = uuid()));
 
-  useBcrypt(User, { field: "password", rounds: 12, compare: "authenticate" });
+  useBcrypt(User);
 
   return User;
 };
