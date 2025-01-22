@@ -1,0 +1,19 @@
+import { ProductService } from "../services/product.service.js";
+
+export const addProduct = async (req, res) => {
+  try {
+    const result = await ProductService.createProduct({ ...req.body });
+    return res.status(200).json({ message: "post", result });
+  } catch (error) {
+    return res.status(404).json({ message: "error", error });
+  }
+};
+
+export const getProducts = async (req, res) => {
+  try {
+    const result = await ProductService.getProducts();
+    return res.status(200).json({ message: "products", result });
+  } catch (error) {
+    return res.status(404).json({ message: "error", error });
+  }
+};

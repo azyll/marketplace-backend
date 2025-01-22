@@ -3,13 +3,15 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "dev": "nodemon --exec npx babel-node src/server",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "migrate": "npx sequelize-cli db:migrate",
+    "seeders": "npx sequelize-cli db:seed:all"
   },
   "author": "",
   "license": "ISC",
-  "type": "module",
   "dependencies": {
     "@babel/core": "^7.26.0",
     "@babel/node": "^7.26.0",
