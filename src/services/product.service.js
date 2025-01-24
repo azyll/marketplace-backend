@@ -2,7 +2,7 @@ import { DB } from "../database/index.js";
 
 export class ProductService {
   static async createProduct(product) {
-    const result = DB.Product.create({ ...product });
+    const result = DB.Product.create(product);
     return result;
   }
   static async getProducts() {

@@ -8,26 +8,27 @@ export default (sequelize) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // models.Product.belongsTo(ProductTypes, {
-      //   foreignKey: "typeId",
-      //   as: "type",
-      // });
-      // ProductTypes.hasMany(Product, {
-      //   foreignKey: "typeId",
-      //   as: "product",
-      // });
+      ProductTypes.hasMany(models.Product, {
+        foreignKey: "typeId",
+        as: "product",
+      });
     }
   }
   ProductTypes.init(
     {
-      typeId: {
-        type: DataTypes.STRING,
-        allowNull: false,
+      id: {
+        type: DataTypes.INTEGER,
         primaryKey: true,
+        autoIncrement: true,
       },
-      typeName: {
+      name: {
         type: DataTypes.STRING,
         allowNull: false,
+      },
+      deletedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        defaultValue: null,
       },
     },
     {

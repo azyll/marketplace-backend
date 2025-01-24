@@ -16,7 +16,7 @@ router.post(
   validate({
     name: Joi.string().trim().required(),
     price: Joi.number().required(),
-    typeId: Joi.string().trim().required(),
+    typeId: Joi.number().min(1).required(),
   }),
   addProduct,
 );

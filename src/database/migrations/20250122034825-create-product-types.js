@@ -2,13 +2,14 @@
 /** @type {import('sequelize-cli').Migration} */
 export async function up(queryInterface, Sequelize) {
   await queryInterface.createTable("ProductTypes", {
-    typeId: {
+    id: {
+      type: Sequelize.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
+    name: {
       type: Sequelize.STRING,
       allowNull: false,
-      primaryKey: true,
-    },
-    typeName: {
-      type: Sequelize.STRING,
     },
     createdAt: {
       allowNull: false,
@@ -17,6 +18,11 @@ export async function up(queryInterface, Sequelize) {
     updatedAt: {
       allowNull: false,
       type: Sequelize.DATE,
+    },
+    deletedAt: {
+      type: Sequelize.DATE,
+      allowNull: true,
+      defaultValue: null,
     },
   });
 }

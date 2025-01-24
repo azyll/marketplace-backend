@@ -12,12 +12,8 @@ export default (sequelize) => {
     static associate(models) {
       // define association here
       Product.belongsTo(models.ProductTypes, {
-        foreignKey: "typeId",
         as: "type",
-      });
-      models.ProductTypes.hasMany(Product, {
         foreignKey: "typeId",
-        as: "product",
       });
     }
   }
@@ -25,14 +21,9 @@ export default (sequelize) => {
   Product.init(
     {
       id: {
-        type: DataTypes.INTEGER,
-        primaryKey: true,
-        autoIncrement: true,
-      },
-      subId: {
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
-        allowNull: false,
+        primaryKey: true,
       },
       name: {
         type: DataTypes.STRING,
@@ -41,7 +32,12 @@ export default (sequelize) => {
       price: {
         type: DataTypes.DOUBLE,
         allowNull: false,
-        schema: Joi.number().positive().precision(2).required(),
+        schema: Joi.number().min(0).precision(2).required(),
+      },
+      deletedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        defaultValue: null,
       },
     },
     {
