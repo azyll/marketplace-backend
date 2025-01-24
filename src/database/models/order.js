@@ -9,6 +9,9 @@ export default (sequelize) => {
      */
     static associate(models) {
       // define association here
+      Order.hasOne(models.Sale);
+      Order.hasMany(models.OrderBreakdown);
+      Order.belongsTo(models.User);
     }
   }
   Order.init(
@@ -21,11 +24,12 @@ export default (sequelize) => {
       total: DataTypes.DOUBLE,
       status: {
         type: DataTypes.ENUM,
+        values: ["completed", "ongoing", "failed"],
       },
     },
     {
       sequelize,
-      modelName: "Order",
+      modelName: "Orders",
     },
   );
   return Order;

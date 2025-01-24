@@ -8,6 +8,7 @@ export default (sequelize) => {
      */
     static associate(models) {
       // define association here
+      Sales.belongsTo(models.Order);
     }
   }
   Sales.init(

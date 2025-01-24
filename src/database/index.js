@@ -4,6 +4,10 @@ import RoleModel from "./models/role.js";
 import ProductModel from "./models/product.js";
 import StudentModel from "./models/student.js";
 import ProductTypesModel from "./models/product-types.js";
+
+import SaleModel from "./models/sales.js";
+import OrderModel from "./models/order.js";
+import OrderBreakdownModel from "./models/order-breakdown.js";
 export const DB = {
   sequelize,
   User: UserModel(sequelize),
@@ -11,6 +15,9 @@ export const DB = {
   Student: StudentModel(sequelize),
   Product: ProductModel(sequelize),
   ProductTypes: ProductTypesModel(sequelize),
+  Sale: SaleModel(sequelize),
+  Order: OrderModel(sequelize),
+  OrderBreakdown: OrderBreakdownModel(sequelize),
 };
 
 Object.values(DB).forEach((model) => {

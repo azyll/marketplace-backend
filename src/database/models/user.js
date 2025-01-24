@@ -27,6 +27,10 @@ export default (sequelize) => {
 
   User.init(
     {
+      id: {
+        type: DataTypes.UUID,
+        primaryKey: true,
+      },
       firstName: {
         type: DataTypes.STRING,
         schema: Joi.string().trim().required(),

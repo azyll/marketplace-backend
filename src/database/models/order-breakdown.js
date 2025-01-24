@@ -1,8 +1,7 @@
+"use strict";
 import { Model, DataTypes } from "sequelize";
-import { v4 as uuid } from "uuid";
-
 export default (sequelize) => {
-  class Role extends Model {
+  class OrderBreakdown extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -10,26 +9,19 @@ export default (sequelize) => {
      */
     static associate(models) {
       // define association here
+      OrderBreakdown.belongsTo(models.Order);
     }
   }
-  Role.init(
+  OrderBreakdown.init(
     {
-      id: {
-        type: DataTypes.UUID,
-        primaryKey: true,
-      },
-      name: DataTypes.STRING,
-      systemTag: {
-        type: DataTypes.ENUM,
-        values: ["student", "admin", "employee"],
+      quantity: {
+        type: DataTypes.INTEGER,
       },
     },
     {
       sequelize,
-      modelName: "Roles",
+      modelName: "OrderBreakdown",
     },
   );
-
-  Role.beforeCreate((role) => (role.id = uuid()));
-  return Role;
+  return OrderBreakdown;
 };
