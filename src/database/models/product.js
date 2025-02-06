@@ -15,6 +15,8 @@ export default (sequelize) => {
         as: "type",
         foreignKey: "typeId",
       });
+      Product.hasOne(models.OrderItems);
+      Product.hasMany(models.ProductVariant);
     }
   }
   sequelizeJoi(sequelize);

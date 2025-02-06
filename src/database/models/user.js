@@ -39,6 +39,16 @@ export default (sequelize) => {
         type: DataTypes.STRING,
         schema: Joi.string().trim().required(),
       },
+      fullName: {
+        type: DataTypes.VIRTUAL,
+        get() {
+          return `${this.firstName} ${this.lastName}`;
+        },
+
+        set() {
+          throw new Error("Do not try to set the `fullName` value!");
+        },
+      },
       email: {
         type: DataTypes.STRING,
         schema: Joi.string().trim().email().required(),

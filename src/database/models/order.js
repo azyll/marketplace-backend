@@ -10,7 +10,7 @@ export default (sequelize) => {
     static associate(models) {
       // define association here
       Order.hasOne(models.Sale);
-      Order.hasMany(models.OrderBreakdown);
+      Order.hasMany(models.OrderItems);
       Order.belongsTo(models.User);
     }
   }
@@ -19,7 +19,7 @@ export default (sequelize) => {
       id: {
         primaryKey: true,
         type: DataTypes.UUID,
-        defaultValue: DataTypes.UUIDV4,
+        defaultValue: DataTypes.UUID,
       },
       total: DataTypes.DOUBLE,
       status: {

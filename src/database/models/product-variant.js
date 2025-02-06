@@ -1,7 +1,7 @@
 "use strict";
 import { Model, DataTypes } from "sequelize";
 export default (sequelize) => {
-  class OrderBreakdown extends Model {
+  class ProductVariant extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -9,19 +9,25 @@ export default (sequelize) => {
      */
     static associate(models) {
       // define association here
-      OrderBreakdown.belongsTo(models.Order);
+      ProductVariant.belongsTo(models.Product);
     }
   }
-  OrderBreakdown.init(
+  ProductVariant.init(
     {
-      quantity: {
+      id: {
+        type: DataTypes.UUID,
+        primaryKey: true,
+        defaultValue: DataTypes.UUID,
+      },
+      stockQuantity: {
         type: DataTypes.INTEGER,
       },
+      name: DataTypes.STRING,
     },
     {
       sequelize,
-      modelName: "OrderBreakdown",
+      modelName: "ProductVariants",
     },
   );
-  return OrderBreakdown;
+  return ProductVariant;
 };

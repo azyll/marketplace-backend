@@ -1,0 +1,26 @@
+"use strict";
+import { Model, DataTypes } from "sequelize";
+export default (sequelize) => {
+  class Cart extends Model {
+    /**
+     * Helper method for defining associations.
+     * This method is not a part of Sequelize lifecycle.
+     * The `models/index` file will call this method automatically.
+     */
+    static associate(models) {
+      // define association here
+      Cart.belongsTo(models.Student);
+      Cart.belongsTo(models.ProductVariant);
+    }
+  }
+  Cart.init(
+    {
+      quantity: DataTypes.INTEGER,
+    },
+    {
+      sequelize,
+      modelName: "Carts",
+    },
+  );
+  return Cart;
+};

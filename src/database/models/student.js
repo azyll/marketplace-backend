@@ -15,6 +15,7 @@ export default (sequelize) => {
         foreignKey: "userId",
         as: "user",
       });
+      Student.hasMany(models.Cart);
     }
   }
   Student.init(
