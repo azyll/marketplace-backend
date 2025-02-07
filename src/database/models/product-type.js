@@ -22,8 +22,9 @@ export default (sequelize) => {
         autoIncrement: true,
       },
       name: {
-        type: DataTypes.STRING,
+        type: DataTypes.ENUM,
         allowNull: false,
+        values: ["top", "bottom", "accessory"],
       },
       deletedAt: {
         type: DataTypes.DATE,

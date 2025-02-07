@@ -10,6 +10,9 @@ export default (sequelize) => {
      */
     static associate(models) {
       // define association here
+      Role.hasMany(models.ActivityLog, {
+        foreignKey: "actorId",
+      });
     }
   }
   Role.init(

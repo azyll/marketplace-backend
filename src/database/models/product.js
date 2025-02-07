@@ -17,6 +17,7 @@ export default (sequelize) => {
       });
       Product.hasOne(models.OrderItems);
       Product.hasMany(models.ProductVariant);
+      Product.belongsTo(models.StudentProgram);
     }
   }
   sequelizeJoi(sequelize);
@@ -24,17 +25,18 @@ export default (sequelize) => {
     {
       id: {
         type: DataTypes.UUID,
-        defaultValue: DataTypes.UUIDV4,
+        defaultValue: DataTypes.UUID,
         primaryKey: true,
       },
       name: {
         type: DataTypes.STRING,
         schema: Joi.string().trim().required(),
       },
-      price: {
-        type: DataTypes.DOUBLE,
-        allowNull: false,
-        schema: Joi.number().min(0).precision(2).required(),
+      description: {
+        type: DataTypes.STRING,
+      },
+      image: {
+        type: DataTypes.STRING,
       },
       deletedAt: {
         type: DataTypes.DATE,

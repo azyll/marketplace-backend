@@ -16,6 +16,7 @@ export default (sequelize) => {
         as: "user",
       });
       Student.hasMany(models.Cart);
+      Student.hasOne(models.StudentProgram);
     }
   }
   Student.init(

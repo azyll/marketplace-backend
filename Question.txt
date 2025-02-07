@@ -1,9 +1,0 @@
-1. Nag R-Run na ba to?
- if Yes
- How? May na encounter kasi ako na error eh, pero oks na naman
-
-2. Gusto mo ba gamitin natin yung authentication feature ng Supabase? nag g-generate na rin sila ng jwt token (access/refresh)
-3. Ta-tangalin na talaga yung relationship folder?
-4. Yung sa roles, may feature na gusto si sir lubian. 
-Dapat daw yung admin kaya mag set, mag edit, saka makapag add ng new role if need,  hindi dapat naka type, dapat dynamic.
- 

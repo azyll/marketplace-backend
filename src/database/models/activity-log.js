@@ -1,7 +1,7 @@
 "use strict";
 import { Model, DataTypes } from "sequelize";
 export default (sequelize) => {
-  class ProductVariant extends Model {
+  class ActivityLog extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -9,31 +9,29 @@ export default (sequelize) => {
      */
     static associate(models) {
       // define association here
-      ProductVariant.belongsTo(models.Product);
+      ActivityLog.belongsTo(models.Role, {
+        as: "actor",
+      });
     }
   }
-  ProductVariant.init(
+  ActivityLog.init(
     {
-      id: {
-        type: DataTypes.UUID,
-        primaryKey: true,
-        defaultValue: DataTypes.UUID,
-      },
-      name: DataTypes.STRING,
-      size: {
+      title: {
         type: DataTypes.STRING,
       },
-      price: {
-        type: DataTypes.DOUBLE,
+      content: {
+        type: DataTypes.STRING,
       },
-      stockQuantity: {
-        type: DataTypes.INTEGER,
+      type: {
+        type: DataTypes.ENUM,
+        values: ["SALES", "Admin", "asd"],
       },
     },
     {
       sequelize,
-      modelName: "ProductVariants",
+      modelName: "ActivityLogs",
     },
   );
-  return ProductVariant;
+  ActivityLog.removeAttribute("id");
+  return ActivityLog;
 };

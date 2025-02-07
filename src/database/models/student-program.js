@@ -1,7 +1,7 @@
 "use strict";
 import { Model, DataTypes } from "sequelize";
 export default (sequelize) => {
-  class ActivityHistory extends Model {
+  class StudentProgram extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -9,16 +9,23 @@ export default (sequelize) => {
      */
     static associate(models) {
       // define association here
+      StudentProgram.hasOne(models.Product);
+      StudentProgram.belongsTo(models.Student);
     }
   }
-  ActivityHistory.init(
+  StudentProgram.init(
     {
+      id: {
+        type: DataTypes.UUID,
+        primaryKey: true,
+        defaultValue: DataTypes.UUID,
+      },
       name: DataTypes.STRING,
     },
     {
       sequelize,
-      modelName: "ActivityHistory",
+      modelName: "StudentPrograms",
     },
   );
-  return ActivityHistory;
+  return StudentProgram;
 };

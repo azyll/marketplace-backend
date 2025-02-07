@@ -24,5 +24,6 @@ export default (sequelize) => {
       modelName: "OrderItems",
     },
   );
+  OrderItems.removeAttribute("id");
   return OrderItems;
 };
