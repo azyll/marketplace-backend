@@ -19,6 +19,11 @@ export default (sequelize) => {
         primaryKey: true,
       },
       total: DataTypes.DOUBLE,
+      deletedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        defaultValue: null,
+      },
     },
     {
       sequelize,

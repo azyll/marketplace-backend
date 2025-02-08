@@ -18,6 +18,11 @@ export default (sequelize) => {
       quantity: {
         type: DataTypes.INTEGER,
       },
+      deletedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        defaultValue: null,
+      },
     },
     {
       sequelize,

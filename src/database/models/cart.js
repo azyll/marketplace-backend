@@ -16,7 +16,13 @@ export default (sequelize) => {
   Cart.init(
     {
       quantity: DataTypes.INTEGER,
+      deletedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        defaultValue: null,
+      },
     },
+
     {
       sequelize,
       modelName: "Carts",

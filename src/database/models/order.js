@@ -26,6 +26,11 @@ export default (sequelize) => {
         type: DataTypes.ENUM,
         values: ["completed", "ongoing", "failed"],
       },
+      deletedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        defaultValue: null,
+      },
     },
     {
       sequelize,

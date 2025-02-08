@@ -29,6 +29,11 @@ export default (sequelize) => {
       stockQuantity: {
         type: DataTypes.INTEGER,
       },
+      deletedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        defaultValue: null,
+      },
     },
     {
       sequelize,
