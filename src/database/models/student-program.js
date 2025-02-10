@@ -9,7 +9,7 @@ export default (sequelize) => {
      */
     static associate(models) {
       // define association here
-      StudentProgram.hasOne(models.Product);
+      StudentProgram.hasMany(models.Product);
       StudentProgram.belongsTo(models.Student);
     }
   }
