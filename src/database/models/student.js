@@ -15,19 +15,20 @@ export default (sequelize) => {
         foreignKey: "userId",
         as: "user",
       });
+
+      Student.belongsTo(models.Program);
       Student.hasMany(models.Cart);
-      Student.hasOne(models.StudentProgram);
     }
   }
   Student.init(
     {
-      program: DataTypes.STRING,
       userId: {
         type: DataTypes.UUID,
         references: {
           model: User(sequelize),
           key: "id",
         },
+        primaryKey: true,
       },
       level: {
         type: DataTypes.ENUM,
@@ -44,7 +45,7 @@ export default (sequelize) => {
     },
   );
 
-  Student.beforeCreate((student) => (student.id = uuid()));
-
+  // Student.beforeCreate((student) => (student.id = uuid()));
+  Student.removeAttribute("id");
   return Student;
 };

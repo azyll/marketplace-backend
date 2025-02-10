@@ -10,7 +10,7 @@ import OrderItemsModel from "./models/order-items.js";
 import ProductVariantModel from "./models/product-variant.js";
 import CartModel from "./models/cart.js";
 import ActivityLogModel from "./models/activity-log.js";
-import StudentProgramModel from "./models/student-program.js";
+import ProgramModel from "./models/program.js";
 
 export const DB = {
   sequelize,
@@ -25,7 +25,7 @@ export const DB = {
   ProductVariant: ProductVariantModel(sequelize),
   Cart: CartModel(sequelize),
   ActivityLog: ActivityLogModel(sequelize),
-  StudentProgram: StudentProgramModel(sequelize),
+  Program: ProgramModel(sequelize),
 };
 
 Object.values(DB).forEach((model) => {

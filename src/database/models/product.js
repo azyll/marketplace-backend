@@ -17,7 +17,7 @@ export default (sequelize) => {
       });
       Product.hasOne(models.OrderItems);
       Product.hasMany(models.ProductVariant);
-      Product.belongsTo(models.StudentProgram);
+      Product.belongsTo(models.Program);
     }
   }
   sequelizeJoi(sequelize);
