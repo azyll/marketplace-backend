@@ -11,7 +11,9 @@ export default (sequelize) => {
       // define association here
       Order.hasOne(models.Sale);
       Order.hasMany(models.OrderItems);
-      Order.belongsTo(models.User);
+      Order.belongsTo(models.Student, {
+        foreignKey: "studentId",
+      });
     }
   }
   Order.init(

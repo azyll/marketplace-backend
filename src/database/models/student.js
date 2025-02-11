@@ -17,7 +17,9 @@ export default (sequelize) => {
       });
 
       Student.belongsTo(models.Program);
-      Student.hasMany(models.Cart);
+      Student.hasMany(models.Cart, {
+        foreignKey: "studentId",
+      });
     }
   }
   Student.init(

@@ -10,13 +10,23 @@ export default (sequelize) => {
     static associate(models) {
       // define association here
       OrderItems.belongsTo(models.Order);
-      OrderItems.belongsTo(models.Product);
+      OrderItems.belongsTo(models.ProductVariant);
     }
   }
   OrderItems.init(
     {
       quantity: {
         type: DataTypes.INTEGER,
+      },
+      total: {
+        type: DataTypes.VIRTUAL,
+        get() {
+          return `${this.firstName} ${this.lastName}`;
+        },
+
+        set() {
+          throw new Error("Do not try to set the `total` value!");
+        },
       },
       deletedAt: {
         type: DataTypes.DATE,
