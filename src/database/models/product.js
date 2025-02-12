@@ -11,10 +11,6 @@ export default (sequelize) => {
      */
     static associate(models) {
       // define association here
-      Product.belongsTo(models.ProductTypes, {
-        as: "type",
-        foreignKey: "typeId",
-      });
       Product.hasMany(models.ProductVariant);
       Product.belongsTo(models.Program);
     }
@@ -41,6 +37,10 @@ export default (sequelize) => {
         type: DataTypes.DATE,
         allowNull: true,
         defaultValue: null,
+      },
+      productType: {
+        type: DataTypes.ENUM,
+        values: ["top", "bottom", "accessory", "miscellaneous"],
       },
     },
     {

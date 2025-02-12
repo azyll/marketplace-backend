@@ -9,9 +9,7 @@ export default (sequelize) => {
      */
     static associate(models) {
       // define association here
-      Cart.belongsTo(models.Student, {
-        foreignKey: "studentId",
-      });
+      Cart.belongsTo(models.Student);
       Cart.belongsTo(models.ProductVariant);
     }
   }

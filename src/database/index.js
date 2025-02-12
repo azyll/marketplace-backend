@@ -3,7 +3,6 @@ import UserModel from "./models/user.js";
 import RoleModel from "./models/role.js";
 import ProductModel from "./models/product.js";
 import StudentModel from "./models/student.js";
-import ProductTypesModel from "./models/product-type.js";
 import SaleModel from "./models/sales.js";
 import OrderModel from "./models/order.js";
 import OrderItemsModel from "./models/order-items.js";
@@ -18,8 +17,7 @@ export const DB = {
   Role: RoleModel(sequelize),
   Student: StudentModel(sequelize),
   Product: ProductModel(sequelize),
-  ProductTypes: ProductTypesModel(sequelize),
-  Sale: SaleModel(sequelize),
+  Sales: SaleModel(sequelize),
   Order: OrderModel(sequelize),
   OrderItems: OrderItemsModel(sequelize),
   ProductVariant: ProductVariantModel(sequelize),

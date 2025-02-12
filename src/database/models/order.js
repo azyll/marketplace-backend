@@ -9,11 +9,9 @@ export default (sequelize) => {
      */
     static associate(models) {
       // define association here
-      Order.hasOne(models.Sale);
+      Order.hasOne(models.Sales);
       Order.hasMany(models.OrderItems);
-      Order.belongsTo(models.Student, {
-        foreignKey: "studentId",
-      });
+      Order.belongsTo(models.Student);
     }
   }
   Order.init(
@@ -23,7 +21,10 @@ export default (sequelize) => {
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUID,
       },
-      total: DataTypes.DOUBLE,
+      total: {
+        type: DataTypes.DOUBLE,
+        allowNull: false,
+      },
       status: {
         type: DataTypes.ENUM,
         values: ["completed", "ongoing", "failed"],

@@ -18,7 +18,10 @@ export default (sequelize) => {
         defaultValue: DataTypes.UUIDV4,
         primaryKey: true,
       },
-      total: DataTypes.DOUBLE,
+      total: {
+        type: DataTypes.DOUBLE,
+        allowNull: false,
+      },
       deletedAt: {
         type: DataTypes.DATE,
         allowNull: true,

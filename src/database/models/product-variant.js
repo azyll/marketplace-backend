@@ -17,7 +17,7 @@ export default (sequelize) => {
       id: {
         type: DataTypes.UUID,
         primaryKey: true,
-        defaultValue: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
       },
       name: DataTypes.STRING,
       size: {

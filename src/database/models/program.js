@@ -10,7 +10,7 @@ export default (sequelize) => {
     static associate(models) {
       // define association here
       Program.hasMany(models.Product);
-      Program.hasOne(models.Student);
+      Program.hasOne(models.User);
     }
   }
   Program.init(
@@ -18,9 +18,17 @@ export default (sequelize) => {
       id: {
         type: DataTypes.UUID,
         primaryKey: true,
-        defaultValue: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
       },
-      name: DataTypes.STRING,
+      name: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      deletedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        defaultValue: null,
+      },
     },
     {
       sequelize,

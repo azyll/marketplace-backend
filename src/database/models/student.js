@@ -17,20 +17,22 @@ export default (sequelize) => {
       });
 
       Student.belongsTo(models.Program);
-      Student.hasMany(models.Cart, {
-        foreignKey: "studentId",
-      });
+      Student.hasMany(models.Cart);
     }
   }
   Student.init(
     {
+      id: {
+        type: DataTypes.BIGINT,
+        primaryKey: true,
+        allowNull: false,
+      },
       userId: {
         type: DataTypes.UUID,
         references: {
           model: User(sequelize),
           key: "id",
         },
-        primaryKey: true,
       },
       level: {
         type: DataTypes.ENUM,
@@ -46,8 +48,5 @@ export default (sequelize) => {
       modelName: "Students",
     },
   );
-
-  // Student.beforeCreate((student) => (student.id = uuid()));
-  Student.removeAttribute("id");
   return Student;
 };
