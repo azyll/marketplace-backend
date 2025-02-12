@@ -5,37 +5,23 @@ export default {
   async up(queryInterface) {
     await queryInterface.createTable("Users", {
       id: {
-        allowNull: false,
+        type: DataTypes.UUID,
         primaryKey: true,
-        type: Sequelize.UUID,
-        defaultValue: DataTypes.UUIDV4,
       },
       firstName: {
-        type: Sequelize.STRING,
+        type: DataTypes.STRING,
       },
       lastName: {
-        type: Sequelize.STRING,
+        type: DataTypes.STRING,
       },
       email: {
-        type: Sequelize.STRING,
+        type: DataTypes.STRING,
       },
       password: {
-        type: Sequelize.STRING,
-      },
-      roleId: {
-        type: Sequelize.UUID,
-      },
-      createdAt: {
-        allowNull: false,
-        type: Sequelize.DATE,
-      },
-      updatedAt: {
-        allowNull: false,
-        type: Sequelize.DATE,
+        type: DataTypes.STRING,
       },
       deletedAt: {
-        allowNull: true,
-        type: Sequelize.DATE,
+        type: DataTypes.DATE,
       },
     });
   },
