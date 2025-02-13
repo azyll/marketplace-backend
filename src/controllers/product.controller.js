@@ -27,3 +27,12 @@ export const getProducts = async (req, res) => {
     return res.status(404).json({ message: "error", error });
   }
 };
+export const getProduct = async (req, res) => {
+  const { productId } = req.params;
+  try {
+    const result = await ProductService.getProduct(productId);
+    return res.status(200).json({ message: "product", result });
+  } catch (error) {
+    return res.status(404).json({ message: "error", error });
+  }
+};

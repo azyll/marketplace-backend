@@ -2,6 +2,7 @@ import { Router } from "express";
 
 import {
   addProduct,
+  getProduct,
   getProducts,
 } from "../../controllers/product.controller.js";
 import { validate } from "../../middleware/validation.js";
@@ -23,5 +24,6 @@ router.post(
   }),
   addProduct,
 );
+router.get("/:productId", getProduct);
 
 export default router;

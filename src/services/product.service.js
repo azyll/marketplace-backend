@@ -1,3 +1,4 @@
+import { Op } from "sequelize";
 import { DB } from "../database/index.js";
 
 export class ProductService {
@@ -46,7 +47,21 @@ export class ProductService {
   }
 
   static async getProducts() {
-    const result = DB.Product.findAll();
+    const result = DB.Product.findAll({
+      include: DB.ProductVariant,
+    });
+    return result;
+  }
+  static async getProduct(productId) {
+    const result = DB.Product.findOne({
+      include: [
+        {
+          model: DB.ProductVariant,
+        },
+      ],
+
+      where: { id: productId, deletedAt: { [Op.is]: null } },
+    });
     return result;
   }
 }
