@@ -15,8 +15,11 @@ router.post(
   "/",
   validate({
     name: Joi.string().trim().required(),
-    price: Joi.number().required(),
-    typeId: Joi.number().min(1).required(),
+    description: Joi.string().trim().required(),
+    image: Joi.string().trim().required(),
+    productType: Joi.string().trim().required(),
+    variants: Joi.array().required(),
+    programId: Joi.string().required(),
   }),
   addProduct,
 );

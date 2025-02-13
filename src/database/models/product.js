@@ -11,8 +11,18 @@ export default (sequelize) => {
      */
     static associate(models) {
       // define association here
-      Product.hasMany(models.ProductVariant);
-      Product.belongsTo(models.Program);
+      Product.hasMany(models.ProductVariant, {
+        foreignKey: {
+          name: "productId",
+          allowNull: false,
+        },
+      });
+      Product.belongsTo(models.Program, {
+        foreignKey: {
+          name: "programId",
+          allowNull: false,
+        },
+      });
     }
   }
   sequelizeJoi(sequelize);
@@ -20,7 +30,7 @@ export default (sequelize) => {
     {
       id: {
         type: DataTypes.UUID,
-        defaultValue: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
         primaryKey: true,
       },
       name: {

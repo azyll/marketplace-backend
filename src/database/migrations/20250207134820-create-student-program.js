@@ -1,6 +1,6 @@
 "use strict";
 /** @type {import('sequelize-cli').Migration} */
-export async function up(queryInterface, Sequelize) {
+export async function up(queryInterface) {
   await queryInterface.createTable("Programs", {
     id: {
       allowNull: false,
@@ -18,6 +18,11 @@ export async function up(queryInterface, Sequelize) {
     updatedAt: {
       allowNull: false,
       type: Sequelize.DATE,
+    },
+    deletedAt: {
+      type: DataTypes.DATE,
+      allowNull: true,
+      defaultValue: null,
     },
   });
 }

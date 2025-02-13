@@ -1,4 +1,4 @@
-import Sequelize, { DataTypes } from "sequelize";
+import { DataTypes } from "sequelize";
 
 /** @type {import('sequelize-cli').Migration} */
 export default {
@@ -7,30 +7,30 @@ export default {
       id: {
         allowNull: false,
         primaryKey: true,
-        type: Sequelize.UUID,
+        type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
       },
       program: {
-        type: Sequelize.STRING,
+        type: DataTypes.STRING,
       },
       level: {
-        type: Sequelize.ENUM,
+        type: DataTypes.ENUM,
         values: ["shs", "tertiary"],
       },
       userId: {
-        type: Sequelize.UUID,
+        type: DataTypes.UUID,
       },
       createdAt: {
         allowNull: false,
-        type: Sequelize.DATE,
+        type: DataTypes.DATE,
       },
       updatedAt: {
         allowNull: false,
-        type: Sequelize.DATE,
+        type: DataTypes.DATE,
       },
       deletedAt: {
         allowNull: true,
-        type: Sequelize.DATE,
+        type: DataTypes.DATE,
       },
     });
   },

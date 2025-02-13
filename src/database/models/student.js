@@ -16,8 +16,18 @@ export default (sequelize) => {
         as: "user",
       });
 
-      Student.belongsTo(models.Program);
-      Student.hasMany(models.Cart);
+      Student.belongsTo(models.Program, {
+        foreignKey: {
+          name: "programId",
+          allowNull: false,
+        },
+      });
+      Student.hasMany(models.Cart, {
+        foreignKey: {
+          name: "studentId",
+          allowNull: false,
+        },
+      });
     }
   }
   Student.init(

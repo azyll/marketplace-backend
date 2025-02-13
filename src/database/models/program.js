@@ -9,8 +9,18 @@ export default (sequelize) => {
      */
     static associate(models) {
       // define association here
-      Program.hasMany(models.Product);
-      Program.hasOne(models.User);
+      Program.hasMany(models.Product, {
+        foreignKey: {
+          name: "programId",
+          allowNull: false,
+        },
+      });
+      Program.hasOne(models.User, {
+        foreignKey: {
+          name: "programId",
+          allowNull: false,
+        },
+      });
     }
   }
   Program.init(

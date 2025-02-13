@@ -10,6 +10,10 @@ export default (sequelize) => {
     static associate(models) {
       // define association here
       ActivityLog.belongsTo(models.Role, {
+        foreignKey: {
+          name: "roleId",
+          allowNull: false,
+        },
         as: "actor",
       });
     }

@@ -9,9 +9,24 @@ export default (sequelize) => {
      */
     static associate(models) {
       // define association here
-      Order.hasOne(models.Sales);
-      Order.hasMany(models.OrderItems);
-      Order.belongsTo(models.Student);
+      Order.hasOne(models.Sales, {
+        foreignKey: {
+          name: "orderId",
+          allowNull: false,
+        },
+      });
+      Order.hasMany(models.OrderItems, {
+        foreignKey: {
+          name: "orderId",
+          allowNull: false,
+        },
+      });
+      Order.belongsTo(models.Student, {
+        foreignKey: {
+          name: "studentId",
+          allowNull: false,
+        },
+      });
     }
   }
   Order.init(
@@ -19,7 +34,7 @@ export default (sequelize) => {
       id: {
         primaryKey: true,
         type: DataTypes.UUID,
-        defaultValue: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
       },
       total: {
         type: DataTypes.DOUBLE,

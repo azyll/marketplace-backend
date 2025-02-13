@@ -9,8 +9,18 @@ export default (sequelize) => {
      */
     static associate(models) {
       // define association here
-      OrderItems.belongsTo(models.Order);
-      OrderItems.belongsTo(models.ProductVariant);
+      OrderItems.belongsTo(models.Order, {
+        foreignKey: {
+          name: "orderId",
+          allowNull: false,
+        },
+      });
+      OrderItems.belongsTo(models.ProductVariant, {
+        foreignKey: {
+          name: "productVariantId",
+          allowNull: false,
+        },
+      });
     }
   }
   OrderItems.init(

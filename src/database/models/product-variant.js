@@ -9,7 +9,12 @@ export default (sequelize) => {
      */
     static associate(models) {
       // define association here
-      ProductVariant.belongsTo(models.Product);
+      ProductVariant.belongsTo(models.Product, {
+        foreignKey: {
+          name: "productId",
+          allowNull: false,
+        },
+      });
     }
   }
   ProductVariant.init(
