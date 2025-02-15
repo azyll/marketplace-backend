@@ -1,26 +1,39 @@
 "use strict";
 /** @type {import('sequelize-cli').Migration} */
-export async function up(queryInterface, Sequelize) {
-  await queryInterface.createTable("product-variants", {
+import Sequelize, { DataTypes } from "sequelize";
+
+export async function up(queryInterface) {
+  await queryInterface.createTable("ProductVariants", {
     id: {
-      allowNull: false,
-      autoIncrement: true,
+      type: DataTypes.UUID,
       primaryKey: true,
-      type: Sequelize.INTEGER,
+      defaultValue: DataTypes.UUIDV4,
     },
-    name: {
-      type: Sequelize.STRING,
+    name: { type: DataTypes.STRING },
+    size: {
+      type: DataTypes.STRING,
+    },
+    price: {
+      type: DataTypes.DOUBLE,
+    },
+    stockQuantity: {
+      type: DataTypes.INTEGER,
+    },
+    deletedAt: {
+      type: DataTypes.DATE,
+      allowNull: true,
+      defaultValue: null,
     },
     createdAt: {
       allowNull: false,
-      type: Sequelize.DATE,
+      type: DataTypes.DATE,
     },
     updatedAt: {
       allowNull: false,
-      type: Sequelize.DATE,
+      type: DataTypes.DATE,
     },
   });
 }
-export async function down(queryInterface, Sequelize) {
-  await queryInterface.dropTable("product-variants");
+export async function down(queryInterface) {
+  await queryInterface.dropTable("ProductVariants");
 }

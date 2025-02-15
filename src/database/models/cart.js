@@ -1,5 +1,7 @@
 "use strict";
 import { Model, DataTypes } from "sequelize";
+import { Joi, sequelizeJoi } from "sequelize-joi";
+
 export default (sequelize) => {
   class Cart extends Model {
     /**
@@ -23,13 +25,19 @@ export default (sequelize) => {
       });
     }
   }
+  sequelizeJoi(sequelize);
+
   Cart.init(
     {
-      quantity: DataTypes.INTEGER,
+      quantity: {
+        type: DataTypes.INTEGER,
+        schema: Joi.number().integer().min(0).required(),
+      },
       deletedAt: {
         type: DataTypes.DATE,
         allowNull: true,
         defaultValue: null,
+        schema: Joi.date().allow(null),
       },
     },
 

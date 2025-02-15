@@ -9,22 +9,24 @@ export async function up(queryInterface, Sequelize) {
       primaryKey: true,
     },
     name: {
-      type: Sequelize.STRING,
+      type: DataTypes.STRING,
     },
-    price: { type: Sequelize.DOUBLE, allowNull: false },
+    price: {
+      type: DataTypes.DOUBLE,
+      allowNull: false,
+    },
+    deletedAt: {
+      type: DataTypes.DATE,
+      allowNull: true,
+      defaultValue: null,
+    },
     createdAt: {
       allowNull: false,
-      type: Sequelize.DATE,
+      type: DataTypes.DATE,
     },
     updatedAt: {
       allowNull: false,
-      type: Sequelize.DATE,
-    },
-
-    deletedAt: {
-      type: Sequelize.DATE,
-      allowNull: true,
-      defaultValue: null,
+      type: DataTypes.DATE,
     },
   });
 }

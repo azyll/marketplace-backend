@@ -1,29 +1,43 @@
 /** @type {import('sequelize-cli').Migration} */
-export async function up(queryInterface, Sequelize) {
+import Sequelize, { DataTypes } from "sequelize";
+
+export async function up(queryInterface) {
   await queryInterface.createTable("Sales", {
     id: {
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,
       primaryKey: true,
-      type: Sequelize.UUID,
-      defaultValue: Sequelize.UUIDV4,
+    },
+    name: {
+      type: DataTypes.STRING,
+      unique: true,
     },
 
-    total: {
-      type: Sequelize.DOUBLE,
+    description: {
+      type: DataTypes.STRING,
+    },
+    image: {
+      type: DataTypes.STRING,
+    },
+    deletedAt: {
+      type: DataTypes.DATE,
+      allowNull: true,
+      defaultValue: null,
+    },
+    productType: {
+      type: DataTypes.ENUM,
+      values: ["top", "bottom", "accessory", "miscellaneous"],
     },
     createdAt: {
       allowNull: false,
-      type: Sequelize.DATE,
+      type: DataTypes.DATE,
     },
     updatedAt: {
       allowNull: false,
-      type: Sequelize.DATE,
-    },
-    deletedAt: {
-      allowNull: false,
-      type: Sequelize.DATE,
+      type: DataTypes.DATE,
     },
   });
 }
-export async function down(queryInterface, Sequelize) {
+export async function down(queryInterface) {
   await queryInterface.dropTable("Sales");
 }

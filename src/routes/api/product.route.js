@@ -24,6 +24,6 @@ router.post(
   }),
   addProduct,
 );
-router.get("/:productId", getProduct);
+router.get("/:id", getProduct);
 
 export default router;

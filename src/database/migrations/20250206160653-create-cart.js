@@ -1,26 +1,27 @@
 "use strict";
 /** @type {import('sequelize-cli').Migration} */
-export async function up(queryInterface, Sequelize) {
-  await queryInterface.createTable("carts", {
-    id: {
-      allowNull: false,
-      autoIncrement: true,
-      primaryKey: true,
-      type: Sequelize.INTEGER,
-    },
+import Sequelize, { DataTypes } from "sequelize";
+
+export async function up(queryInterface) {
+  await queryInterface.createTable("Carts", {
     quantity: {
-      type: Sequelize.INTEGER,
+      type: DataTypes.INTEGER,
+    },
+    deletedAt: {
+      type: DataTypes.DATE,
+      allowNull: true,
+      defaultValue: null,
     },
     createdAt: {
       allowNull: false,
-      type: Sequelize.DATE,
+      type: DataTypes.DATE,
     },
     updatedAt: {
       allowNull: false,
-      type: Sequelize.DATE,
+      type: DataTypes.DATE,
     },
   });
 }
-export async function down(queryInterface, Sequelize) {
-  await queryInterface.dropTable("carts");
+export async function down(queryInterface) {
+  await queryInterface.dropTable("Carts");
 }

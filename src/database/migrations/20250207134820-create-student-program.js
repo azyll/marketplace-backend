@@ -1,23 +1,26 @@
 "use strict";
 /** @type {import('sequelize-cli').Migration} */
+import Sequelize, { DataTypes } from "sequelize";
+
 export async function up(queryInterface) {
   await queryInterface.createTable("Programs", {
     id: {
-      allowNull: false,
-      autoIncrement: true,
+      type: DataTypes.UUID,
       primaryKey: true,
-      type: Sequelize.INTEGER,
+      defaultValue: DataTypes.UUIDV4,
     },
     name: {
-      type: Sequelize.STRING,
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true,
     },
     createdAt: {
       allowNull: false,
-      type: Sequelize.DATE,
+      type: DataTypes.DATE,
     },
     updatedAt: {
       allowNull: false,
-      type: Sequelize.DATE,
+      type: DataTypes.DATE,
     },
     deletedAt: {
       type: DataTypes.DATE,

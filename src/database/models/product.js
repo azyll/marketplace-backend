@@ -1,7 +1,5 @@
-import Joi from "joi";
 import { Model, DataTypes } from "sequelize";
-import { sequelizeJoi } from "sequelize-joi";
-
+import { sequelizeJoi, Joi } from "sequelize-joi";
 export default (sequelize) => {
   class Product extends Model {
     /**
@@ -36,17 +34,22 @@ export default (sequelize) => {
       name: {
         type: DataTypes.STRING,
         schema: Joi.string().trim().required(),
+        unique: true,
       },
+
       description: {
         type: DataTypes.STRING,
+        schema: Joi.string().trim().required(),
       },
       image: {
         type: DataTypes.STRING,
+        schema: Joi.string().trim().required(),
       },
       deletedAt: {
         type: DataTypes.DATE,
         allowNull: true,
         defaultValue: null,
+        schema: Joi.date().allow(null),
       },
       productType: {
         type: DataTypes.ENUM,
@@ -58,5 +61,6 @@ export default (sequelize) => {
       modelName: "Products",
     },
   );
+
   return Product;
 };

@@ -2,4 +2,8 @@ Q:
 Return Item Table
 
 
+02-13-2025-11:45AM
+Problem:
+Handle error at Product Service
+
 m"Inser product route, working. Cannot handle insert product error yet"

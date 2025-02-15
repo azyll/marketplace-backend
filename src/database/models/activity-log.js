@@ -1,5 +1,7 @@
 "use strict";
 import { Model, DataTypes } from "sequelize";
+import { Joi, sequelizeJoi } from "sequelize-joi";
+
 export default (sequelize) => {
   class ActivityLog extends Model {
     /**
@@ -18,13 +20,16 @@ export default (sequelize) => {
       });
     }
   }
+  sequelizeJoi(sequelize);
   ActivityLog.init(
     {
       title: {
         type: DataTypes.STRING,
+        schema: Joi.string().trim().required(),
       },
       content: {
         type: DataTypes.STRING,
+        schema: Joi.string().trim().required(),
       },
       type: {
         type: DataTypes.ENUM,
@@ -34,6 +39,7 @@ export default (sequelize) => {
         type: DataTypes.DATE,
         allowNull: true,
         defaultValue: null,
+        schema: Joi.date().allow(null),
       },
     },
     {
@@ -41,6 +47,7 @@ export default (sequelize) => {
       modelName: "ActivityLogs",
     },
   );
+
   ActivityLog.removeAttribute("id");
   return ActivityLog;
 };

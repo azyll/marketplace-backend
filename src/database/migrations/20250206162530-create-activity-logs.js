@@ -1,26 +1,35 @@
 "use strict";
 /** @type {import('sequelize-cli').Migration} */
+import Sequelize, { DataTypes } from "sequelize";
+
 export async function up(queryInterface, Sequelize) {
-  await queryInterface.createTable("activity-histories", {
-    id: {
-      allowNull: false,
-      autoIncrement: true,
-      primaryKey: true,
-      type: Sequelize.INTEGER,
+  await queryInterface.createTable("ActivityLogs", {
+    title: {
+      type: DataTypes.STRING,
     },
-    name: {
-      type: Sequelize.STRING,
+    content: {
+      type: DataTypes.STRING,
+    },
+    type: {
+      type: DataTypes.ENUM,
+      values: ["SALES", "Admin", "asd"],
     },
     createdAt: {
       allowNull: false,
-      type: Sequelize.DATE,
+      type: DataTypes.DATE,
     },
     updatedAt: {
       allowNull: false,
-      type: Sequelize.DATE,
+      type: DataTypes.DATE,
+    },
+    deletedAt: {
+      type: DataTypes.DATE,
+      allowNull: true,
+      defaultValue: null,
+      schema: Joi.date().allow(null),
     },
   });
 }
 export async function down(queryInterface, Sequelize) {
-  await queryInterface.dropTable("activity-histories");
+  await queryInterface.dropTable("ActivityLogs");
 }

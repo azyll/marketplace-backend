@@ -1,3 +1,5 @@
+import { Joi, sequelizeJoi } from "sequelize-joi";
+
 import { Model, DataTypes } from "sequelize";
 export default (sequelize) => {
   class Sales extends Model {
@@ -16,6 +18,7 @@ export default (sequelize) => {
       });
     }
   }
+  sequelizeJoi(sequelize);
   Sales.init(
     {
       id: {
@@ -26,11 +29,13 @@ export default (sequelize) => {
       total: {
         type: DataTypes.DOUBLE,
         allowNull: false,
+        schema: Joi.number().integer().min(0).required(),
       },
       deletedAt: {
         type: DataTypes.DATE,
         allowNull: true,
         defaultValue: null,
+        schema: Joi.date().allow(null),
       },
     },
     {

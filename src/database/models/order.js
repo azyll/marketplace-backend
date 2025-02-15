@@ -1,5 +1,7 @@
 "use strict";
 import { Model, DataTypes } from "sequelize";
+import { Joi, sequelizeJoi } from "sequelize-joi";
+
 export default (sequelize) => {
   class Order extends Model {
     /**
@@ -29,6 +31,7 @@ export default (sequelize) => {
       });
     }
   }
+  sequelizeJoi(sequelize);
   Order.init(
     {
       id: {
@@ -39,6 +42,7 @@ export default (sequelize) => {
       total: {
         type: DataTypes.DOUBLE,
         allowNull: false,
+        schema: Joi.number().min(0).precision(2).required(),
       },
       status: {
         type: DataTypes.ENUM,
@@ -48,6 +52,7 @@ export default (sequelize) => {
         type: DataTypes.DATE,
         allowNull: true,
         defaultValue: null,
+        schema: Joi.date().allow(null),
       },
     },
     {

@@ -12,26 +12,21 @@ export class ProductService {
     const { name, description, image, productType, programId, variants } =
       product;
 
-    try {
-      const result = await DB.Product.create({
-        name,
-        description,
-        image,
-        productType,
-        programId,
+    const result = await DB.Product.create({
+      name,
+      description,
+      image,
+      productType,
+      programId,
+    });
+    const variantsInput = await variants.map(async (variant) => {
+      return this.createProductVariants({
+        ...variant,
+        productId: result.id,
       });
-      const variantsInput = await variants.map(
-        async (variant) =>
-          await this.createProductVariants({
-            ...variant,
-            productId: result.id,
-          }),
-      );
+    });
 
-      return { result, variantsInput };
-    } catch (error) {
-      throw new Error(error);
-    }
+    return { result, variantsInput };
   }
   // Array Product Variants
   static async createProductVariants(variant) {
@@ -52,7 +47,9 @@ export class ProductService {
     });
     return result;
   }
-  static async getProduct(productId) {
+  static async getProductsByProgram(programId) {}
+  // Params: id = Product id
+  static async getProduct(id) {
     const result = DB.Product.findOne({
       include: [
         {
@@ -60,8 +57,12 @@ export class ProductService {
         },
       ],
 
-      where: { id: productId, deletedAt: { [Op.is]: null } },
+      where: {
+        id,
+        deletedAt: { [Op.is]: null },
+      },
     });
+    console.log(await result);
     return result;
   }
 }

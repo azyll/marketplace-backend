@@ -1,29 +1,33 @@
 "use strict";
 /** @type {import('sequelize-cli').Migration} */
-export async function up(queryInterface, Sequelize) {
+import Sequelize, { DataTypes } from "sequelize";
+
+export async function up(queryInterface) {
   await queryInterface.createTable("OrderItems", {
-    id: {
+    quantity: {
+      type: DataTypes.INTEGER,
       allowNull: false,
-      autoIncrement: true,
-      primaryKey: true,
-      type: Sequelize.INTEGER,
-    },
-    id: {
-      type: Sequelize.UUID,
     },
     total: {
-      type: Sequelize.DOUBLE,
+      type: DataTypes.VIRTUAL,
+      get() {
+        return `${this.firstName} ${this.lastName}`;
+      },
+    },
+    deletedAt: {
+      type: DataTypes.DATE,
+      allowNull: true,
     },
     createdAt: {
       allowNull: false,
-      type: Sequelize.DATE,
+      type: DataTypes.DATE,
     },
     updatedAt: {
       allowNull: false,
-      type: Sequelize.DATE,
+      type: DataTypes.DATE,
     },
   });
 }
-export async function down(queryInterface, Sequelize) {
+export async function down(queryInterface) {
   await queryInterface.dropTable("OrderItems");
 }

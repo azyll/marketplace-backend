@@ -1,6 +1,7 @@
 import { Model, DataTypes, Model as Users } from "sequelize";
 import User from "./user.js";
 import { v4 as uuid } from "uuid";
+import { Joi, sequelizeJoi } from "sequelize-joi";
 
 export default (sequelize) => {
   class Student extends Model {
@@ -30,12 +31,15 @@ export default (sequelize) => {
       });
     }
   }
+
+  sequelizeJoi(sequelize);
   Student.init(
     {
       id: {
         type: DataTypes.BIGINT,
         primaryKey: true,
         allowNull: false,
+        schema: Joi.number().integer().min(1).positive().required(),
       },
       userId: {
         type: DataTypes.UUID,
@@ -47,10 +51,12 @@ export default (sequelize) => {
       level: {
         type: DataTypes.ENUM,
         values: ["shs", "tertiary"],
+        schema: Joi.string().trim().required(),
       },
       deletedAt: {
         type: DataTypes.DATE,
         allowNull: true,
+        schema: Joi.date().allow(null),
       },
     },
     {

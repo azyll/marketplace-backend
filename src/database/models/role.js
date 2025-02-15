@@ -1,5 +1,6 @@
 import { Model, DataTypes } from "sequelize";
 import { v4 as uuid } from "uuid";
+import { Joi, sequelizeJoi } from "sequelize-joi";
 
 export default (sequelize) => {
   class Role extends Model {
@@ -15,16 +16,24 @@ export default (sequelize) => {
       });
     }
   }
+  sequelizeJoi(sequelize);
   Role.init(
     {
       id: {
         type: DataTypes.UUID,
         primaryKey: true,
       },
-      name: DataTypes.STRING,
+      name: {
+        type: DataTypes.STRING,
+        schema: Joi.string().trim().required(),
+      },
       systemTag: {
         type: DataTypes.ENUM,
         values: ["student", "admin", "employee"],
+      },
+      deletedAt: {
+        type: DataTypes.DATE,
+        schema: Joi.date().allow(null),
       },
     },
     {

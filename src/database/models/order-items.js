@@ -1,5 +1,7 @@
 "use strict";
 import { Model, DataTypes } from "sequelize";
+import { Joi, sequelizeJoi } from "sequelize-joi";
+
 export default (sequelize) => {
   class OrderItems extends Model {
     /**
@@ -23,26 +25,26 @@ export default (sequelize) => {
       });
     }
   }
+  sequelizeJoi(sequelize);
+
   OrderItems.init(
     {
       quantity: {
         type: DataTypes.INTEGER,
         allowNull: false,
+        schema: Joi.number().integer().min(0).required(),
       },
       total: {
         type: DataTypes.VIRTUAL,
         get() {
           return `${this.firstName} ${this.lastName}`;
         },
-
-        set() {
-          throw new Error("Do not try to set the `total` value!");
-        },
       },
       deletedAt: {
         type: DataTypes.DATE,
         allowNull: true,
         defaultValue: null,
+        schema: Joi.date().allow(null),
       },
     },
     {

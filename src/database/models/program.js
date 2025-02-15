@@ -1,5 +1,6 @@
 "use strict";
 import { Model, DataTypes } from "sequelize";
+import { Joi, sequelizeJoi } from "sequelize-joi";
 export default (sequelize) => {
   class Program extends Model {
     /**
@@ -23,6 +24,7 @@ export default (sequelize) => {
       });
     }
   }
+  sequelizeJoi(sequelize);
   Program.init(
     {
       id: {
@@ -32,12 +34,15 @@ export default (sequelize) => {
       },
       name: {
         type: DataTypes.STRING,
+        schema: Joi.string().trim().required(),
         allowNull: false,
+        unique: true,
       },
       deletedAt: {
         type: DataTypes.DATE,
         allowNull: true,
         defaultValue: null,
+        schema: Joi.date().allow(null),
       },
     },
     {

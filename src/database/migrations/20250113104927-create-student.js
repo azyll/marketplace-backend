@@ -5,20 +5,24 @@ export default {
   async up(queryInterface) {
     await queryInterface.createTable("Students", {
       id: {
-        allowNull: false,
+        type: DataTypes.BIGINT,
         primaryKey: true,
-        type: DataTypes.UUID,
-        defaultValue: DataTypes.UUIDV4,
+        allowNull: false,
       },
-      program: {
-        type: DataTypes.STRING,
+      userId: {
+        type: DataTypes.UUID,
+        references: {
+          model: "User",
+          key: "id",
+        },
       },
       level: {
         type: DataTypes.ENUM,
         values: ["shs", "tertiary"],
       },
-      userId: {
-        type: DataTypes.UUID,
+      deletedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
       },
       createdAt: {
         allowNull: false,
@@ -28,13 +32,9 @@ export default {
         allowNull: false,
         type: DataTypes.DATE,
       },
-      deletedAt: {
-        allowNull: true,
-        type: DataTypes.DATE,
-      },
     });
   },
-  async down(queryInterface, Sequelize) {
+  async down(queryInterface) {
     await queryInterface.dropTable("Students");
   },
 };

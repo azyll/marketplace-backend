@@ -28,9 +28,9 @@ export const getProducts = async (req, res) => {
   }
 };
 export const getProduct = async (req, res) => {
-  const { productId } = req.params;
+  const { id } = req.params;
   try {
-    const result = await ProductService.getProduct(productId);
+    const result = await ProductService.getProduct(id);
     return res.status(200).json({ message: "product", result });
   } catch (error) {
     return res.status(404).json({ message: "error", error });

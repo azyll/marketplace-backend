@@ -22,9 +22,7 @@ export default (sequelize) => {
       });
     }
   }
-
   sequelizeJoi(sequelize);
-
   User.init(
     {
       id: {
@@ -35,6 +33,7 @@ export default (sequelize) => {
         type: DataTypes.STRING,
         schema: Joi.string().trim().required(),
       },
+
       lastName: {
         type: DataTypes.STRING,
         schema: Joi.string().trim().required(),
@@ -43,9 +42,6 @@ export default (sequelize) => {
         type: DataTypes.VIRTUAL,
         get() {
           return `${this.firstName} ${this.lastName}`;
-        },
-        set() {
-          throw new Error("Do not try to set the `fullName` value!");
         },
       },
       email: {
@@ -65,6 +61,7 @@ export default (sequelize) => {
       },
       deletedAt: {
         type: DataTypes.DATE,
+        allowNull: true,
         schema: Joi.date().allow(null),
       },
     },

@@ -17,6 +17,10 @@ export default {
         type: Sequelize.ENUM,
         values: ["student", "admin", "employee"],
       },
+      deletedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,
@@ -27,7 +31,7 @@ export default {
       },
     });
   },
-  async down(queryInterface, Sequelize) {
+  async down(queryInterface) {
     await queryInterface.dropTable("Roles");
   },
 };
