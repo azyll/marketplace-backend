@@ -10,7 +10,6 @@ export async function up(queryInterface) {
     deletedAt: {
       type: DataTypes.DATE,
       allowNull: true,
-      defaultValue: null,
     },
     createdAt: {
       allowNull: false,

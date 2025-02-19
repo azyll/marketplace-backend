@@ -48,12 +48,15 @@ export default (sequelize) => {
       deletedAt: {
         type: DataTypes.DATE,
         allowNull: true,
-        defaultValue: null,
         schema: Joi.date().allow(null),
       },
-      productType: {
+      type: {
         type: DataTypes.ENUM,
-        values: ["top", "bottom", "accessory", "miscellaneous"],
+        values: ["top", "bottom", "n/a"],
+      },
+      category: {
+        type: DataTypes.ENUM,
+        values: ["uniform", "proware", "stationery accessory"],
       },
     },
     {

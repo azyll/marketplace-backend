@@ -11,6 +11,7 @@ export default {
       firstName: {
         type: DataTypes.STRING,
       },
+
       lastName: {
         type: DataTypes.STRING,
       },
@@ -26,9 +27,12 @@ export default {
       password: {
         type: DataTypes.STRING,
       },
+      roleId: {
+        type: DataTypes.UUID,
+      },
       deletedAt: {
-        allowNull: true,
         type: DataTypes.DATE,
+        allowNull: true,
       },
       createdAt: {
         allowNull: false,

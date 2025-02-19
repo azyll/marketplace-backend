@@ -14,6 +14,10 @@ export async function up(queryInterface, Sequelize) {
       type: DataTypes.ENUM,
       values: ["SALES", "Admin", "asd"],
     },
+    deletedAt: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
     createdAt: {
       allowNull: false,
       type: DataTypes.DATE,
@@ -21,12 +25,6 @@ export async function up(queryInterface, Sequelize) {
     updatedAt: {
       allowNull: false,
       type: DataTypes.DATE,
-    },
-    deletedAt: {
-      type: DataTypes.DATE,
-      allowNull: true,
-      defaultValue: null,
-      schema: Joi.date().allow(null),
     },
   });
 }

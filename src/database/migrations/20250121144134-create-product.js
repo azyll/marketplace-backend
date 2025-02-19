@@ -10,15 +10,23 @@ export async function up(queryInterface, Sequelize) {
     },
     name: {
       type: DataTypes.STRING,
+
+      unique: true,
     },
-    price: {
-      type: DataTypes.DOUBLE,
-      allowNull: false,
+
+    description: {
+      type: DataTypes.STRING,
+    },
+    image: {
+      type: DataTypes.STRING,
     },
     deletedAt: {
       type: DataTypes.DATE,
       allowNull: true,
-      defaultValue: null,
+    },
+    productType: {
+      type: DataTypes.ENUM,
+      values: ["top", "bottom", "accessory", "miscellaneous"],
     },
     createdAt: {
       allowNull: false,

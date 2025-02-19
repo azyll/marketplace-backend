@@ -6,23 +6,31 @@ export async function up(queryInterface) {
   await queryInterface.createTable("ProductVariants", {
     id: {
       type: DataTypes.UUID,
-      primaryKey: true,
       defaultValue: DataTypes.UUIDV4,
+      primaryKey: true,
     },
-    name: { type: DataTypes.STRING },
-    size: {
+    name: {
+      type: DataTypes.STRING,
+      unique: true,
+    },
+
+    description: {
       type: DataTypes.STRING,
     },
-    price: {
-      type: DataTypes.DOUBLE,
+    image: {
+      type: DataTypes.STRING,
     },
-    stockQuantity: {
-      type: DataTypes.INTEGER,
+    type: {
+      type: DataTypes.ENUM,
+      values: ["top", "bottom", "accessory"],
+    },
+    category: {
+      type: DataTypes.ENUM,
+      values: ["uniform", "proware", "stationery accessory"],
     },
     deletedAt: {
       type: DataTypes.DATE,
       allowNull: true,
-      defaultValue: null,
     },
     createdAt: {
       allowNull: false,

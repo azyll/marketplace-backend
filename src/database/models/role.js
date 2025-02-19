@@ -33,6 +33,7 @@ export default (sequelize) => {
       },
       deletedAt: {
         type: DataTypes.DATE,
+        allowNull: true,
         schema: Joi.date().allow(null),
       },
     },

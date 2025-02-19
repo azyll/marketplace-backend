@@ -14,6 +14,10 @@ export async function up(queryInterface) {
       allowNull: false,
       unique: true,
     },
+    deletedAt: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
     createdAt: {
       allowNull: false,
       type: DataTypes.DATE,
@@ -21,11 +25,6 @@ export async function up(queryInterface) {
     updatedAt: {
       allowNull: false,
       type: DataTypes.DATE,
-    },
-    deletedAt: {
-      type: DataTypes.DATE,
-      allowNull: true,
-      defaultValue: null,
     },
   });
 }

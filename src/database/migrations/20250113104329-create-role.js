@@ -5,16 +5,14 @@ export default {
   async up(queryInterface) {
     await queryInterface.createTable("Roles", {
       id: {
-        allowNull: false,
+        type: DataTypes.UUID,
         primaryKey: true,
-        type: Sequelize.UUID,
-        defaultValue: DataTypes.UUIDV4,
       },
       name: {
-        type: Sequelize.STRING,
+        type: DataTypes.STRING,
       },
       systemTag: {
-        type: Sequelize.ENUM,
+        type: DataTypes.ENUM,
         values: ["student", "admin", "employee"],
       },
       deletedAt: {

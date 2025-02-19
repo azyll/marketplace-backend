@@ -22,9 +22,8 @@ export async function up(queryInterface) {
     deletedAt: {
       type: DataTypes.DATE,
       allowNull: true,
-      defaultValue: null,
     },
-    productType: {
+    type: {
       type: DataTypes.ENUM,
       values: ["top", "bottom", "accessory", "miscellaneous"],
     },

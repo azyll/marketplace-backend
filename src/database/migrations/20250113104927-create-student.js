@@ -7,14 +7,9 @@ export default {
       id: {
         type: DataTypes.BIGINT,
         primaryKey: true,
-        allowNull: false,
       },
       userId: {
         type: DataTypes.UUID,
-        references: {
-          model: "User",
-          key: "id",
-        },
       },
       level: {
         type: DataTypes.ENUM,

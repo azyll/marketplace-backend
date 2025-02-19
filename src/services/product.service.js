@@ -3,28 +3,30 @@ import { DB } from "../database/index.js";
 
 export class ProductService {
   /**
-   * Get User
-   * @param product
-   * @returns {Promise<result>}
+   * Add Product
+   * @param {object} product
+   *
    */
   static async createProduct(product) {
     // Destruct Product Object
-    const { name, description, image, productType, programId, variants } =
+    const { name, description, image, type, category, programId, variants } =
       product;
 
     const result = await DB.Product.create({
       name,
       description,
       image,
-      productType,
+      type,
+      category,
       programId,
     });
-    const variantsInput = await variants.map(async (variant) => {
+    const variantsPromises = await variants.map(async (variant) => {
       return this.createProductVariants({
         ...variant,
         productId: result.id,
       });
     });
+    const variantsInput = await Promise.all(variantsPromises);
 
     return { result, variantsInput };
   }

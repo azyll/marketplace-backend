@@ -1,7 +1,7 @@
 import { ProductService } from "../services/product.service.js";
 
 export const addProduct = async (req, res) => {
-  const { name, description, image, productType, variants, programId } =
+  const { name, description, image, type, category, variants, programId } =
     req.body;
 
   try {
@@ -9,7 +9,8 @@ export const addProduct = async (req, res) => {
       name,
       description,
       image,
-      productType,
+      type,
+      category,
       programId,
       variants,
     });
