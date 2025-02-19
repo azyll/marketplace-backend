@@ -1,8 +1,30 @@
-import { DB } from "../database";
+import { DB } from "../database/index.js";
 
 export class OrderService {
-  static async createOrder(order) {
-    const result = await DB.Order.create(order);
+  // Params Object { studentId:UUID, orderItems:Array }
+  static async createOrder({ studentId, orderItems }) {
+    const totalOrder = orderItems.reduce((acc, current) => {
+      return acc + Number(current.price);
+    }, 0);
+    const status = "ongoing";
+
+    const resultOrderCreate = await DB.Order.create({
+      total: totalOrder || 6,
+      status,
+      studentId,
+    });
+
+    const resultPromises = await orderItems.map(
+      async (item) =>
+        await this.createOrderItem({ ...item, orderId: resultOrderCreate.id }),
+    );
+    const variantsInput = Promise.all(resultPromises);
+
+    return { resultOrderCreate, variantsInput };
+  }
+  // Params Object   {quantity,orderId,productVariantId}
+  static async createOrderItem(orderItem) {
+    const result = await DB.OrderItems.create(orderItem);
     return result;
   }
   static async getOrders() {
