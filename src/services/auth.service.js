@@ -9,12 +9,7 @@ export class AuthService {
   static async login(email, password) {
     const user = await DB.User.scope("withPassword").findOne({
       where: { email },
-      include: [
-        {
-          as: "role",
-          model: DB.Role,
-        },
-      ],
+      include: [{ model: DB.Role, as: "role" }],
     });
 
     if (!user) throw new UnauthorizedException("Invalid Credentials");

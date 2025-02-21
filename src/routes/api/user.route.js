@@ -7,6 +7,7 @@ import {
   getUser,
   restoreUser,
   updatePassword,
+  createRole,
 } from "../../controllers/user.controller.js";
 import { validate } from "../../middleware/validation.js";
 import { Joi } from "sequelize-joi";
@@ -21,7 +22,9 @@ router.get("/:userId", auth(["admin"]), getUser);
 router.get("/", auth(["admin", "student"]), getAllUsers);
 
 // Create User
-router.post("/", auth(["admin"]), addUser);
+// router.post("/", auth(["admin"]), addUser);
+router.post("/", addUser);
+// router.post("/", addUser);
 
 // Update User
 router.put(
@@ -59,6 +62,14 @@ router.post(
     oldPassword: Joi.string().required(),
   }),
   updatePassword,
+);
+router.post(
+  "/role",
+  validate({
+    name: Joi.string().required(),
+    systemTag: Joi.string().required().valid("student", "admin", "employee"),
+  }),
+  createRole,
 );
 
 export default router;

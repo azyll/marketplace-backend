@@ -2,7 +2,7 @@ import { DB } from "../database/index.js";
 import { Op } from "sequelize";
 import { NotFoundException } from "../exceptions/notFound.js";
 
-const { User } = DB;
+const { User, Role } = DB;
 
 const DEFAULT_FIELDS = [
   "id",
@@ -198,5 +198,10 @@ export class UserService {
     if (count <= 0) throw new NotFoundException("User not found", 404);
 
     return updatedUser;
+  }
+  static async createRole(data) {
+    const { name, systemTag } = data;
+    const result = await Role.create({ name, systemTag });
+    return result;
   }
 }

@@ -121,3 +121,14 @@ export const updatePassword = async (req, res) => {
     });
   }
 };
+export const createRole = async (req, res) => {
+  try {
+    const role = await UserService.createRole(req.body);
+    res.status(200).json(role);
+  } catch (error) {
+    res.status(400).json({
+      message: "Failed to create role",
+      error: err.message,
+    });
+  }
+};

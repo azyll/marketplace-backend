@@ -14,7 +14,9 @@ router.post(
   "/:userId",
   auth(["admin"]),
   validate({
-    program: Joi.string().required(),
+    // Question? ano i type isesend ng frontend? progId ba or name?
+    id: Joi.number().required(),
+    programId: Joi.string().required(),
     level: Joi.string().required().valid("shs", "tertiary"),
   }),
   createStudent,

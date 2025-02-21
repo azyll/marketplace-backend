@@ -26,7 +26,7 @@ export const auth = (roles, options) => {
       return res.status(401).json({
         message: "Unauthorized",
       });
-
+    console.log(req.headers);
     const user = await AuthService.verifyToken(accessToken);
 
     if (!roles.includes(user.roleSystemTag)) {

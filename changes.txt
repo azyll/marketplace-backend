@@ -1,0 +1,5 @@
+User Model => RoleId allowNull:false
+
+Add Create Role in user route & service
+
+ // Question? ano i type isesend ng frontend? progId ba or name? line 17 Student Route

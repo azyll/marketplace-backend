@@ -13,7 +13,10 @@ export default (sequelize) => {
      */
     static associate(models) {
       User.belongsTo(models.Role, {
-        foreignKey: "roleId",
+        foreignKey: {
+          name: "roleId",
+          allowNull: false,
+        },
         as: "role",
       });
       User.hasOne(models.Student, {
@@ -47,6 +50,7 @@ export default (sequelize) => {
       email: {
         type: DataTypes.STRING,
         schema: Joi.string().trim().email().required(),
+        unique: true,
       },
       password: {
         type: DataTypes.STRING,
@@ -58,6 +62,7 @@ export default (sequelize) => {
           model: Role(sequelize),
           key: "id",
         },
+        allowNull: false,
       },
       deletedAt: {
         type: DataTypes.DATE,

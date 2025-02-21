@@ -16,7 +16,7 @@ export default (sequelize) => {
           allowNull: false,
         },
       });
-      Program.hasOne(models.User, {
+      Program.hasOne(models.Student, {
         foreignKey: {
           name: "programId",
           allowNull: false,

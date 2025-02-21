@@ -16,7 +16,10 @@ export class OrderService {
 
     const resultPromises = await orderItems.map(
       async (item) =>
-        await this.createOrderItem({ ...item, orderId: resultOrderCreate.id }),
+        await this.createOrderItem({
+          ...item,
+          orderId: resultOrderCreate.id,
+        }),
     );
     const variantsInput = Promise.all(resultPromises);
 
