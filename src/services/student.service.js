@@ -42,5 +42,4 @@ export class StudentService {
       ],
     });
   }
-  static async getStudentCart(userId) {}
 }

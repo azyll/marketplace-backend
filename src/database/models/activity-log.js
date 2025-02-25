@@ -47,6 +47,5 @@ export default (sequelize) => {
     },
   );
 
-  ActivityLog.removeAttribute("id");
   return ActivityLog;
 };

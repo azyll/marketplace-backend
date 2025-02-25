@@ -45,6 +45,6 @@ export default (sequelize) => {
       modelName: "Carts",
     },
   );
-  Cart.removeAttribute("id");
+
   return Cart;
 };

@@ -2,7 +2,7 @@ import { DB } from "../database";
 
 export class SalesService {
   static async createSales(sales) {
-    const result = DB.Sales.create(sales);
+    const result = await DB.Sales.create(sales);
     return result;
   }
   static async getSales() {}

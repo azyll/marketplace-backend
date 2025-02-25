@@ -2,11 +2,11 @@ import { DB } from "../database";
 
 export class ActivityLogService {
   static async createLog(data) {
-    const result = DB.ActivityLog.create(data);
-    return result;
+    const log = await DB.ActivityLog.create(data);
+    return log;
   }
   static async getLogs() {
-    const result = DB.ActivityLog.findAll();
-    return result;
+    const logs = await DB.ActivityLog.findAll();
+    return logs;
   }
 }

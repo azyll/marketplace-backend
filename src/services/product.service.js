@@ -1,18 +1,24 @@
 import { Op } from "sequelize";
 import { DB } from "../database/index.js";
+import { NotFoundException } from "../exceptions/notFound.js";
+import { AlreadyExistException } from "../exceptions/alreadyExist.js";
 
 export class ProductService {
-  /**
-   * Add Product
-   * @param {object} product
-   *
-   */
-  static async createProduct(product) {
-    // Destruct Product Object
+  static async createProduct(productData) {
     const { name, description, image, type, category, programId, variants } =
-      product;
+      productData;
 
-    const result = await DB.Product.create({
+    const program = await DB.Program.findOne({
+      where: { id: programId },
+    });
+    if (!program) throw new NotFoundException("Program not found", 404);
+
+    const productName = await DB.Product.findOne({
+      where: { name },
+    });
+    if (productName)
+      throw new AlreadyExistException("Product is already exists");
+    const product = await DB.Product.create({
       name,
       description,
       image,
@@ -20,39 +26,49 @@ export class ProductService {
       category,
       programId,
     });
-    const variantsPromises = await variants.map(async (variant) => {
-      return this.createProductVariants({
-        ...variant,
-        productId: result.id,
-      });
-    });
-    const variantsInput = await Promise.all(variantsPromises);
+    const productVariants = await Promise.all(
+      variants.map(
+        async (variant) =>
+          await this.createProductVariant({
+            ...variant,
+            productId: product.id,
+          }),
+      ),
+    );
 
-    return { result, variantsInput };
+    return { product, productVariants };
   }
+
   // Array Product Variants
-  static async createProductVariants(variant) {
-    const { productId, name, size, price, stockQuantity } = variant;
-    const result = DB.ProductVariant.create({
-      productId,
-      name,
-      size,
-      price,
-      stockQuantity,
-    });
-    return result;
+  // const { productId, name, size, price, stockQuantity } = variant;
+  static async createProductVariant(variant) {
+    const productVariant = await DB.ProductVariant.create(variant);
+    return productVariant;
   }
 
   static async getProducts() {
-    const result = DB.Product.findAll({
+    const products = await DB.Product.findAll({
       include: DB.ProductVariant,
     });
-    return result;
+    return products;
   }
-  static async getProductsByProgram(programId) {}
+  static async getProductsByProgram(programId) {
+    const program = await DB.Program.findOne({
+      where: { id: programId },
+    });
+    if (!program) throw new NotFoundException("Program not found", 404);
+
+    const productsFilteredByProgram = await DB.Product.findAll({
+      where: {
+        programId,
+      },
+    });
+    return productsFilteredByProgram;
+  }
+
   // Params: id = Product id
   static async getProduct(id) {
-    const result = DB.Product.findOne({
+    const product = await DB.Product.findOne({
       include: [
         {
           model: DB.ProductVariant,
@@ -64,7 +80,7 @@ export class ProductService {
         deletedAt: { [Op.is]: null },
       },
     });
-    console.log(await result);
-    return result;
+    if (!product) throw new NotFoundException("Product not found", 404);
+    return product;
   }
 }

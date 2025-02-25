@@ -11,7 +11,7 @@ import { Joi } from "sequelize-joi";
 const router = Router();
 
 router.get("/", getProducts);
-// Post new Product
+// Create Product
 router.post(
   "/",
   validate({
@@ -25,6 +25,7 @@ router.post(
   }),
   addProduct,
 );
+// Get Product
 router.get("/:id", getProduct);
 
 export default router;
