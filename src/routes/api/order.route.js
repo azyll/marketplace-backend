@@ -1,11 +1,20 @@
 import { Router } from "express";
 
-import { createOrder } from "../../controllers/student.controller.js";
+import {
+  createOrder,
+  getStudentOrdersByStudentId,
+  updateStudentOrder,
+  deleteStudentOrder,
+} from "../../controllers/order.controller.js";
+const router = Router();
 
-const orderRoute = Router();
+// Create Student Order
+router.post("/:studentId", createOrder);
+// Get Student Orders by StudentId
+router.get("/:studentId", getStudentOrdersByStudentId);
+// Update Student Order
+router.put("/:studentId", updateStudentOrder);
+// Delete Student Order
+router.delete("/:studentId", deleteStudentOrder);
 
-orderRoute.get("/", async (req, res) => {});
-// Create Order
-orderRoute.post("/", createOrder);
-orderRoute.get("/:id", async (req, res) => {});
-export default orderRoute;
+export default router;

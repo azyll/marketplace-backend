@@ -30,6 +30,10 @@ export default (sequelize) => {
       systemTag: {
         type: DataTypes.ENUM,
         values: ["student", "admin", "employee"],
+        schema: Joi.string()
+          .required()
+          .trim()
+          .valid("student", "admin", "employee"),
       },
       deletedAt: {
         type: DataTypes.DATE,

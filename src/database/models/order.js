@@ -39,7 +39,6 @@ export default (sequelize) => {
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
       },
-      // Tanggalin ko ba?
       total: {
         type: DataTypes.DOUBLE,
         allowNull: false,
@@ -48,6 +47,10 @@ export default (sequelize) => {
       status: {
         type: DataTypes.ENUM,
         values: ["completed", "ongoing", "failed"],
+        schema: Joi.string()
+          .required()
+          .trim()
+          .valid("completed", "ongoing", "failed"),
       },
       deletedAt: {
         type: DataTypes.DATE,

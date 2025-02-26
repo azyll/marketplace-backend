@@ -53,10 +53,14 @@ export default (sequelize) => {
       type: {
         type: DataTypes.ENUM,
         values: ["top", "bottom", "n/a"],
+        schema: Joi.string().trim().required().valid("top", "bottom", "n/a"),
       },
       category: {
         type: DataTypes.ENUM,
         values: ["uniform", "proware", "stationery accessory"],
+        schema: Joi.string()
+          .required()
+          .valid("uniform", "proware", "stationery accessory"),
       },
     },
     {

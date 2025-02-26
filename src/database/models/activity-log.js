@@ -33,7 +33,8 @@ export default (sequelize) => {
       },
       type: {
         type: DataTypes.ENUM,
-        values: ["SALES", "Admin", "asd"],
+        values: ["sales", "admin", "asd"],
+        schema: Joi.string().required().valid(""),
       },
       deletedAt: {
         type: DataTypes.DATE,

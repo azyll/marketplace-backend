@@ -51,7 +51,7 @@ export default (sequelize) => {
       level: {
         type: DataTypes.ENUM,
         values: ["shs", "tertiary"],
-        schema: Joi.string().trim().required(),
+        schema: Joi.string().trim().required().valid("shs", "tertiary"),
       },
       deletedAt: {
         type: DataTypes.DATE,
