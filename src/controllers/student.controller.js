@@ -50,27 +50,3 @@ export const getStudentByUserId = async (req, res) => {
     });
   }
 };
-
-export const createOrder = async (req, res) => {
-  const { studentId, orderItems } = req.body;
-  try {
-    const result = await OrderService.createOrder({ studentId, orderItems });
-    return res.status(200).json({ message: "success", result });
-  } catch (error) {
-    return res
-      .status(400)
-      .json({ message: "error", error: error?.message || "error" });
-  }
-};
-
-export const getStudentOrdersByStudentId = async (req, res) => {
-  const { studentId } = req.params;
-  try {
-    const result = await OrderService.getStudentOrdersByStudentId(studentId);
-    return res.status(200).json({ message: "success", result });
-  } catch (error) {
-    return res
-      .status(400)
-      .json({ message: "error", error: error?.message || "error" });
-  }
-};

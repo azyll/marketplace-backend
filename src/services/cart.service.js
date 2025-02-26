@@ -34,5 +34,16 @@ export class CartService {
     return variantsInsert;
   }
 
-  static async getStudentCart(studentId) {}
+  static async getStudentCartByStudentId(studentId) {
+    const student = await DB.Student.findOne({ where: { id: studentId } });
+    if (!student) throw new NotFoundException("Student not found");
+
+    const carts = await DB.Cart.findAll({ where: { studentId } });
+    return carts;
+  }
+
+  //Student ID: Number, CarId:Number
+  static async updateStudentCart({ studentId, cartId }) {}
+  //Student ID: Number, CarIds:Number
+  static async deleteStudentCart({ studentId, cartId }) {}
 }

@@ -34,12 +34,6 @@ export default (sequelize) => {
         allowNull: false,
         schema: Joi.number().integer().min(0).required(),
       },
-      total: {
-        type: DataTypes.VIRTUAL,
-        get() {
-          return `${this.firstName} ${this.lastName}`;
-        },
-      },
       deletedAt: {
         type: DataTypes.DATE,
         allowNull: true,

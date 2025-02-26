@@ -4,23 +4,42 @@ import { Joi } from "sequelize-joi";
 import {
   createStudent,
   getStudentByUserId,
-  getStudentOrdersByStudentId,
 } from "../../controllers/student.controller.js";
 import { auth } from "../../middleware/auth.js";
-import { CartService } from "../../services/cart.service.js";
+
+import {
+  createStudentCart,
+  getStudentCartByStudentId,
+  updateStudentCart,
+  deleteStudentCart,
+} from "../../controllers/cart.controller.js";
+import {
+  createOrder,
+  getStudentOrdersByStudentId,
+  updateStudentOrder,
+  deleteStudentOrder,
+} from "../../controllers/order.controller.js";
 
 const router = express.Router();
-router.post("/cart", async (req, res) => {
-  const { studentId, productVariantsIds } = req.body;
-  try {
-    const result = await CartService.createCart(studentId, productVariantsIds);
-    return res.status(200).json({ message: "success", result });
-  } catch (error) {
-    return res
-      .status(error.statusCode || 400)
-      .json({ message: "error", error: error?.message || "error" });
-  }
-});
+
+// Create Student Cart
+router.post("/cart/:studentId", createStudentCart);
+// Get Student`s Cart
+router.get("/cart/:studentId", getStudentCartByStudentId);
+// Update item in Student Cart
+router.put("/cart/:studentId", updateStudentCart);
+// Delete item in Student Cart
+router.delete("/cart/:studentId", deleteStudentCart);
+
+// Create Student Order
+router.post("/order/:studentId", createOrder);
+// Get Student Orders by StudentId
+router.get("/order/:studentId", getStudentOrdersByStudentId);
+// Update Student Order
+router.put("/order/:studentId", updateStudentOrder);
+// Delete Student Order
+router.delete("/order/:studentId", deleteStudentOrder);
+
 // Create Student
 router.post(
   "/:userId",
@@ -40,7 +59,5 @@ router.get(
   auth(["student"], { selfOnly: { param: "userId", roles: ["student"] } }),
   getStudentByUserId,
 );
-// Get Cart by StudentId
-router.get("/:studentId/cart", getStudentOrdersByStudentId);
 
 export default router;

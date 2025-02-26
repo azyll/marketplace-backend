@@ -10,10 +10,34 @@ export class OrderService {
     });
     if (!student) throw new NotFoundException("Student not found", 404);
 
-    const totalOrder = orderItems.reduce((acc, current) => {
-      return acc + Number(current.price);
-    }, 0);
+    const totalOrder = await Promise.all(
+      orderItems.map(async (item) => {
+        const productVariant = await DB.ProductVariant.findOne({
+          where: {
+            id: item.productVariantId,
+          },
+        });
+        if (!productVariant)
+          throw new NotFoundException("Product variant not found", 404);
+
+        return Number(productVariant.price);
+      }),
+    ).then((prices) => prices.reduce((acc, price) => acc + price, 0));
+
     const status = "ongoing";
+
+    await Promise.all(
+      orderItems.map(async (item) => {
+        const productVariant = await DB.ProductVariant.findOne({
+          where: {
+            id: item.productVariantId,
+          },
+        });
+
+        if (!productVariant)
+          throw new NotFoundException("Product variant not found", 404);
+      }),
+    );
 
     const order = await DB.Order.create({
       total: totalOrder || 1,
@@ -44,17 +68,6 @@ export class OrderService {
     });
     return orders;
   }
-  static async getOrder(orderId) {
-    const order = await DB.Order.findOne({
-      include: [DB.OrderItems, DB.Student],
-      where: {
-        id: orderId,
-      },
-    });
-
-    if (!order) throw new NotFoundException("Order not found", 404);
-    return order;
-  }
   static async getStudentOrdersByStudentId(studentId) {
     const student = await DB.Student.findOne({
       where: { id: studentId },
@@ -66,5 +79,8 @@ export class OrderService {
     });
     return orders;
   }
-  static async updateOrder(order) {}
+  // Student ID: Number, orderId:Number
+  static async updateStudentOrdersByStudentId({ studentId, orderId }) {}
+  // Student ID: Number, orderId:Number
+  static async deleteStudentOrdersByStudentId({ studentId, orderId }) {}
 }
