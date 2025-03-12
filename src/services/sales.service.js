@@ -2,10 +2,13 @@ import { DB } from "../database";
 
 export class SalesService {
   static async createSales(sales) {
-    const result = await DB.Sales.create(sales);
-    return result;
+    const sales = await DB.Sales.create(sales);
+    return sales;
   }
-  static async getSales() {}
-  static async getSale() {}
-  static async updateSales(sales) {}
+  static async getSales() {
+    const sales = await DB.Sales.findAll({
+      include: DB.Order,
+    });
+    return sales;
+  }
 }

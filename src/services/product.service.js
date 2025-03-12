@@ -18,32 +18,22 @@ export class ProductService {
     });
     if (productName)
       throw new AlreadyExistException("Product is already exists");
-    const product = await DB.Product.create({
-      name,
-      description,
-      image,
-      type,
-      category,
-      programId,
-    });
-    const productVariants = await Promise.all(
-      variants.map(
-        async (variant) =>
-          await this.createProductVariant({
-            ...variant,
-            productId: product.id,
-          }),
-      ),
+    const product = await DB.Product.create(
+      {
+        name,
+        description,
+        image,
+        type,
+        category,
+        programId,
+        ProductVariants: variants,
+      },
+      {
+        include: [DB.ProductVariant],
+      },
     );
 
-    return { product, productVariants };
-  }
-
-  // Array Product Variants
-  // const { productId, name, size, price, stockQuantity } = variant;
-  static async createProductVariant(variant) {
-    const productVariant = await DB.ProductVariant.create(variant);
-    return productVariant;
+    return { product };
   }
 
   static async getProducts() {

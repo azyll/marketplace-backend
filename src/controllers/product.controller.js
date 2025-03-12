@@ -16,6 +16,7 @@ export const addProduct = async (req, res) => {
     });
     return res.status(200).json({ message: "post", result });
   } catch (error) {
+    console.table(error);
     return res.status(404).json({ message: error.message || "error", error });
   }
 };
