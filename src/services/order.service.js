@@ -1,103 +1,95 @@
-import { or } from "sequelize";
-import { DB } from "../database/index.js";
-import { NotFoundException } from "../exceptions/notFound.js";
+import {or} from 'sequelize';
+import {DB} from '../database/index.js';
+import {NotFoundException} from '../exceptions/notFound.js';
+
+const {Order} = DB;
 
 export class OrderService {
-  // Params Object { studentId:UUID, orderItems:Array }
-  static async createOrder({ studentId, orderItems }) {
+  /**
+   * Create order for student
+   *
+   * @param {string} studentId - id of student
+   * @param {{
+   * productVariantId:string,
+   * quantity:number
+   * } []} orderItems - The parameters for creating an order.
+   *
+   * @returns {Promise<Order>} order of student
+   *
+   * @throws {NotFoundException}  if student or product does not exists
+   */
+  static async createOrder(studentId, orderItems) {
     const student = await DB.Student.findOne({
-      where: { id: studentId },
+      where: {id: studentId}
     });
-    if (!student) throw new NotFoundException("Student not found", 404);
-
-    // ! NO NEED FOR THIS, the frontend will send a total value
-    // const totalOrder = await Promise.all(
-    //   orderItems.map(async (item) => {
-    //     const productVariant = await DB.ProductVariant.findOne({
-    //       where: {
-    //         id: item.productVariantId,
-    //       },
-    //     });
-    //     if (!productVariant)
-    //       throw new NotFoundException("Product variant not found", 404);
-
-    //     return Number(productVariant.price);
-    //   }),
-    // ).then((prices) => prices.reduce((acc, price) => acc + price, 0));
-
-    const status = "ongoing";
-
+    if (!student) throw new NotFoundException('Student not found', 404);
+    // !NO NEED FOR THIS, the frontend will send a total value
+    const status = 'ongoing';
     await Promise.all(
       orderItems.map(async (item) => {
         const productVariant = await DB.ProductVariant.findOne({
           where: {
-            id: item.productVariantId,
-          },
+            id: item.productVariantId
+          }
         });
-        if (!productVariant)
-          throw new NotFoundException("Product variant not found", 404);
+        if (!productVariant) throw new NotFoundException('Product variant not found', 404);
 
-        return Number(productVariant.price);
-      }),
+        return item;
+      })
     );
-    // TODO: FIX Creating order items anomaly
-    // TODO: Still creating event it throws an error
     const order = await DB.Order.create(
       {
         total: totalOrder || 0,
         status,
         studentId,
-        OrderItems: orderItems,
+        OrderItems: orderItems
       },
       {
-        include: [DB.OrderItems],
-      },
+        include: [DB.OrderItems]
+      }
     );
     return order;
   }
-  // Params Object   {quantity,orderId,productVariantId}
 
   /**
    * Get Orders
    * @param userId
-   * @returns {Promise<User>}
+   * @returns {Promise<Order[]>} All of the orders
    */
 
-  static async getOrders() {
+  static async getOrders(page, limit, search) {
     const orders = await DB.Order.findAll({
-      include: [DB.OrderItems, DB.Student],
+      include: [DB.OrderItems, DB.Student]
     });
     return orders;
   }
-  static async getStudentOrdersByStudentId(studentId) {
+  /**
+   *
+   * @param {string} studentId
+   * @returns {Promise<Order[]>} All of the student orders
+   * @throws {NotFoundException} If Student does not exists
+   */
+  static async getOrdersByStudentId(studentId) {
     const student = await DB.Student.findOne({
-      where: { id: studentId },
+      where: {id: studentId}
     });
-    if (!student) throw new NotFoundException("Student not found", 404);
+    if (!student) throw new NotFoundException('Student not found', 404);
 
     const orders = await DB.Order.findAll({
-      where: { studentId: studentId },
+      where: {studentId: studentId}
     });
     return orders;
   }
   // Student ID: Number, orderId:Number
-  static async updateStudentOrderStatusByStudentId({
-    studentId,
-    orderId,
-    newStatus,
-  }) {
-    if (newStatus == "completed") {
+  static async updateOrderStatusByStudentId({studentId, orderId, newStatus}) {
+    if (newStatus == 'completed') {
       // write Sales
     }
   }
 
   // UpdateData[] = {type: increment:decrement:delete, orderItemId}
-  static async updateStudentOrderByStudentId({
-    studentId,
-    orderId,
-    updateData,
-  }) {}
+  static async updateOrderByStudentId({studentId, orderId, updateData}) {}
 
   // Student ID: Number, orderId:Number
-  static async deleteStudentOrdersByStudentId({ studentId, orderId }) {}
+  static async deleteOrderByStudentId({studentId, orderId}) {}
 }

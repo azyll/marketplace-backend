@@ -1,10 +1,6 @@
-Q:
-Return Item Table
+add JSDOcType
+
+create seeders for all the models
 
 
-
-
-add filer to display product, when it is hidden.
-
-Put association in migration and learn seeders
-
+do association in migrations
