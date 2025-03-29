@@ -1,19 +1,19 @@
-import { Router } from "express";
+import {Router} from 'express';
 import {
   createStudentCart,
-  getStudentCartByStudentId,
+  getStudentCart,
   updateStudentCart,
-  deleteStudentCart,
-} from "../../controllers/cart.controller.js";
+  deleteStudentCart
+} from '../../controllers/cart.controller.js';
 const router = Router();
 
 // Create Student Cart
-router.post("/:studentId", createStudentCart);
+router.post('/:studentId', createStudentCart);
 // Get Student`s Cart
-router.get("/:studentId", getStudentCartByStudentId);
+router.get('/:studentId', getStudentCart);
 // Update item in Student Cart
-router.put("/:studentId", updateStudentCart);
+router.put('/:studentId', updateStudentCart);
 // Delete item in Student Cart
-router.delete("/:studentId", deleteStudentCart);
+router.delete('/:studentId', deleteStudentCart);
 
 export default router;

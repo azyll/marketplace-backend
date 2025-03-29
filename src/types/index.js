@@ -21,4 +21,24 @@
  * @property {string} productVariantId
  * @property {number} quantity
  */
+
+/**
+ * @typedef {Object} PaginationMeta
+ * @property {number|string} currentPage - The current page number
+ * @property {number|string} itemsPerPage - The number of items per page
+ * @property {number|string} totalItems - The total number of items
+ */
+
+/**
+ * @template T
+ * @typedef {Object} PaginatedResponse
+ * @property {InstanceType[]} data - The array of items (model instances)
+ * @property {PaginationMeta} meta - Pagination metadata
+ */
+
+/**
+ * @typedef {Object} QueryParams
+ * @property {string|number} limit
+ * @property {string|number} page
+ */
 export {};

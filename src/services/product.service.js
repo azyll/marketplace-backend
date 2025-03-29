@@ -1,35 +1,39 @@
+// @ts-check
 import {Op} from 'sequelize';
 import {DB} from '../database/index.js';
 import {NotFoundException} from '../exceptions/notFound.js';
 import {AlreadyExistException} from '../exceptions/alreadyExist.js';
 
 const {Product, Program, ProductVariant} = DB;
+
+/**
+ * @typedef {import ('../types/index.js').PaginatedResponse<Product>} ProductResponse
+ * @typedef {import ('../types/index.js').QueryParams} QueryParams
+ */
+
 export class ProductService {
   /**
    * @param {{name:string, description:string, image:string
-   * , type:"top"| "bottom"| "n/a", category:string, programId:string, variants:{
+   * , type:"top"| "bottom"| "n/a", category:"uniform"| "proware"| "stationery accessory", programId:string, variants:{
    *  name:string,
    *  size:string,
    *  price:number,
    *  stockQuantity:number
-   * }[]}} Product - New Product
+   * }[]}} newProduct - New Product
    * @returns {Promise<Product>} Product data from the database
    * @throws {NotFoundException} If Program does not exists
    * @throws {AlreadyExistException} if Product is already existing
    */
-  static async createProduct(Product) {
-    const {category, description, image, name, programId, type, variants} = Product;
-    const program = await Program.findOne({
-      where: {id: programId}
-    });
-    if (!program) throw new NotFoundException('Program not found', 404);
+  static async createProduct(newProduct) {
+    const {category, description, image, name, programId, type, variants} = newProduct;
+    const program = await Program.findByPk(programId);
+    if (!program) {
+      throw new NotFoundException('Program not found', 404);
+    }
 
-    const productName = await Product.findOne({
-      where: {name}
-    });
-    if (productName) throw new AlreadyExistException('Product is already exists');
-    const product = await Product.create(
-      {
+    const [product, isJustCreated] = await Product.findOrCreate({
+      where: {name},
+      defaults: {
         name,
         description,
         image,
@@ -38,59 +42,77 @@ export class ProductService {
         programId,
         ProductVariants: variants
       },
-      {
-        include: [ProductVariant]
-      }
-    );
-
-    return {product};
+      include: [ProductVariant]
+    });
+    if (!isJustCreated) {
+      throw new AlreadyExistException('Product is already exists');
+    }
+    // @ts-ignore
+    return product;
   }
 
   /**
-   *
-   * @returns {Promise<Product[]>} All products
+   * @param {QueryParams} query Query
+   * @returns {Promise<ProductResponse>} All products
    */
-  static async getProducts() {
-    const products = await Product.findAll({
-      include: ProductVariant
+  static async getProducts(query) {
+    const page = Number(query.page) || 1;
+    const limit = Number(query.limit) || 10;
+
+    const {count, rows: productData} = await Product.findAndCountAll({
+      include: [ProductVariant]
     });
-    return products;
+
+    return {
+      data: productData,
+      meta: {
+        currentPage: page,
+        itemsPerPage: limit,
+        totalItems: count
+      }
+    };
   }
   /**
    *
    * @param {string} programId
-   * @throws {NotFoundException} if program does not exists
-   * @returns {Promise<Product[]>} all products filtered by program
+   * @param {QueryParams} query
+   * @throws {NotFoundException}  Program not found
+   * @returns {Promise<ProductResponse>} All products filtered by program
    */
-  static async getProductsByProgram(programId) {
-    const program = await DB.Program.findOne({
-      where: {id: programId}
-    });
+  static async getProductsByProgram(programId, query) {
+    const program = await Program.findByPk(programId);
     if (!program) throw new NotFoundException('Program not found', 404);
 
-    const productsFilteredByProgram = await DB.Product.findAll({
+    const page = Number(query.page) || 1;
+    const limit = Number(query.limit) || 10;
+
+    const {count, rows: productData} = await Product.findAndCountAll({
       where: {
         programId
-      }
+      },
+      include: [ProductVariant]
     });
-    return productsFilteredByProgram;
+    return {
+      data: productData,
+      meta: {
+        currentPage: page,
+        itemsPerPage: limit,
+        totalItems: count
+      }
+    };
   }
 
   /**
    * Get a single Product
-   * @param {string} productId
+   * @param {string} id - Product Id
    * @returns {Promise<Product>} get a product and its variants
-   * @throws {NotFoundException} if product does not exists
+   * @throws {NotFoundException} Product not found
    */
-  static async getProduct(productId) {
-    const product = await DB.Product.findOne({
-      include: [
-        {
-          model: DB.ProductVariant
-        }
-      ],
+  static async getProduct(id) {
+    const product = await Product.findOne({
+      include: [ProductVariant],
       where: {
-        id: productId,
+        id,
         deletedAt: {[Op.is]: null}
       }
     });

@@ -1,0 +1,12 @@
+add JSDOcType
+
+create seeders for all the models
+
+
+do association in migrations
+
+
+paranoid in model (sequelize docs) (deletedAt Columns)
+
+
+Not checking pa kung deleted na yung product (All query)

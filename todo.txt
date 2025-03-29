@@ -1,6 +1,0 @@
-add JSDOcType
-
-create seeders for all the models
-
-
-do association in migrations
