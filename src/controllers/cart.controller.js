@@ -7,7 +7,7 @@ import {CartService} from '../services/cart.service.js';
  */
 
 /**
- *
+ * Create Student Cart
  * @param {import('express').Request<{studentId:string},{},{products:string[]}>} req
  * @param {import('express').Response} res
  * @returns {Promise<import('express').Response>} Response Object
@@ -23,22 +23,20 @@ export const createStudentCart = async (req, res) => {
     if (error instanceof NotFoundException) {
       return res.status(error.statusCode).json({message: error.message || 'Error', error});
     }
-    return res.status(400).json({message: error?.message || 'error', error});
+    return res.status(400).json({message: 'Error', error});
   }
 };
 
 /**
- *
+ * Get Student Cart
  * @param {import('express').Request<{studentId:string},{},{products:string[]},QueryParams>} req
  * @param {import('express').Response} res
  * @returns {Promise<import('express').Response>} Response Object
+ *
  */
-
 export const getStudentCart = async (req, res) => {
   const {studentId} = req.params;
-
   const query = req.query;
-
   try {
     const response = await CartService.getCart(studentId, query);
     return res.status(200).json(response);
@@ -46,11 +44,17 @@ export const getStudentCart = async (req, res) => {
     if (error instanceof NotFoundException) {
       return res.status(error.statusCode).json({message: error.message || 'Error', error});
     }
-    return res.status(400).json({message: error?.message || 'error', error});
+
+    return res.status(400).json({message: 'Error', error});
   }
 };
-
 // TODO: Need to confirm!
+/**
+ *
+ * @param {import('express').Request} req
+ * @param {import('express').Response} res
+ * @returns
+ */
 export const updateStudentCart = async (req, res) => {
   const {studentId} = req.params;
   const {cartId} = req.body;
@@ -61,6 +65,13 @@ export const updateStudentCart = async (req, res) => {
     return res.status(error.statusCode || 400).json({message: 'error', error: error?.message || 'error'});
   }
 };
+
+/**
+ *
+ * @param {import('express').Request} req
+ * @param {import('express').Response} res
+ * @returns
+ */
 export const deleteStudentCart = async (req, res) => {
   const {studentId} = req.params;
   const {cartId} = req.body;

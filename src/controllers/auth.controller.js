@@ -1,13 +1,18 @@
+// @ts-check
 import {AuthService} from '../services/auth.service.js';
 import {UnauthorizedException} from '../exceptions/unauthorized.js';
 
+/**
+ * User login
+ * @param {import('express').Request<{},{},{email:string,password:string}>} req
+ * @param {import('express').Response} res
+ * @returns {Promise<import('express').Response>} Response Object
+ */
 export const login = async (req, res) => {
   try {
     const {email, password} = req.body;
-
     const accessToken = await AuthService.login(email, password);
-
-    res.status(200).json({accessToken});
+    return res.status(200).json({accessToken});
   } catch (err) {
     const message = 'Failed to login';
     if (err instanceof UnauthorizedException) {
@@ -16,7 +21,7 @@ export const login = async (req, res) => {
         error: err.message
       });
     }
-    res.status(400).json({
+    return res.status(400).json({
       message,
       error: err.message
     });

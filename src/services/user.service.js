@@ -1,8 +1,14 @@
+// @ts-check
 import {DB} from '../database/index.js';
 import {Op} from 'sequelize';
 import {NotFoundException} from '../exceptions/notFound.js';
 
 const {User, Role} = DB;
+
+/**
+ * @typedef {import ('../types/index.js').QueryParams} QueryParams
+ * @typedef {import ('../types/index.js').PaginatedResponse<User>} UserResponse
+ */
 
 const DEFAULT_FIELDS = ['id', 'firstName', 'lastName', 'email', 'createdAt', 'updatedAt', 'deletedAt'];
 const role = {
@@ -37,10 +43,12 @@ export class UserService {
     return user;
   }
 
+  //  @returns {Promise<{data: User[], meta: {totalItems: (count), itemsPerPage: (*|number), currentPage: (string|number)}}>}
+
   /**
    * Get All Users Details
-   * @param {object} query
-   * @returns {Promise<{data: User[], meta: {totalItems: (count), itemsPerPage: (*|number), currentPage: (string|number)}}>}
+   * @param {QueryParams} query
+   * @returns {Promise<UserResponse>}
    */
   static async getUsers(query) {
     const page = query.page ?? 1;
@@ -50,7 +58,8 @@ export class UserService {
     // page * limit
     // 1 *10, skip first 10
     // (page -1) we need first 10 in first page
-    const users = User.findAndCountAll({
+    const {count, rows: usersData} = await User.findAndCountAll({
+      distinct: true,
       include: role,
       where: {deletedAt: {[Op.is]: null}},
       limit,
@@ -58,11 +67,11 @@ export class UserService {
     });
 
     return {
-      data: (await users).rows,
+      data: usersData,
       meta: {
         currentPage: page,
         itemsPerPage: limit,
-        totalItems: (await users).count
+        totalItems: count
       }
     };
   }
@@ -89,6 +98,7 @@ export class UserService {
    * @returns {Promise<User>}
    */
   static async updateUser(userId, data) {
+    // * Bat mat role id, pero wla role id na pinasa?
     const {password, roleId, ...rest} = data;
 
     const result = await User.update(rest, {

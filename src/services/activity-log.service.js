@@ -1,4 +1,5 @@
-import { DB } from "../database";
+// @ts-check
+import {DB} from '../database';
 
 export class ActivityLogService {
   static async createLog(data) {

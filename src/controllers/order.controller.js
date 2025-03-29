@@ -27,7 +27,7 @@ export const createOrder = async (req, res) => {
     if (error instanceof NotFoundException) {
       return res.status(error.statusCode).json({message: error?.message || 'error', error});
     }
-    return res.status(400).json({message: error?.message || 'error', error});
+    return res.status(400).json({message: 'error', error});
   }
 };
 
@@ -43,7 +43,7 @@ export const getOrders = async (req, res) => {
     const result = await OrderService.getOrders(query);
     return res.status(200).json({message: 'success', result});
   } catch (error) {
-    return res.status(400).json({message: error?.message || 'error', error});
+    return res.status(400).json({message: 'error', error});
   }
 };
 
@@ -65,7 +65,7 @@ export const getOrder = async (req, res) => {
     if (error instanceof DatabaseError) {
       return res.status(404).json({message: 'Invalid Credential //Cannot Convert string to uuid', error});
     }
-    return res.status(400).json({message: error?.message || 'error', error});
+    return res.status(400).json({message: 'error', error});
   }
 };
 
@@ -85,7 +85,7 @@ export const getStudentOrder = async (req, res) => {
     if (error instanceof NotFoundException) {
       return res.status(error.statusCode).json({message: error?.message || 'error', error});
     }
-    return res.status(400).json({message: error?.message || 'error', error});
+    return res.status(400).json({message: 'error', error});
   }
 };
 
@@ -104,7 +104,7 @@ export const updateOrderStatus = async (req, res) => {
     const result = await OrderService.updateOrderStatus(studentId, orderId, newStatus);
     return res.status(200).json({message: 'success', result});
   } catch (error) {
-    return res.status(400).json({message: 'error', error: error?.message || 'error'});
+    return res.status(400).json({message: 'error', error});
   }
 };
 
@@ -125,7 +125,7 @@ export const updateStudentOrder = async (req, res) => {
     if (error instanceof NotFoundException) {
       return res.status(error.statusCode).json({message: error?.message || 'error', error});
     }
-    return res.status(400).json({message: 'error', error: error?.message || 'error'});
+    return res.status(400).json({message: 'error', error});
   }
 };
 /**
@@ -144,6 +144,6 @@ export const deleteStudentOrder = async (req, res) => {
     });
     return res.status(200).json({message: 'success', result});
   } catch (error) {
-    return res.status(400).json({message: 'error', error: error?.message || 'error'});
+    return res.status(400).json({message: 'error', error});
   }
 };

@@ -29,7 +29,7 @@ export const addProduct = async (req, res) => {
     } else if (error instanceof DatabaseError) {
       return res.status(400).json({message: 'Invalid Credential', error});
     }
-    return res.status(404).json({message: error.message || 'error', error});
+    return res.status(404).json({message: 'error', error});
   }
 };
 

@@ -1,3 +1,4 @@
+// @ts-check
 import {UnauthorizedException} from '../exceptions/unauthorized.js';
 import jwt from 'jsonwebtoken';
 import {DB} from '../database/index.js';
@@ -30,7 +31,7 @@ export class AuthService {
   }
   /**
    *
-   * @param {string[]} token
+   * @param {string} token
    * @returns {Promise<object>} token payload
    */
   static async verifyToken(token) {

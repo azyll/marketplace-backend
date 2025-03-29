@@ -1,6 +1,7 @@
-"use strict";
-import { Model, DataTypes } from "sequelize";
-import { Joi, sequelizeJoi } from "sequelize-joi";
+'use strict';
+
+import {Model, DataTypes} from 'sequelize';
+import {Joi, sequelizeJoi} from 'sequelize-joi';
 
 export default (sequelize) => {
   class ActivityLog extends Model {
@@ -13,10 +14,10 @@ export default (sequelize) => {
       // define association here
       ActivityLog.belongsTo(models.Role, {
         foreignKey: {
-          name: "roleId",
-          allowNull: false,
+          name: 'roleId',
+          allowNull: false
         },
-        as: "actor",
+        as: 'actor'
       });
     }
   }
@@ -25,27 +26,27 @@ export default (sequelize) => {
     {
       title: {
         type: DataTypes.STRING,
-        schema: Joi.string().trim().required(),
+        schema: Joi.string().trim().required()
       },
       content: {
         type: DataTypes.STRING,
-        schema: Joi.string().trim().required(),
+        schema: Joi.string().trim().required()
       },
       type: {
         type: DataTypes.ENUM,
-        values: ["sales", "admin", "asd"],
-        schema: Joi.string().required().valid(""),
+        values: ['sales', 'admin', 'asd'],
+        schema: Joi.string().required().valid('')
       },
       deletedAt: {
         type: DataTypes.DATE,
         allowNull: true,
-        schema: Joi.date().allow(null),
-      },
+        schema: Joi.date().allow(null)
+      }
     },
     {
       sequelize,
-      modelName: "ActivityLogs",
-    },
+      modelName: 'ActivityLogs'
+    }
   );
 
   return ActivityLog;

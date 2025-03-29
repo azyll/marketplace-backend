@@ -1,8 +1,14 @@
+// @ts-check
 import {AlreadyExistException} from '../exceptions/alreadyExist.js';
 import {NotFoundException} from '../exceptions/notFound.js';
-import {OrderService} from '../services/order.service.js';
 import {StudentService} from '../services/student.service.js';
 
+/**
+ *
+ * @param {import('express').Request} req
+ * @param {import('express').Response} res
+ * @returns {Promise<import('express').Response>}
+ */
 export const createStudent = async (req, res) => {
   try {
     const {userId} = req.params;
@@ -10,7 +16,7 @@ export const createStudent = async (req, res) => {
 
     const student = await StudentService.createStudent(userId, payload);
 
-    res.status(200).json(student);
+    return res.status(200).json(student);
   } catch (err) {
     const message = 'Failed to create student';
 
@@ -21,23 +27,29 @@ export const createStudent = async (req, res) => {
       });
     }
     if (err instanceof AlreadyExistException) {
-      return res.status(err.statusCode).json({message: err.message | 'err', err});
+      return res.status(err.statusCode).json({message: err.message || 'err', err});
     }
 
-    res.status(400).json({
+    return res.status(400).json({
       message,
-      error: err.message
+      error: err
     });
   }
 };
 
+/**
+ *
+ * @param {import('express').Request} req
+ * @param {import('express').Response} res
+ * @returns {Promise<import('express').Response>}
+ */
 export const getStudentByUserId = async (req, res) => {
   try {
     const {userId} = req.params;
 
     const student = await StudentService.getStudentByUserId(userId);
 
-    res.status(200).json(student);
+    return res.status(200).json(student);
   } catch (err) {
     const message = 'Failed to get student';
 
@@ -48,9 +60,9 @@ export const getStudentByUserId = async (req, res) => {
       });
     }
 
-    res.status(400).json({
+    return res.status(400).json({
       message,
-      error: err.message
+      error: err
     });
   }
 };

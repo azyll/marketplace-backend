@@ -1,3 +1,4 @@
+// @ts-check
 import {DB} from '../database/index.js';
 import {AlreadyExistException} from '../exceptions/alreadyExist.js';
 
@@ -10,13 +11,14 @@ export class ProgramService {
    * @throws {AlreadyExistException} if the program is already exists
    */
   static async createProgram(name) {
-    const program = await Program.findOne({
+    const [program, isJustCreated] = await Program.findOrCreate({
       where: {name}
     });
-    if (program) {
+
+    if (!isJustCreated) {
       throw new AlreadyExistException('This program is already exists');
     }
 
-    return await Program.create({name});
+    return program;
   }
 }
