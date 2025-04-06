@@ -3,7 +3,7 @@ import {AlreadyExistException} from '../exceptions/alreadyExist.js';
 import {ProgramService} from '../services/program.service.js';
 
 /**
- *
+ * POST => Create Product
  * @param {import('express').Request} req
  * @param {import('express').Response} res
  * @returns {Promise<import('express').Response>}

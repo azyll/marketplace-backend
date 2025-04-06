@@ -6,16 +6,14 @@ import {OrderService} from '../services/order.service.js';
 
 /**
  * @typedef {import("../types/index.js").TOrderItem} TOrderItem
- */
-
-/**
  * @typedef {import('../types/index.js').QueryParams} QueryParams
  */
 
 /**
+ * Post => Create order
  * @param {import('express').Request<{studentId:string},{},{orderItems:TOrderItem[]}>} req
  * @param {import('express').Response} res
- * @returns {Promise<import('express').Response>} Response Object
+ * @returns {Promise<import('express').Response>} Response object
  */
 export const createOrder = async (req, res) => {
   const {studentId} = req.params;
@@ -32,10 +30,10 @@ export const createOrder = async (req, res) => {
 };
 
 /**
- *
+ * Get => All orders
  * @param {import('express').Request<{},{},{},QueryParams>} req
  * @param {import('express').Response} res
- * @returns {Promise<import('express').Response>} Response Object
+ * @returns {Promise<import('express').Response>} Response object
  */
 export const getOrders = async (req, res) => {
   const query = req.query;
@@ -48,10 +46,10 @@ export const getOrders = async (req, res) => {
 };
 
 /**
- *
+ * Get => A single order
  * @param {import('express').Request} req
  * @param {import('express').Response} res
- * @returns {Promise<import('express').Response>} Response Object
+ * @returns {Promise<import('express').Response>} Response object
  */
 export const getOrder = async (req, res) => {
   const {orderId} = req.params;
@@ -70,10 +68,10 @@ export const getOrder = async (req, res) => {
 };
 
 /**
- *
+ * Get => All orders of student
  * @param {import('express').Request<{studentId:string},{},{},QueryParams>} req
  * @param {import('express').Response} res
- * @returns {Promise<import('express').Response>} Response Object
+ * @returns {Promise<import('express').Response>} Response object
  */
 export const getStudentOrder = async (req, res) => {
   const {studentId} = req.params;
@@ -90,11 +88,11 @@ export const getStudentOrder = async (req, res) => {
 };
 
 /**
- * Update Student Order
+ * Put => Update student order
  * @param {import('express').Request<{studentId:string},{},
  * {orderId:string,newStatus:"completed"| "ongoing"| "failed"}>} req
  * @param {import('express').Response} res
- * @returns {Promise<import('express').Response>} Response Object
+ * @returns {Promise<import('express').Response>} Response object
  */
 export const updateOrderStatus = async (req, res) => {
   const {studentId} = req.params;
@@ -109,10 +107,10 @@ export const updateOrderStatus = async (req, res) => {
 };
 
 /**
- * Update Student Order Items
+ * Put => Update student order items
  * @param {import('express').Request} req
  * @param {import('express').Response} res
- * @returns {Promise<import('express').Response>} Response Object
+ * @returns {Promise<import('express').Response>} Response object
  */
 export const updateStudentOrder = async (req, res) => {
   const {studentId} = req.params;
@@ -129,19 +127,16 @@ export const updateStudentOrder = async (req, res) => {
   }
 };
 /**
- *
+ * Delete => Archive / delete/ cancel student order
  * @param {import('express').Request} req
  * @param {import('express').Response} res
- * @returns
+ * @returns {Promise<import('express').Response>} Response object
  */
 export const deleteStudentOrder = async (req, res) => {
   const {studentId} = req.params;
   const {orderId} = req.body;
   try {
-    const result = await OrderService.deleteStudentOrdersByStudentId({
-      studentId,
-      orderId
-    });
+    const result = await OrderService.archiveStudentOrder(studentId, orderId);
     return res.status(200).json({message: 'success', result});
   } catch (error) {
     return res.status(400).json({message: 'error', error});

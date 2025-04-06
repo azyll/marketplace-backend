@@ -1,5 +1,6 @@
 // @ts-check
 
+import {Op} from 'sequelize';
 import {DB} from '../database/index.js';
 import {NotFoundException} from '../exceptions/notFound.js';
 
@@ -13,7 +14,7 @@ const {Order, Student, User, OrderItems, ProductVariant, Product} = DB;
 export class OrderService {
   /**
    * Create order for student
-   * @param {string} studentId - Student Id
+   * @param {string} studentId - Student ID
    * @param {{productVariantId:string, quantity:number} []} orderItems - Order items
    * @returns {Promise<Order>} Order Data
    * @throws {NotFoundException}  Student or Product not found
@@ -24,19 +25,19 @@ export class OrderService {
 
     const status = 'ongoing';
 
-    // Check if all variant ids exists
-    await Promise.all(
-      orderItems.map(async (item) => {
-        const productVariant = await ProductVariant.findOne({
-          where: {
-            id: item.productVariantId
-          }
-        });
-        if (!productVariant) throw new NotFoundException('Product variant not found', 404);
+    const variantIds = orderItems.map((item) => item.productVariantId);
 
-        return item;
-      })
-    );
+    const productVariants = await ProductVariant.findAll({
+      where: {
+        id: {
+          [Op.in]: variantIds
+        }
+      }
+    });
+
+    if (productVariants.length !== variantIds.length) {
+      throw new NotFoundException('Invalid credential, The product not found', 404);
+    }
 
     const order = await Order.create(
       {
@@ -202,5 +203,11 @@ export class OrderService {
   static async updateOrderByStudentId({studentId, orderId, updateData}) {}
 
   // Student ID: Number, orderId:Number
-  static async deleteOrderByStudentId({studentId, orderId}) {}
+  /**
+   * Delete Student Order
+   * @param {string} studentId
+   * @param {string} orderId
+   * @throws {NotFoundException} Student and order not found
+   */
+  static async archiveStudentOrder(studentId, orderId) {}
 }

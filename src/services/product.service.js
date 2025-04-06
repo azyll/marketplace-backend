@@ -119,6 +119,20 @@ export class ProductService {
     if (!product) throw new NotFoundException('Product not found', 404);
     return product;
   }
-  static async deleteProduct(productId) {}
-  static async editProduct(product) {}
+  /**
+   * Archive Product
+   * @param {string} productId
+   */
+  static async archiveProduct(productId) {}
+
+  /**
+   *
+   * @param {string} productId
+   * @returns {Promise<Product>}
+   * @throws {NotFoundException}
+   * @throws {AlreadyExistException} For Duplication of product
+   */
+  static async editProduct(productId) {
+    return;
+  }
 }

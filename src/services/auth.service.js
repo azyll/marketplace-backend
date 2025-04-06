@@ -39,4 +39,6 @@ export class AuthService {
 
     return jwt.verify(accessToken, JWT_SECRET);
   }
+
+  static async logout() {}
 }

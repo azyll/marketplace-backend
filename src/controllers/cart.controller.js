@@ -1,4 +1,5 @@
 // @ts-check
+import {AlreadyExistException} from '../exceptions/alreadyExist.js';
 import {NotFoundException} from '../exceptions/notFound.js';
 import {CartService} from '../services/cart.service.js';
 
@@ -7,20 +8,23 @@ import {CartService} from '../services/cart.service.js';
  */
 
 /**
- * Create Student Cart
- * @param {import('express').Request<{studentId:string},{},{products:string[]}>} req
+ * Post=> Create student cart
+ * @param {import('express').Request<{studentId:string},{},{product:string}>} req
  * @param {import('express').Response} res
- * @returns {Promise<import('express').Response>} Response Object
+ * @returns {Promise<import('express').Response>} Response object
  */
 export const createStudentCart = async (req, res) => {
   const {studentId} = req.params;
-  const {products} = req.body;
+  const {product} = req.body;
 
   try {
-    const response = await CartService.addItemToCart(studentId, products);
-    return res.status(200).json(response);
+    const newItemToCart = await CartService.addItemToCart(studentId, product);
+    return res.status(200).json(newItemToCart);
   } catch (error) {
     if (error instanceof NotFoundException) {
+      return res.status(error.statusCode).json({message: error.message || 'Error', error});
+    }
+    if (error instanceof AlreadyExistException) {
       return res.status(error.statusCode).json({message: error.message || 'Error', error});
     }
     return res.status(400).json({message: 'Error', error});
@@ -28,18 +32,18 @@ export const createStudentCart = async (req, res) => {
 };
 
 /**
- * Get Student Cart
- * @param {import('express').Request<{studentId:string},{},{products:string[]},QueryParams>} req
+ * Get =>  Student Carts
+ * @param {import('express').Request<{studentId:string},{},{},QueryParams>} req
  * @param {import('express').Response} res
- * @returns {Promise<import('express').Response>} Response Object
+ * @returns {Promise<import('express').Response>} Response object
  *
  */
 export const getStudentCart = async (req, res) => {
   const {studentId} = req.params;
   const query = req.query;
   try {
-    const response = await CartService.getCart(studentId, query);
-    return res.status(200).json(response);
+    const cart = await CartService.getCart(studentId, query);
+    return res.status(200).json(cart);
   } catch (error) {
     if (error instanceof NotFoundException) {
       return res.status(error.statusCode).json({message: error.message || 'Error', error});
@@ -48,9 +52,10 @@ export const getStudentCart = async (req, res) => {
     return res.status(400).json({message: 'Error', error});
   }
 };
-// TODO: Need to confirm!
+
+// TODO: BELOW -> Need to confirm!
 /**
- *
+ * Update Student
  * @param {import('express').Request} req
  * @param {import('express').Response} res
  * @returns

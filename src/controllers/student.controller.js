@@ -4,7 +4,7 @@ import {NotFoundException} from '../exceptions/notFound.js';
 import {StudentService} from '../services/student.service.js';
 
 /**
- *
+ * Post => Create Student
  * @param {import('express').Request} req
  * @param {import('express').Response} res
  * @returns {Promise<import('express').Response>}
