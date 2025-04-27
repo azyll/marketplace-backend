@@ -98,7 +98,7 @@ export class UserService {
    * @returns {Promise<User>}
    */
   static async updateUser(userId, data) {
-    // * Bat mat role id, pero wla role id na pinasa?
+    // * Bat mat role id, pero wla role id na pinasa? base sa postman
     const {password, roleId, ...rest} = data;
 
     const result = await User.update(rest, {

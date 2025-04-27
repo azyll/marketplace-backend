@@ -10,7 +10,7 @@ import {OrderService} from '../services/order.service.js';
  */
 
 /**
- * Post => Create order
+ *  Create order
  * @param {import('express').Request<{studentId:string},{},{orderItems:TOrderItem[]}>} req
  * @param {import('express').Response} res
  * @returns {Promise<import('express').Response>} Response object
@@ -30,7 +30,7 @@ export const createOrder = async (req, res) => {
 };
 
 /**
- * Get => All orders
+ *  All orders
  * @param {import('express').Request<{},{},{},QueryParams>} req
  * @param {import('express').Response} res
  * @returns {Promise<import('express').Response>} Response object
@@ -46,7 +46,7 @@ export const getOrders = async (req, res) => {
 };
 
 /**
- * Get => A single order
+ *  A single order
  * @param {import('express').Request} req
  * @param {import('express').Response} res
  * @returns {Promise<import('express').Response>} Response object
@@ -68,7 +68,7 @@ export const getOrder = async (req, res) => {
 };
 
 /**
- * Get => All orders of student
+ *  All orders of student
  * @param {import('express').Request<{studentId:string},{},{},QueryParams>} req
  * @param {import('express').Response} res
  * @returns {Promise<import('express').Response>} Response object
@@ -88,7 +88,7 @@ export const getStudentOrder = async (req, res) => {
 };
 
 /**
- * Put => Update student order
+ *  Update student order
  * @param {import('express').Request<{studentId:string},{},
  * {orderId:string,newStatus:"completed"| "ongoing"| "failed"}>} req
  * @param {import('express').Response} res
@@ -107,27 +107,7 @@ export const updateOrderStatus = async (req, res) => {
 };
 
 /**
- * Put => Update student order items
- * @param {import('express').Request} req
- * @param {import('express').Response} res
- * @returns {Promise<import('express').Response>} Response object
- */
-export const updateStudentOrder = async (req, res) => {
-  const {studentId} = req.params;
-  const {orderId, updateData} = req.body;
-
-  try {
-    const result = await OrderService.updateOrderStatus(studentId, orderId, updateData);
-    return res.status(200).json({message: 'success', result});
-  } catch (error) {
-    if (error instanceof NotFoundException) {
-      return res.status(error.statusCode).json({message: error?.message || 'error', error});
-    }
-    return res.status(400).json({message: 'error', error});
-  }
-};
-/**
- * Delete => Archive / delete/ cancel student order
+ *  Archive / delete/ cancel student order
  * @param {import('express').Request} req
  * @param {import('express').Response} res
  * @returns {Promise<import('express').Response>} Response object
@@ -139,6 +119,30 @@ export const deleteStudentOrder = async (req, res) => {
     const result = await OrderService.archiveStudentOrder(studentId, orderId);
     return res.status(200).json({message: 'success', result});
   } catch (error) {
+    return res.status(400).json({message: 'error', error});
+  }
+};
+
+/**
+ * *Suggestion ni sir bern nung mini capstone defense
+ */
+/**
+ *  Update student order items
+ * @param {import('express').Request} req
+ * @param {import('express').Response} res
+ * @returns {Promise<import('express').Response>} Response object
+ */
+export const updateStudentOrder = async (req, res) => {
+  const {studentId} = req.params;
+  const {orderId, updateData} = req.body;
+
+  try {
+    const result = await OrderService.updateStudentOrder(studentId, orderId, updateData);
+    return res.status(200).json({message: 'success', result});
+  } catch (error) {
+    if (error instanceof NotFoundException) {
+      return res.status(error.statusCode).json({message: error?.message || 'error', error});
+    }
     return res.status(400).json({message: 'error', error});
   }
 };

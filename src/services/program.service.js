@@ -1,11 +1,16 @@
 // @ts-check
 import {DB} from '../database/index.js';
 import {AlreadyExistException} from '../exceptions/alreadyExist.js';
+import {NotFoundException} from '../exceptions/notFound.js';
 
 const {Program} = DB;
+
+/**
+ * @typedef {import('../types/index.js').QueryParams} QueryParams
+ */
 export class ProgramService {
   /**
-   *
+   * Create program
    * @param {string} name - program name
    * @returns {Promise<Program>} data from the database
    * @throws {AlreadyExistException} if the program is already exists
@@ -21,4 +26,47 @@ export class ProgramService {
 
     return program;
   }
+
+  /**
+   * Delete program
+   * @throws {NotFoundException}
+   * @param {string} programId
+   */
+  static async archiveProgram(programId) {}
+
+  /**
+   * Get all program
+   * @param {QueryParams} query
+   */
+  static async getPrograms(query) {
+    const page = Number(query.page) || 1;
+    const limit = Number(query.limit) || 10;
+
+    const {count, rows: programData} = await Program.findAndCountAll();
+
+    return {
+      data: programData,
+      meta: {
+        currentPage: page,
+        itemsPerPage: limit,
+        totalItems: count
+      }
+    };
+  }
+
+  /**
+   * Update program
+   * @param {string} programId
+   * @param {object} newProgram
+   * @throws {NotFoundException}
+   * @throws {AlreadyExistException}
+   */
+  static async updateProgram(programId, newProgram) {}
+
+  /**
+   * Get a single program
+   * @param {string} programId
+   * @throws {NotFoundException}
+   */
+  static async getProgram(programId) {}
 }

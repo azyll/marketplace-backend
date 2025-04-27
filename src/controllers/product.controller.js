@@ -9,21 +9,35 @@ import {ProductService} from '../services/product.service.js';
  * @typedef {import("../types/index.js").QueryParams} QueryParams
  * @typedef
  */
-
 /**
- * Post => Create Product
+ *  Create Product
  * @param {import('express').Request<{},{},
  * {name:string, description:string, image:string,
- * type:"top"| "bottom"| "n/a",  category:"uniform"| "proware"| "stationery accessory", programId:string,
- * variants:{ name:string, size:string, price:number, stockQuantity:number}[]}>} req
+ * type:'Upperwear'| 'Lowerwear'| 'Non-wearable', category:'Uniform'|'Proware'|'Stationery'|'Accessory', programId:string,
+ * variants:string}>} req
  * @param {import('express').Response} res
  * @returns {Promise<import('express').Response>}
  */
 export const addProduct = async (req, res) => {
   try {
-    const result = await ProductService.createProduct(req.body);
+    /**
+     * @type {{ name:string,size:string,price:number,stockQuantity:number}[]}
+     */
+    const variants = [];
+    req.body.variants.split(')').map((variant) => {
+      if (variant === '') return;
+
+      variants.push(JSON.parse(variant.split('=')[1]));
+    });
+
+    const result = await ProductService.createProduct({
+      ...req.body,
+      variants
+    });
+
     return res.status(200).json({message: 'success', result});
   } catch (error) {
+    console.log('error', error);
     if (error instanceof NotFoundException) {
       return res.status(error.statusCode).json({message: error.message || 'Error', error});
     } else if (error instanceof AlreadyExistException) {
@@ -36,7 +50,7 @@ export const addProduct = async (req, res) => {
 };
 
 /**
- * Get => Get All Products
+ * Get All Products
  * @param {import('express').Request<{},{},{},QueryParams>} req
  * @param {import('express').Response} res
  * @returns {Promise<import('express').Response>}
@@ -45,14 +59,16 @@ export const getProducts = async (req, res) => {
   const query = req.query;
   try {
     const result = await ProductService.getProducts(query);
+
     return res.status(200).json({message: 'products', result});
   } catch (error) {
+    console.log(error, 'error');
     return res.status(404).json({message: 'error', error});
   }
 };
 
 /**
- * Get => Get Single Product
+ *  Get Single Product
  * @param {import('express').Request} req
  * @param {import('express').Response} res
  * @returns {Promise<import('express').Response>}
@@ -63,12 +79,13 @@ export const getProduct = async (req, res) => {
     const result = await ProductService.getProduct(id);
     return res.status(200).json({message: 'product', result});
   } catch (error) {
+    console.log(error);
     return res.status(404).json({message: 'error', error});
   }
 };
 
 /**
- * Delete => Delete Product
+ * Archive / Delete Product
  * @param {import('express').Request} req
  * @param {import('express').Response} res
  * @returns {Promise<import('express').Response>}
@@ -84,15 +101,16 @@ export const deleteProduct = async (req, res) => {
 };
 
 /**
- * Put => Edit Product
+ *  Update / Edit product
  * @param {import('express').Request} req
  * @param {import('express').Response} res
  * @returns {Promise<import('express').Response>}
  */
-export const editProduct = async (req, res) => {
+export const updateProduct = async (req, res) => {
   const {id} = req.params;
+  const newProduct = req.body;
   try {
-    const result = await ProductService.editProduct(id);
+    const result = await ProductService.updateProduct(id, newProduct);
     return res.status(200).json({message: 'product', result});
   } catch (error) {
     return res.status(404).json({message: 'error', error});

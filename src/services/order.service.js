@@ -13,6 +13,10 @@ const {Order, Student, User, OrderItems, ProductVariant, Product} = DB;
 
 export class OrderService {
   /**
+   * TODO: Add create notification and  log
+   */
+
+  /**
    * Create order for student
    * @param {string} studentId - Student ID
    * @param {{productVariantId:string, quantity:number} []} orderItems - Order items
@@ -50,7 +54,7 @@ export class OrderService {
         include: [OrderItems]
       }
     );
-    // @ts-ignore
+
     return order;
   }
 
@@ -198,11 +202,14 @@ export class OrderService {
       // write Sales
     }
   }
+  /**
+   *
+   * @param {string} studentId
+   * @param {string} orderId
+   * @param {string} newOrder
+   */
+  static async updateStudentOrder(studentId, orderId, newOrder) {}
 
-  // UpdateData[] = {type: increment:decrement:delete, orderItemId}
-  static async updateOrderByStudentId({studentId, orderId, updateData}) {}
-
-  // Student ID: Number, orderId:Number
   /**
    * Delete Student Order
    * @param {string} studentId

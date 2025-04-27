@@ -1,10 +1,13 @@
-import { Router } from "express";
+import {Router} from 'express';
 
-import { createProgram } from "../../controllers/program.controller.js";
+import {archiveProgram, createProgram, getPrograms, updateProgram} from '../../controllers/program.controller.js';
 
 const router = Router();
 
 // Create Program
-router.post("/", createProgram);
+router.post('/', createProgram);
+router.get('/', getPrograms);
+router.put('/', updateProgram);
+router.delete('/', archiveProgram);
 
 export default router;

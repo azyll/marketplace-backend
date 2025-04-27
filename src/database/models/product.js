@@ -1,5 +1,5 @@
-import { Model, DataTypes } from "sequelize";
-import { sequelizeJoi, Joi } from "sequelize-joi";
+import {Model, DataTypes} from 'sequelize';
+import {sequelizeJoi, Joi} from 'sequelize-joi';
 export default (sequelize) => {
   class Product extends Model {
     /**
@@ -11,15 +11,15 @@ export default (sequelize) => {
       // define association here
       Product.hasMany(models.ProductVariant, {
         foreignKey: {
-          name: "productId",
-          allowNull: false,
-        },
+          name: 'productId',
+          allowNull: false
+        }
       });
       Product.belongsTo(models.Program, {
         foreignKey: {
-          name: "programId",
-          allowNull: false,
-        },
+          name: 'programId',
+          allowNull: false
+        }
       });
     }
   }
@@ -29,44 +29,41 @@ export default (sequelize) => {
       id: {
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
-        primaryKey: true,
+        primaryKey: true
       },
       name: {
         type: DataTypes.STRING,
         schema: Joi.string().trim().required(),
-        unique: true,
+        unique: true
       },
-
       description: {
         type: DataTypes.STRING,
-        schema: Joi.string().trim().required(),
+        schema: Joi.string().trim().required()
       },
       image: {
         type: DataTypes.STRING,
-        schema: Joi.string().trim().required(),
+        schema: Joi.string().trim().required()
+      },
+      type: {
+        type: DataTypes.ENUM,
+        values: ['Upperwear', 'Lowerwear', 'Non-wearable'],
+        schema: Joi.string().trim().required().valid('Upperwear', 'Lowerwear', 'Non-wearable')
+      },
+      category: {
+        type: DataTypes.ENUM,
+        values: ['Uniform', 'Proware', 'Stationery', 'Accessory'],
+        schema: Joi.string().required().valid('Uniform', 'Proware', 'Stationery', 'Accessory')
       },
       deletedAt: {
         type: DataTypes.DATE,
         allowNull: true,
-        schema: Joi.date().allow(null),
-      },
-      type: {
-        type: DataTypes.ENUM,
-        values: ["top", "bottom", "n/a"],
-        schema: Joi.string().trim().required().valid("top", "bottom", "n/a"),
-      },
-      category: {
-        type: DataTypes.ENUM,
-        values: ["uniform", "proware", "stationery accessory"],
-        schema: Joi.string()
-          .required()
-          .valid("uniform", "proware", "stationery accessory"),
-      },
+        schema: Joi.date().allow(null)
+      }
     },
     {
       sequelize,
-      modelName: "Products",
-    },
+      modelName: 'Products'
+    }
   );
 
   return Product;

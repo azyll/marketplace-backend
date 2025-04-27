@@ -11,54 +11,6 @@ const {Cart, Student, ProductVariant, Product} = DB;
  */
 
 export class CartService {
-  // /**
-  //  * Add Item To Student Cart
-  //  * @param {string} studentId - Student id
-  //  * @param {string[]} products  - IDs of product variants
-  //  * @throws {NotFoundException} Product or student not found
-  //  * @returns {Promise<Cart[]>}  Inserted Product to the database
-  //  * @throws {AlreadyExistException} Since one order for student,
-  //   throws error if the item is already exist in the student cart
-  //  **/
-  // static async addItemToCart(studentId, products) {
-  //   const student = await Student.findByPk(studentId);
-
-  //   if (!student) {
-  //     throw new NotFoundException('Student not found', 409);
-  //   }
-
-  //   // Iterate the ids
-  //   products.forEach(async (productVariantId) => {
-  //     const variant = await ProductVariant.findByPk(productVariantId);
-
-  //     // Not Product Not found
-  //     if (!variant) {
-  //       throw new NotFoundException('Product not found');
-  //     }
-
-  //     const [productVariant, isNewItem] = await Cart.findOrCreate({
-  //       where: {studentId, productVariantId},
-  //       defaults: {
-  //         quantity: 1,
-  //         studentId,
-  //         productVariantId
-  //       }
-  //     });
-
-  //     if (!isNewItem) {
-  //       await productVariant.update({
-  //         quantity: productVariant.quantity + 1
-  //       });
-  //       await productVariant.save();
-  //     }
-
-  //   });
-
-  //   const studentCart = await this.getCart(studentId, undefined);
-
-  //   return studentCart;
-  // }
-
   /** 
    * Add Item To Student Cart
    * @param {string} studentId - Student id   
@@ -135,7 +87,12 @@ export class CartService {
   }
 
   //Student ID: Number, CarId:Number
-  static async updateCartItems({studentId, cartId}) {}
+  static async updateCartItems(studentId, cartId) {}
   //Student ID: Number, CarIds:Number
-  static async deleteCart({studentId, cartId}) {}
+  /**
+   *
+   * @param {string} studentId
+   * @param {string} cartId
+   */
+  static async archiveCart(studentId, cartId) {}
 }

@@ -1,6 +1,6 @@
-"use strict";
-import { Model, DataTypes } from "sequelize";
-import { Joi, sequelizeJoi } from "sequelize-joi";
+'use strict';
+import {Model, DataTypes} from 'sequelize';
+import {Joi, sequelizeJoi} from 'sequelize-joi';
 
 export default (sequelize) => {
   class Order extends Model {
@@ -13,21 +13,21 @@ export default (sequelize) => {
       // define association here
       Order.hasOne(models.Sales, {
         foreignKey: {
-          name: "orderId",
-          allowNull: false,
-        },
+          name: 'orderId',
+          allowNull: false
+        }
       });
       Order.hasMany(models.OrderItems, {
         foreignKey: {
-          name: "orderId",
-          allowNull: false,
-        },
+          name: 'orderId',
+          allowNull: false
+        }
       });
       Order.belongsTo(models.Student, {
         foreignKey: {
-          name: "studentId",
-          allowNull: false,
-        },
+          name: 'studentId',
+          allowNull: false
+        }
       });
     }
   }
@@ -37,31 +37,28 @@ export default (sequelize) => {
       id: {
         primaryKey: true,
         type: DataTypes.UUID,
-        defaultValue: DataTypes.UUIDV4,
+        defaultValue: DataTypes.UUIDV4
       },
       total: {
         type: DataTypes.DOUBLE,
         allowNull: false,
-        schema: Joi.number().min(0).precision(2).required(),
+        schema: Joi.number().min(0).precision(2).required()
       },
       status: {
         type: DataTypes.ENUM,
-        values: ["completed", "ongoing", "failed"],
-        schema: Joi.string()
-          .required()
-          .trim()
-          .valid("completed", "ongoing", "failed"),
+        values: ['completed', 'on going', 'failed'],
+        schema: Joi.string().required().trim().valid('completed', 'on going', 'failed')
       },
       deletedAt: {
         type: DataTypes.DATE,
         allowNull: true,
-        schema: Joi.date().allow(null),
-      },
+        schema: Joi.date().allow(null)
+      }
     },
     {
       sequelize,
-      modelName: "Orders",
-    },
+      modelName: 'Orders'
+    }
   );
   return Order;
 };

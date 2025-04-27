@@ -1,6 +1,6 @@
-"use strict";
-import { Model, DataTypes, ENUM } from "sequelize";
-import { Joi, sequelizeJoi } from "sequelize-joi";
+'use strict';
+import {Model, DataTypes, ENUM} from 'sequelize';
+import {Joi, sequelizeJoi} from 'sequelize-joi';
 
 export default (sequelize) => {
   class ProductVariant extends Model {
@@ -13,9 +13,9 @@ export default (sequelize) => {
       // define association here
       ProductVariant.belongsTo(models.Product, {
         foreignKey: {
-          name: "productId",
-          allowNull: false,
-        },
+          name: 'productId',
+          allowNull: false
+        }
       });
     }
   }
@@ -25,20 +25,20 @@ export default (sequelize) => {
       id: {
         type: DataTypes.UUID,
         primaryKey: true,
-        defaultValue: DataTypes.UUIDV4,
+        defaultValue: DataTypes.UUIDV4
       },
-      name: { type: DataTypes.STRING, schema: Joi.string().trim().required() },
+      name: {type: DataTypes.STRING, schema: Joi.string().trim().required()},
       size: {
         type: DataTypes.STRING,
-        schema: Joi.string().required(),
+        schema: Joi.string().required()
       },
       price: {
         type: DataTypes.DOUBLE,
-        schema: Joi.number().min(0).precision(2).required(),
+        schema: Joi.number().min(0).precision(2).required()
       },
       stockQuantity: {
         type: DataTypes.INTEGER,
-        schema: Joi.number().integer().min(0).required(),
+        schema: Joi.number().integer().min(0).required()
       },
       // TODO : Stock Condition
       // stockCondition: {
@@ -54,13 +54,13 @@ export default (sequelize) => {
       deletedAt: {
         type: DataTypes.DATE,
         allowNull: true,
-        schema: Joi.date().allow(null),
-      },
+        schema: Joi.date().allow(null)
+      }
     },
     {
       sequelize,
-      modelName: "ProductVariants",
-    },
+      modelName: 'ProductVariants'
+    }
   );
   return ProductVariant;
 };

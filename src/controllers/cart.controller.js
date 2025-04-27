@@ -8,7 +8,7 @@ import {CartService} from '../services/cart.service.js';
  */
 
 /**
- * Post=> Create student cart
+ *  Create student cart
  * @param {import('express').Request<{studentId:string},{},{product:string}>} req
  * @param {import('express').Response} res
  * @returns {Promise<import('express').Response>} Response object
@@ -21,18 +21,16 @@ export const createStudentCart = async (req, res) => {
     const newItemToCart = await CartService.addItemToCart(studentId, product);
     return res.status(200).json(newItemToCart);
   } catch (error) {
-    if (error instanceof NotFoundException) {
+    if (error instanceof NotFoundException || error instanceof AlreadyExistException) {
       return res.status(error.statusCode).json({message: error.message || 'Error', error});
     }
-    if (error instanceof AlreadyExistException) {
-      return res.status(error.statusCode).json({message: error.message || 'Error', error});
-    }
+
     return res.status(400).json({message: 'Error', error});
   }
 };
 
 /**
- * Get =>  Student Carts
+ *   Student Carts
  * @param {import('express').Request<{studentId:string},{},{},QueryParams>} req
  * @param {import('express').Response} res
  * @returns {Promise<import('express').Response>} Response object
@@ -64,7 +62,7 @@ export const updateStudentCart = async (req, res) => {
   const {studentId} = req.params;
   const {cartId} = req.body;
   try {
-    const result = await CartService.updateStudentCart({studentId, cartId});
+    const result = await CartService.updateCartItems(studentId, cartId);
     return res.status(200).json({message: 'success', result});
   } catch (error) {
     return res.status(error.statusCode || 400).json({message: 'error', error: error?.message || 'error'});
@@ -81,7 +79,7 @@ export const deleteStudentCart = async (req, res) => {
   const {studentId} = req.params;
   const {cartId} = req.body;
   try {
-    const result = await CartService.deleteStudentCart({studentId, cartId});
+    const result = await CartService.archiveCart(studentId, cartId);
     return res.status(200).json({message: 'success', result});
   } catch (error) {
     return res.status(error.statusCode || 400).json({message: 'error', error: error?.message || 'error'});
