@@ -2,7 +2,7 @@ import supabase from '../lib/supabase.js';
 
 export class SupabaseService {
   /**
-   * @param {File} image
+   * @param {Buffer<ArrayBufferLike>} image
    * @param {string} fileName
    */
   static async uploadFile(image, fileName) {

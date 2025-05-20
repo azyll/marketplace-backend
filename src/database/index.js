@@ -10,6 +10,7 @@ import ProductVariantModel from './models/product-variant.js';
 import CartModel from './models/cart.js';
 import ActivityLogModel from './models/activity-log.js';
 import ProgramModel from './models/program.js';
+import ProductAttribute from './models/product-attribute.js';
 
 export const DB = {
   sequelize,
@@ -23,7 +24,8 @@ export const DB = {
   ProductVariant: ProductVariantModel(sequelize),
   Cart: CartModel(sequelize),
   ActivityLog: ActivityLogModel(sequelize),
-  Program: ProgramModel(sequelize)
+  Program: ProgramModel(sequelize),
+  ProductAttribute: ProductAttribute(sequelize)
 };
 
 Object.values(DB).forEach((model) => {

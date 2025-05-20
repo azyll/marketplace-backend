@@ -17,6 +17,12 @@ export default (sequelize) => {
           allowNull: false
         }
       });
+      ProductVariant.belongsTo(models.ProductAttribute, {
+        foreignKey: {
+          name: 'productAttributeId',
+          allowNull: false
+        }
+      });
     }
   }
   sequelizeJoi(sequelize);
@@ -40,17 +46,6 @@ export default (sequelize) => {
         type: DataTypes.INTEGER,
         schema: Joi.number().integer().min(0).required()
       },
-      // TODO : Stock Condition
-      // stockCondition: {
-      //   type: DataTypes.ENUM,
-      //   schema: Joi.number()
-      //     .integer()
-      //     .min(0)
-      //     .required()
-      //     .valid("critical", "safe", "at risk"),
-      //   values: ["critical", "safe", "at risk"],
-      // },
-
       deletedAt: {
         type: DataTypes.DATE,
         allowNull: true,

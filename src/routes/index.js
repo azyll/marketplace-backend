@@ -7,6 +7,7 @@ import programRoute from './api/program.route.js';
 import cartRoute from './api/cart.route.js';
 import orderRoute from './api/order.route.js';
 import inventoryRoute from './api/inventory.route.js';
+import DashboardRoute from './api/dashboard.route.js';
 
 const router = express.Router();
 
@@ -18,5 +19,6 @@ router.use('/program', programRoute);
 router.use('/cart', cartRoute);
 router.use('/order', orderRoute);
 router.use('/inventory', inventoryRoute);
+router.use('/dashboard', DashboardRoute);
 
 export default router;

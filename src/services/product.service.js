@@ -7,7 +7,7 @@ import {AlreadyExistException} from '../exceptions/alreadyExist.js';
 import {calculateStockCondition} from '../utils/stock-helper.js';
 import fs from 'node:fs/promises';
 import {SupabaseService} from './supabase.service.js';
-const {Product, Program, ProductVariant} = DB;
+const {Product, Program, ProductVariant, ProductAttribute} = DB;
 
 /**
  * @typedef {import ('../types/index.js').PaginatedResponse<Product>} ProductResponse
@@ -20,9 +20,10 @@ export class ProductService {
    */
 
   /**
-   * @param {{name:string, description:string, image:string
-   * , type:'Upperwear'| 'Lowerwear'| 'Non-wearable', category:'Uniform'|'Proware'|'Stationery'|'Accessory', programId:string, variants:{
+   * @param {{name:string, description:string, image:string,
+   *  type:'Upperwear'| 'Lowerwear'| 'Non-wearable', category:'Uniform'|'Proware'|'Stationery'|'Accessory', programId:string, variants:{
    *  name:string,
+   *  productAttributeId:string,
    *  size:string,
    *  price:number,
    *  stockQuantity:number
@@ -50,19 +51,26 @@ export class ProductService {
         programId,
         ProductVariants: variants
       },
-      include: [ProductVariant]
+      include: [
+        {
+          model: ProductVariant,
+          include: [ProductAttribute]
+        }
+      ]
     });
     if (!isJustCreated) {
       throw new AlreadyExistException('Product is already exists');
     }
-    // @ts-ignore
-
     const fileBuffer = await fs.readFile(`./uploads/images/products/${image}`);
     await SupabaseService.uploadFile(fileBuffer, image);
+
+    // @ts-ignore
+
     return product;
   }
 
   /**
+   * Get All Products
    * @param {QueryParams} query Query
    * @param {boolean} raw  - raw  (if true, product variants have own column)
    * @returns {Promise<ProductResponse>} All products
@@ -72,7 +80,12 @@ export class ProductService {
     const limit = Number(query.limit) || 10;
 
     const {count, rows: productData} = await Product.findAndCountAll({
-      include: [ProductVariant],
+      include: [
+        {
+          model: ProductVariant,
+          include: [ProductAttribute]
+        }
+      ],
       distinct: true,
       raw,
       nest: raw
@@ -109,7 +122,7 @@ export class ProductService {
     };
   }
   /**
-   *
+   * Get All Products by Program
    * @param {string} programId
    * @param {QueryParams} query
    * @throws {NotFoundException}  Program not found
@@ -126,7 +139,12 @@ export class ProductService {
       where: {
         programId
       },
-      include: [ProductVariant]
+      include: [
+        {
+          model: ProductVariant,
+          include: [ProductAttribute]
+        }
+      ]
     });
     return {
       data: productData,
@@ -146,7 +164,12 @@ export class ProductService {
    */
   static async getProduct(id) {
     const product = await Product.findOne({
-      include: [ProductVariant],
+      include: [
+        {
+          model: ProductVariant,
+          include: [ProductAttribute]
+        }
+      ],
       where: {
         id,
         deletedAt: {[Op.is]: null}
@@ -174,9 +197,31 @@ export class ProductService {
   }
 
   /**
-   * @param {Array<String>} productId
-   * Test
-   * @throws {NotFoundException}
+   * Create Product attribute
+   * @param {string} name
+   * @throws {AlreadyExistException} if attribute already exists
    */
-  static async test(productId) {}
+  static async createAttribute(name) {
+    const [productAttribute, isJustCreated] = await ProductAttribute.findOrCreate({
+      where: {
+        name
+      },
+      defaults: {
+        name: name.toLowerCase()
+      }
+    });
+
+    if (!isJustCreated) {
+      throw new AlreadyExistException('Attribute already exists');
+    }
+    return productAttribute;
+  }
+  /**
+   * Get all Product Attributes
+   * @returns {Promise<ProductAttribute[]>}
+   */
+  static async getAttributes() {
+    const productAttributes = await ProductAttribute.findAll();
+    return productAttributes;
+  }
 }

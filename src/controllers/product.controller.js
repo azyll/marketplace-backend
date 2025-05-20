@@ -3,6 +3,7 @@ import {DatabaseError} from 'sequelize';
 import {AlreadyExistException} from '../exceptions/alreadyExist.js';
 import {NotFoundException} from '../exceptions/notFound.js';
 import {ProductService} from '../services/product.service.js';
+import {ProgramService} from '../services/program.service.js';
 
 /**
  * @typedef {import("../types/index.js").TOrderItem} TOrderItem
@@ -21,7 +22,7 @@ import {ProductService} from '../services/product.service.js';
 export const addProduct = async (req, res) => {
   try {
     /**
-     * @type {{ name:string,size:string,price:number,stockQuantity:number}[]}
+     * @type {{ name:string,productAttributeId:string,size:string,price:number,stockQuantity:number}[]}
      */
     const variants = [];
     req.body.variants.split(')').map((variant) => {
@@ -79,7 +80,6 @@ export const getProduct = async (req, res) => {
     const result = await ProductService.getProduct(id);
     return res.status(200).json({message: 'product', result});
   } catch (error) {
-    console.log(error);
     return res.status(404).json({message: 'error', error});
   }
 };
@@ -114,5 +114,45 @@ export const updateProduct = async (req, res) => {
     return res.status(200).json({message: 'product', result});
   } catch (error) {
     return res.status(404).json({message: 'error', error});
+  }
+};
+
+/**
+ *  Create Product Attribute
+ * @param {import('express').Request<{},{},{name:string}>} req
+ * @param {import('express').Response} res
+ * @returns {Promise<import('express').Response>}
+ */
+export const createProductAttribute = async (req, res) => {
+  try {
+    const {name} = req.body;
+    const productAttribute = await ProductService.createAttribute(name);
+    return res.status(200).json({message: 'product', result: productAttribute});
+  } catch (error) {
+    if (error instanceof AlreadyExistException) return res.status(404).json({message: 'error', error: error.message});
+    return res.status(404).json({message: 'error', error: error.message});
+  }
+};
+
+/**
+ *  Get Product Attribute and Programs for Product Creation
+ * @param {import('express').Request<{},{},{name:string}>} req
+ * @param {import('express').Response} res
+ * @returns {Promise<import('express').Response>}
+ */
+export const getCreateProductData = async (req, res) => {
+  try {
+    const productAttribute = await ProductService.getAttributes();
+    const programs = await ProgramService.getPrograms();
+
+    return res.status(200).json({
+      message: 'product',
+      result: {
+        productAttribute,
+        programs
+      }
+    });
+  } catch (error) {
+    return res.status(404).json({message: 'error', error: error.message});
   }
 };

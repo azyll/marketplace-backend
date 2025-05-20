@@ -36,22 +36,11 @@ export class ProgramService {
 
   /**
    * Get all program
-   * @param {QueryParams} query
+
    */
-  static async getPrograms(query) {
-    const page = Number(query.page) || 1;
-    const limit = Number(query.limit) || 10;
-
-    const {count, rows: programData} = await Program.findAndCountAll();
-
-    return {
-      data: programData,
-      meta: {
-        currentPage: page,
-        itemsPerPage: limit,
-        totalItems: count
-      }
-    };
+  static async getPrograms() {
+    const programs = await Program.findAll();
+    return programs;
   }
 
   /**
