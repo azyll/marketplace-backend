@@ -46,6 +46,11 @@ export default (sequelize) => {
         type: DataTypes.INTEGER,
         schema: Joi.number().integer().min(0).required()
       },
+      stockCondition: {
+        type: DataTypes.ENUM,
+        values: ['Out of Stock', 'Low Stock', 'In Stock', 'Over Stock', 'Re order'],
+        schema: Joi.string().trim().required().valid('Out of Stock', 'Low Stock', 'In Stock', 'Over Stock', 'Re order')
+      },
       deletedAt: {
         type: DataTypes.DATE,
         allowNull: true,

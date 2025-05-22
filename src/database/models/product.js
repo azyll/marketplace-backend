@@ -46,8 +46,8 @@ export default (sequelize) => {
       },
       type: {
         type: DataTypes.ENUM,
-        values: ['Upperwear', 'Lowerwear', 'Non-wearable'],
-        schema: Joi.string().trim().required().valid('Upperwear', 'Lowerwear', 'Non-wearable')
+        values: ['Upper Wear', 'Lower Wear', 'Non-wearable'],
+        schema: Joi.string().trim().required().valid('Upper Wear', 'Lower Wear', 'Non-wearable')
       },
       category: {
         type: DataTypes.ENUM,
