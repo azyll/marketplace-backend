@@ -40,10 +40,15 @@ export class ProductService {
       throw new NotFoundException('Program not found', 404);
     }
 
-    const productVariantWithStockCondition = variants.map((variant) => ({
-      ...variant,
-      stockCondition: calculateStockCondition(variant.stockQuantity)
-    }));
+    const productVariantWithStockCondition = variants.map((variant) => {
+      if (!variant.name || !variant.price || !variant.productAttributeId || !variant.size || !variant.stockQuantity) {
+        throw new Error('Invalid credential');
+      }
+      return {
+        ...variant,
+        stockCondition: calculateStockCondition(variant.stockQuantity)
+      };
+    });
 
     const [product, isJustCreated] = await Product.findOrCreate({
       where: {name},

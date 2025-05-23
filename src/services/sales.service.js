@@ -1,5 +1,5 @@
 // @ts-check
-import {DB} from '../database';
+import {DB} from '../database/index.js';
 
 const {Sales, Order, OrderItems, Student, User} = DB;
 

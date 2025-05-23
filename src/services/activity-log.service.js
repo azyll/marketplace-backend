@@ -9,14 +9,14 @@ export class ActivityLogService {
   /**
    *
    * @param {String} title
-   * @param {String} message
+   * @param {String} content
    * @param {TLog} type
    * @returns
    */
-  static async createLog(title, message, type) {
+  static async createLog(title, content, type) {
     const log = await DB.ActivityLog.create({
       title,
-      message,
+      content,
       type
     });
     return log;

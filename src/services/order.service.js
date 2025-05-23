@@ -6,6 +6,7 @@ import {NotFoundException} from '../exceptions/notFound.js';
 import {ActivityLogService} from './activity-log.service.js';
 import sequelize from '../database/config/sequelize.js';
 import {calculateStockCondition} from '../utils/stock-helper.js';
+import {SalesService} from './sales.service.js';
 
 const {Order, Student, User, OrderItems, ProductVariant, Product} = DB;
 
@@ -16,10 +17,6 @@ const {Order, Student, User, OrderItems, ProductVariant, Product} = DB;
 
 export class OrderService {
   /**
-   * TODO: Add create notification and  log
-   */
-
-  /**
    * Create order for student
    * @param {string} studentId - Student ID
    * @param {{productVariantId:string, quantity:number} []} orderItems - Order items
@@ -27,6 +24,10 @@ export class OrderService {
    * @throws {NotFoundException}  Student or Product not found
    */
   static async createOrder(studentId, orderItems) {
+    /**
+     * TODO: Add create notification and  log
+     */
+    const variantIds = orderItems.map((item) => item.productVariantId);
     const student = await Student.findByPk(studentId, {
       include: [
         {
@@ -42,9 +43,13 @@ export class OrderService {
                 //Orders for the past 3 months
                 createdAt: {
                   [Op.lt]: new Date(),
-
                   [Op.gt]: new Date(new Date().getMonth() - 3)
                 }
+                //!Not sure about this
+                // productVariantId: {
+                // [Op.in]: variantIds
+                // }
+                //!Not sure about this
               },
               include: [
                 {
@@ -61,13 +66,14 @@ export class OrderService {
 
     const status = 'on going';
 
-    const variantIds = orderItems.map((item) => item.productVariantId);
-
     const productVariants = await ProductVariant.findAll({
       include: [Product],
       where: {
         id: {
           [Op.in]: variantIds
+        },
+        deletedAt: {
+          [Op.is]: null
         }
       }
     });
@@ -153,13 +159,12 @@ export class OrderService {
         include: [OrderItems]
       }
     );
+    await ActivityLogService.createLog(
+      'Order Created Successfully',
+      `Order created with a total of ${totalOrder || 0}`,
+      'order'
+    );
     return order;
-
-    // await ActivityLogService.createLog(
-    //   'Order Created Successfully',
-    //   `Order created with a total of ${totalOrder}`,
-    //   'order'
-    // );
   }
 
   /**
@@ -296,15 +301,26 @@ export class OrderService {
 
   /**
    * Update Order Status
-   * @param {string} studentId - Student Id
    * @param {string} orderId - Order ID
-   * @param {'completed'|'ongoing'|'failed'} newStatus - new Status
+   * @param {string} studentId - Student Id
+   * @param {'completed'|'on going'|'failed'} newStatus - new Status
    * @throws {NotFoundException} Student or Order not found
    */
-  static async updateOrderStatus(studentId, orderId, newStatus) {
-    if (newStatus == 'completed') {
+  static async updateOrderStatus(orderId, studentId, newStatus) {
+    const order = await Order.findByPk(orderId);
+    if (!order) throw new NotFoundException('Order not found', 404);
+
+    const student = await Student.findByPk(studentId);
+    if (!student) throw new NotFoundException('Student not found', 404);
+
+    if (newStatus === 'completed') {
       // write Sales
+      // const sales = await SalesService.createSales();
     }
+    order.status = newStatus;
+    await order.save();
+
+    return order;
   }
   /**
    *

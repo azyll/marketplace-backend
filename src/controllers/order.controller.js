@@ -90,7 +90,7 @@ export const getStudentOrder = async (req, res) => {
 /**
  *  Update student order
  * @param {import('express').Request<{studentId:string},{},
- * {orderId:string,newStatus:"completed"| "ongoing"| "failed"}>} req
+ * {orderId:string,newStatus:"completed"| "on going"| "failed"}>} req
  * @param {import('express').Response} res
  * @returns {Promise<import('express').Response>} Response object
  */
@@ -102,7 +102,10 @@ export const updateOrderStatus = async (req, res) => {
     const result = await OrderService.updateOrderStatus(studentId, orderId, newStatus);
     return res.status(200).json({message: 'success', result});
   } catch (error) {
-    return res.status(400).json({message: 'error', error});
+    if (error instanceof NotFoundException) {
+      return res.status(400).json({message: error.message || 'error', error});
+    }
+    return res.status(400).json({message: error.message || 'error', error});
   }
 };
 

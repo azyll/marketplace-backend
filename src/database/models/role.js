@@ -1,6 +1,6 @@
-import { Model, DataTypes } from "sequelize";
-import { v4 as uuid } from "uuid";
-import { Joi, sequelizeJoi } from "sequelize-joi";
+import {Model, DataTypes} from 'sequelize';
+import {v4 as uuid} from 'uuid';
+import {Joi, sequelizeJoi} from 'sequelize-joi';
 
 export default (sequelize) => {
   class Role extends Model {
@@ -11,9 +11,9 @@ export default (sequelize) => {
      */
     static associate(models) {
       // define association here
-      Role.hasMany(models.ActivityLog, {
-        foreignKey: "actorId",
-      });
+      // Role.hasMany(models.ActivityLog, {
+      //   foreignKey: "actorId",
+      // });
     }
   }
   sequelizeJoi(sequelize);
@@ -21,30 +21,27 @@ export default (sequelize) => {
     {
       id: {
         type: DataTypes.UUID,
-        primaryKey: true,
+        primaryKey: true
       },
       name: {
         type: DataTypes.STRING,
-        schema: Joi.string().trim().required(),
+        schema: Joi.string().trim().required()
       },
       systemTag: {
         type: DataTypes.ENUM,
-        values: ["student", "admin", "employee"],
-        schema: Joi.string()
-          .required()
-          .trim()
-          .valid("student", "admin", "employee"),
+        values: ['student', 'admin', 'employee'],
+        schema: Joi.string().required().trim().valid('student', 'admin', 'employee')
       },
       deletedAt: {
         type: DataTypes.DATE,
         allowNull: true,
-        schema: Joi.date().allow(null),
-      },
+        schema: Joi.date().allow(null)
+      }
     },
     {
       sequelize,
-      modelName: "Roles",
-    },
+      modelName: 'Roles'
+    }
   );
 
   Role.beforeCreate((role) => (role.id = uuid()));
