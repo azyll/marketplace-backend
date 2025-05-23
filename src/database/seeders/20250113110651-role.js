@@ -1,34 +1,34 @@
-import { v4 as uuid } from "uuid";
+import {v4 as uuid} from 'uuid';
 
 /** @type {import('sequelize-cli').Migration} */
 export default {
   async up(queryInterface, Sequelize) {
     await queryInterface.bulkInsert(
-      "Roles",
+      'Roles',
       [
         {
           id: uuid(),
-          name: "Student",
-          systemTag: "student",
+          name: 'Student',
+          systemTag: 'student',
           createdAt: new Date(),
-          updatedAt: new Date(),
+          updatedAt: new Date()
         },
         {
           id: uuid(),
-          name: "Admin",
-          systemTag: "admin",
+          name: 'Admin',
+          systemTag: 'admin',
           createdAt: new Date(),
-          updatedAt: new Date(),
+          updatedAt: new Date()
         },
         {
           id: uuid(),
-          name: "Employee",
-          systemTag: "employee",
+          name: 'Employee',
+          systemTag: 'employee',
           createdAt: new Date(),
-          updatedAt: new Date(),
-        },
+          updatedAt: new Date()
+        }
       ],
-      {},
+      {}
     );
   },
 
@@ -39,5 +39,5 @@ export default {
      * Example:
      * await queryInterface.bulkDelete('People', null, {});
      */
-  },
+  }
 };

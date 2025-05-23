@@ -25,7 +25,7 @@ export const createOrder = async (req, res) => {
     if (error instanceof NotFoundException) {
       return res.status(error.statusCode).json({message: error?.message || 'error', error});
     }
-    return res.status(400).json({message: 'error', error});
+    return res.status(400).json({message: error?.message || 'error', error});
   }
 };
 

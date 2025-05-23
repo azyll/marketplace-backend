@@ -14,7 +14,7 @@ import {ProgramService} from '../services/program.service.js';
  *  Create Product
  * @param {import('express').Request<{},{},
  * {name:string, description:string, image:string,
- * type:'Upperwear'| 'Lowerwear'| 'Non-wearable', category:'Uniform'|'Proware'|'Stationery'|'Accessory', programId:string,
+ * type:'Upper Wear'| 'Lower Wear'| 'Non-wearable', category:'Uniform'|'Proware'|'Stationery'|'Accessory', programId:string,
  * variants:string}>} req
  * @param {import('express').Response} res
  * @returns {Promise<import('express').Response>}
@@ -130,6 +130,7 @@ export const createProductAttribute = async (req, res) => {
     return res.status(200).json({message: 'product', result: productAttribute});
   } catch (error) {
     if (error instanceof AlreadyExistException) return res.status(404).json({message: 'error', error: error.message});
+    console.log(error);
     return res.status(404).json({message: 'error', error: error.message});
   }
 };

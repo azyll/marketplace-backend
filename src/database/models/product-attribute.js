@@ -43,4 +43,3 @@ export default (sequelize) => {
   );
   return ProductAttribute;
 };
-

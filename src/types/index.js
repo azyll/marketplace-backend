@@ -41,4 +41,8 @@
  * @property {string|number} limit
  * @property {string|number} page
  */
+
+/**
+ * @typedef {'user'|'application'|'stock'|'sales'|'order'} TLog
+ */
 export {};

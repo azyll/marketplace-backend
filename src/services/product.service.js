@@ -21,7 +21,7 @@ export class ProductService {
 
   /**
    * @param {{name:string, description:string, image:string,
-   *  type:'Upperwear'| 'Lowerwear'| 'Non-wearable', category:'Uniform'|'Proware'|'Stationery'|'Accessory', programId:string, variants:{
+   *  type:'Upper Wear'| 'Lower Wear'| 'Non-wearable', category:'Uniform'|'Proware'|'Stationery'|'Accessory', programId:string, variants:{
    *  name:string,
    *  productAttributeId:string,
    *  size:string,
@@ -40,6 +40,11 @@ export class ProductService {
       throw new NotFoundException('Program not found', 404);
     }
 
+    const productVariantWithStockCondition = variants.map((variant) => ({
+      ...variant,
+      stockCondition: calculateStockCondition(variant.stockQuantity)
+    }));
+
     const [product, isJustCreated] = await Product.findOrCreate({
       where: {name},
       defaults: {
@@ -49,7 +54,7 @@ export class ProductService {
         type,
         category,
         programId,
-        ProductVariants: variants
+        ProductVariants: productVariantWithStockCondition
       },
       include: [
         {
@@ -58,6 +63,7 @@ export class ProductService {
         }
       ]
     });
+
     if (!isJustCreated) {
       throw new AlreadyExistException('Product is already exists');
     }
@@ -91,29 +97,8 @@ export class ProductService {
       nest: raw
     });
 
-    const productsDataWithStockCondition = productData.map((product) => {
-      if (raw) {
-        return {
-          ...product,
-          ProductVariants: {
-            ...product.ProductVariants,
-            stockCondition: calculateStockCondition(Number(product.ProductVariants.stockQuantity))
-          }
-        };
-      }
-      const productJson = product.toJSON();
-
-      return {
-        ...productJson,
-        ProductVariants: productJson.ProductVariants.map((variant) => ({
-          ...variant,
-          stockCondition: calculateStockCondition(Number(variant.stockQuantity))
-        }))
-      };
-    });
-
     return {
-      data: productsDataWithStockCondition,
+      data: productData,
       meta: {
         currentPage: page,
         itemsPerPage: limit,
@@ -204,7 +189,7 @@ export class ProductService {
   static async createAttribute(name) {
     const [productAttribute, isJustCreated] = await ProductAttribute.findOrCreate({
       where: {
-        name
+        name: name.toLowerCase()
       },
       defaults: {
         name: name.toLowerCase()

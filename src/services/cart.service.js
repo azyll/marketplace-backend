@@ -14,7 +14,7 @@ export class CartService {
   /** 
    * Add Item To Student Cart
    * @param {string} studentId - Student id   
-   * @param {string} productVariantId  - IDs of product variants
+   * @param {string} productVariantId  - ID of product variant
    * @throws {NotFoundException} Product or student not found
    * @throws {AlreadyExistException} Since one order for student, 
     throws error if the item is already exist in the student cart
@@ -29,7 +29,7 @@ export class CartService {
     const product = await ProductVariant.findByPk(productVariantId);
     // if product null
     if (!product) {
-      throw new NotFoundException('Product not found');
+      throw new NotFoundException('Product not found', 404);
     }
 
     const [productVariant, isNewItem] = await Cart.findOrCreate({
@@ -43,7 +43,7 @@ export class CartService {
 
     // If already exists, and not just created
     if (!isNewItem) {
-      throw new AlreadyExistException('The product is already exist in your cart', 409);
+      throw new AlreadyExistException('The selected product is already in your cart', 409);
     }
 
     return productVariant;
@@ -68,6 +68,7 @@ export class CartService {
       },
       offset: limit * (page - 1),
       limit,
+      distinct: true,
       include: [
         {
           model: ProductVariant,

@@ -1,31 +1,24 @@
-import express from "express";
-import { validate } from "../../middleware/validation.js";
-import { Joi } from "sequelize-joi";
-import {
-  createStudent,
-  getStudentByUserId,
-} from "../../controllers/student.controller.js";
-import { auth } from "../../middleware/auth.js";
+import express from 'express';
+import {validate} from '../../middleware/validation.js';
+import {Joi} from 'sequelize-joi';
+import {createStudent, getStudentByUserId} from '../../controllers/student.controller.js';
+import {auth} from '../../middleware/auth.js';
 
 const router = express.Router();
 
 // Create Student
 router.post(
-  "/:userId",
-  auth(["admin"]),
+  '/:userId',
+  // auth(["admin"]),
   validate({
     id: Joi.number().required(),
     programId: Joi.string().required(),
-    level: Joi.string().required().valid("shs", "tertiary"),
+    level: Joi.string().required().valid('shs', 'tertiary')
   }),
-  createStudent,
+  createStudent
 );
 
 // Get Student by UserId
-router.get(
-  "/user/:userId",
-  auth(["student"], { selfOnly: { param: "userId", roles: ["student"] } }),
-  getStudentByUserId,
-);
+router.get('/user/:userId', auth(['student'], {selfOnly: {param: 'userId', roles: ['student']}}), getStudentByUserId);
 
 export default router;
