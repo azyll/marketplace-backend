@@ -32,6 +32,28 @@ export class OrderService {
         {
           model: User,
           as: 'user'
+        },
+        {
+          model: Order,
+          include: [
+            {
+              model: OrderItems,
+              where: {
+                //Orders for the past 3 months
+                createdAt: {
+                  [Op.lt]: new Date(),
+
+                  [Op.gt]: new Date(new Date().getMonth() - 3)
+                }
+              },
+              include: [
+                {
+                  model: ProductVariant,
+                  include: [Product]
+                }
+              ]
+            }
+          ]
         }
       ]
     });
@@ -58,13 +80,33 @@ export class OrderService {
 
     const productVariantWithLowStock = plainProductVariants.filter((variant) => variant.stockQuantity <= 20);
 
+    //Check The last transaction of the user
     if (productVariantWithLowStock.length >= 1) {
-      //Check The last transaction of the user
-      console.log(student);
-      throw new Error(
-        `The item you want to order is currently in low stock, since you order this same item in the last 3 months, you can go to proware department to approve your order`
-      );
-      //Write into a new table specific for problem order
+      /**
+       * @type {string[]}
+       */
+      let invalidProductVariantId = [];
+      //Iterate orders of student for the past 3 months
+      student.Orders.forEach((order) => {
+        const orderItems = order.OrderItems;
+        //Iterate the order items so we can find whether the student wants to order again an item that he/she ordered 3 months ago
+        orderItems.forEach((orderItem) => {
+          if (
+            variantIds.find((id) => id === orderItem.productVariantId) &&
+            !invalidProductVariantId.find((id) => id === orderItem.productVariantId)
+          ) {
+            //Create table for invalid product variants for order of student
+            invalidProductVariantId.push(orderItem.productVariantId);
+          }
+        });
+      });
+
+      if (invalidProductVariantId.length >= 1) {
+        console.log('invalidProductVariantId', invalidProductVariantId);
+        throw new Error(
+          `The item you want to order is currently in low stock, since you order this same item in the last 3 months, you can go to proware department to approve your order`
+        );
+      }
     }
 
     //Used transaction so when have a over order product all the stock update will be roll back
