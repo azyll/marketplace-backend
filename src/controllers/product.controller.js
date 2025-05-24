@@ -4,6 +4,7 @@ import {AlreadyExistException} from '../exceptions/alreadyExist.js';
 import {NotFoundException} from '../exceptions/notFound.js';
 import {ProductService} from '../services/product.service.js';
 import {ProgramService} from '../services/program.service.js';
+import {DepartmentService} from '../services/department.service.js';
 
 /**
  * @typedef {import("../types/index.js").TOrderItem} TOrderItem
@@ -14,7 +15,7 @@ import {ProgramService} from '../services/program.service.js';
  *  Create Product
  * @param {import('express').Request<{},{},
  * {name:string, description:string, image:string,
- * type:'Upper Wear'| 'Lower Wear'| 'Non-wearable', category:'Uniform'|'Proware'|'Stationery'|'Accessory', programId:string,
+ * type:'Upper Wear'| 'Lower Wear'| 'Non-wearable', category:'Uniform'|'Proware'|'Stationery'|'Accessory', departmentId:string,
  * variants:string}>} req
  * @param {import('express').Response} res
  * @returns {Promise<import('express').Response>}
@@ -38,7 +39,6 @@ export const addProduct = async (req, res) => {
 
     return res.status(200).json({message: 'success', result});
   } catch (error) {
-    console.log('error', error);
     if (error instanceof NotFoundException) {
       return res.status(error.statusCode).json({message: error.message || 'Error', error});
     } else if (error instanceof AlreadyExistException) {
@@ -136,7 +136,7 @@ export const createProductAttribute = async (req, res) => {
 };
 
 /**
- *  Get Product Attribute and Programs for Product Creation
+ *  Get Product Attribute and Department for Product Creation
  * @param {import('express').Request<{},{},{name:string}>} req
  * @param {import('express').Response} res
  * @returns {Promise<import('express').Response>}
@@ -144,13 +144,13 @@ export const createProductAttribute = async (req, res) => {
 export const getCreateProductData = async (req, res) => {
   try {
     const productAttribute = await ProductService.getAttributes();
-    const programs = await ProgramService.getPrograms();
+    const departments = await DepartmentService.getDepartments();
 
     return res.status(200).json({
       message: 'product',
       result: {
         productAttribute,
-        programs
+        departments
       }
     });
   } catch (error) {

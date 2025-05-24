@@ -12,12 +12,16 @@ export class ProgramService {
   /**
    * Create program
    * @param {string} name - program name
+   * @param {string} departmentId - department Id
    * @returns {Promise<Program>} data from the database
    * @throws {AlreadyExistException} if the program is already exists
    */
-  static async createProgram(name) {
+  static async createProgram(name, departmentId) {
     const [program, isJustCreated] = await Program.findOrCreate({
-      where: {name}
+      where: {name},
+      defaults: {
+        departmentId
+      }
     });
 
     if (!isJustCreated) {

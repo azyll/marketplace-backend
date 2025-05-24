@@ -15,9 +15,9 @@ export default (sequelize) => {
           allowNull: false
         }
       });
-      Product.belongsTo(models.Program, {
+      Product.belongsTo(models.Department, {
         foreignKey: {
-          name: 'programId',
+          name: 'departmentId',
           allowNull: false
         }
       });

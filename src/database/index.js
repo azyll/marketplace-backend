@@ -11,6 +11,7 @@ import CartModel from './models/cart.js';
 import ActivityLogModel from './models/activity-log.js';
 import ProgramModel from './models/program.js';
 import ProductAttribute from './models/product-attribute.js';
+import DepartmentModel from './models/department.js';
 
 export const DB = {
   sequelize,
@@ -25,6 +26,7 @@ export const DB = {
   Cart: CartModel(sequelize),
   ActivityLog: ActivityLogModel(sequelize),
   Program: ProgramModel(sequelize),
+  Department: DepartmentModel(sequelize),
   ProductAttribute: ProductAttribute(sequelize)
 };
 

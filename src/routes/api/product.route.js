@@ -35,7 +35,7 @@ router.post(
     type: Joi.string().trim().required(),
     category: Joi.string().trim().required(),
     variants: Joi.string().required(),
-    programId: Joi.string().required()
+    departmentId: Joi.string().required()
   }),
   addProduct
 );

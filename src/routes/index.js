@@ -8,6 +8,7 @@ import cartRoute from './api/cart.route.js';
 import orderRoute from './api/order.route.js';
 import inventoryRoute from './api/inventory.route.js';
 import DashboardRoute from './api/dashboard.route.js';
+import DepartmentRoute from './api/department.route.js';
 
 const router = express.Router();
 
@@ -16,6 +17,7 @@ router.use('/student', studentRoute);
 router.use('/auth', authRoute);
 router.use('/product', productRoute);
 router.use('/program', programRoute);
+router.use('/department', DepartmentRoute);
 router.use('/cart', cartRoute);
 router.use('/order', orderRoute);
 router.use('/inventory', inventoryRoute);

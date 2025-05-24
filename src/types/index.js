@@ -12,7 +12,7 @@
  * @property {string} image - product image
  * @property {string} type - product image
  * @property {string} category - product image
- * @property {string} programId - product image
+ * @property {string} departmentId - product image
  * @property {TProductVariant[]} variants - product variants
  */
 

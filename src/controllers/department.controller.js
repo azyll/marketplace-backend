@@ -1,21 +1,21 @@
 // @ts-check
 import {AlreadyExistException} from '../exceptions/alreadyExist.js';
-import {ProgramService} from '../services/program.service.js';
+import {DepartmentService} from '../services/department.service.js';
 
 /**
  * @typedef {import('../types/index.js').QueryParams} QueryParams
  *
  */
 /**
- *  Create Program
+ *  Create Department
  * @param {import('express').Request} req
  * @param {import('express').Response} res
  * @returns {Promise<import('express').Response>}
  */
-export const createProgram = async (req, res) => {
-  const {name, departmentId} = req.body;
+export const createDepartment = async (req, res) => {
+  const {name} = req.body;
   try {
-    const program = await ProgramService.createProgram(name, departmentId);
+    const program = await DepartmentService.createDepartment(name);
     return res.status(200).json(program);
   } catch (error) {
     if (error instanceof AlreadyExistException) {
@@ -26,15 +26,15 @@ export const createProgram = async (req, res) => {
 };
 
 /**
- * Archive/Disable/Delete Program
+ * Archive/Disable/Delete Department
  * @param {import('express').Request} req
  * @param {import('express').Response} res
  * @returns {Promise<import('express').Response>}
  */
-export const archiveProgram = async (req, res) => {
+export const archiveDepartment = async (req, res) => {
   const {programId} = req.params;
   try {
-    const program = await ProgramService.archiveProgram(programId);
+    const program = await DepartmentService.archiveDepartment(programId);
     return res.status(200).json(program);
   } catch (error) {
     if (error instanceof AlreadyExistException) {
@@ -45,17 +45,17 @@ export const archiveProgram = async (req, res) => {
 };
 
 /**
- * Update/Edit/Modify Program
+ * Update/Edit/Modify Department
  * @param {import('express').Request} req
  * @param {import('express').Response} res
  * @returns {Promise<import('express').Response>}
  */
-export const updateProgram = async (req, res) => {
+export const updateDepartment = async (req, res) => {
   const {newProgram} = req.body;
   const {programId} = req.params;
 
   try {
-    const program = await ProgramService.updateProgram(programId, newProgram);
+    const program = await DepartmentService.updateDepartment(programId, newProgram);
     return res.status(200).json(program);
   } catch (error) {
     if (error instanceof AlreadyExistException) {
@@ -72,10 +72,10 @@ export const updateProgram = async (req, res) => {
  * @returns {Promise<import('express').Response>}
  */
 
-export const getPrograms = async (req, res) => {
+export const getDepartments = async (req, res) => {
   const query = req.query;
   try {
-    const program = await ProgramService.getPrograms(query);
+    const program = await DepartmentService.getDepartments();
     return res.status(200).json({message: 'success', result: program});
   } catch (error) {
     if (error instanceof AlreadyExistException) {

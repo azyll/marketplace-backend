@@ -7,7 +7,7 @@ import {AlreadyExistException} from '../exceptions/alreadyExist.js';
 import {calculateStockCondition} from '../utils/stock-helper.js';
 import fs from 'node:fs/promises';
 import {SupabaseService} from './supabase.service.js';
-const {Product, Program, ProductVariant, ProductAttribute} = DB;
+const {Product, Department, ProductVariant, ProductAttribute} = DB;
 
 /**
  * @typedef {import ('../types/index.js').PaginatedResponse<Product>} ProductResponse
@@ -21,7 +21,7 @@ export class ProductService {
 
   /**
    * @param {{name:string, description:string, image:string,
-   *  type:'Upper Wear'| 'Lower Wear'| 'Non-wearable', category:'Uniform'|'Proware'|'Stationery'|'Accessory', programId:string, variants:{
+   *  type:'Upper Wear'| 'Lower Wear'| 'Non-wearable', category:'Uniform'|'Proware'|'Stationery'|'Accessory', departmentId:string, variants:{
    *  name:string,
    *  productAttributeId:string,
    *  size:string,
@@ -29,15 +29,15 @@ export class ProductService {
    *  stockQuantity:number
    * }[]}} newProduct - New Product
    * @returns {Promise<Product>} Product data from the database
-   * @throws {NotFoundException} If Program does not exists
+   * @throws {NotFoundException} If Department does not exists
    * @throws {AlreadyExistException} if Product is already existing
    */
   static async createProduct(newProduct) {
-    const {category, description, image, name, programId, type, variants} = newProduct;
+    const {category, description, image, name, departmentId, type, variants} = newProduct;
 
-    const program = await Program.findByPk(programId);
-    if (!program) {
-      throw new NotFoundException('Program not found', 404);
+    const department = await Department.findByPk(departmentId);
+    if (!department) {
+      throw new NotFoundException('Department not found', 404);
     }
 
     const productVariantWithStockCondition = variants.map((variant) => {
@@ -58,7 +58,7 @@ export class ProductService {
         image,
         type,
         category,
-        programId,
+        departmentId,
         ProductVariants: productVariantWithStockCondition
       },
       include: [
@@ -112,22 +112,22 @@ export class ProductService {
     };
   }
   /**
-   * Get All Products by Program
-   * @param {string} programId
+   * Get All Products by Department
+   * @param {string} departmentId
    * @param {QueryParams} query
-   * @throws {NotFoundException}  Program not found
-   * @returns {Promise<ProductResponse>} All products filtered by program
+   * @throws {NotFoundException}  Department not found
+   * @returns {Promise<ProductResponse>} All products filtered by department
    */
-  static async getProductsByProgram(programId, query) {
-    const program = await Program.findByPk(programId);
-    if (!program) throw new NotFoundException('Program not found', 404);
+  static async getProductsByDepartment(departmentId, query) {
+    const department = await Department.findByPk(departmentId);
+    if (!department) throw new NotFoundException('Department not found', 404);
 
     const page = Number(query.page) || 1;
     const limit = Number(query.limit) || 10;
 
     const {count, rows: productData} = await Product.findAndCountAll({
       where: {
-        programId
+        departmentId
       },
       include: [
         {

@@ -2,7 +2,7 @@
 import {Model, DataTypes} from 'sequelize';
 import {Joi, sequelizeJoi} from 'sequelize-joi';
 export default (sequelize) => {
-  class Program extends Model {
+  class Department extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -11,14 +11,14 @@ export default (sequelize) => {
     static associate(models) {
       // define association here
 
-      Program.hasOne(models.Student, {
+      Department.hasMany(models.Product, {
         foreignKey: {
-          name: 'programId',
+          name: 'departmentId',
           allowNull: false
         }
       });
 
-      Program.belongsTo(models.Department, {
+      Department.hasMany(models.Program, {
         foreignKey: {
           name: 'departmentId',
           allowNull: false
@@ -27,7 +27,7 @@ export default (sequelize) => {
     }
   }
   sequelizeJoi(sequelize);
-  Program.init(
+  Department.init(
     {
       id: {
         type: DataTypes.UUID,
@@ -36,20 +36,16 @@ export default (sequelize) => {
       },
       name: {
         type: DataTypes.STRING,
-        schema: Joi.string().trim().required(),
         allowNull: false,
-        unique: true
-      },
-      deletedAt: {
-        type: DataTypes.DATE,
-        allowNull: true,
-        schema: Joi.date().allow(null)
+        schema: Joi.string().trim().required()
       }
     },
     {
       sequelize,
-      modelName: 'Programs'
+      modelName: 'Departments',
+      paranoid: true
     }
   );
-  return Program;
+  return Department;
 };
+

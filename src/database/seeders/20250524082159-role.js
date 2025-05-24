@@ -3,16 +3,6 @@ import {v4 as uuid} from 'uuid';
 
 /** @type {import('sequelize-cli').Migration} */
 export async function up(queryInterface, Sequelize) {
-  /**
-   * Add seed commands here.
-   *
-   * Example:
-   * await queryInterface.bulkInsert('People', [{
-   *   name: 'John Doe',
-   *   isBetaMember: false
-   * }], {});
-   */
-
   await queryInterface.bulkInsert(
     'Roles',
     [
