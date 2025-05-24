@@ -9,7 +9,7 @@ const router = express.Router();
 // Create Student
 router.post(
   '/:userId',
-  // auth(["admin"]),
+  auth(['admin']),
   validate({
     id: Joi.number().required(),
     programId: Joi.string().required(),

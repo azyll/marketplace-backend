@@ -110,7 +110,7 @@ export class OrderService {
       if (invalidProductVariantId.length >= 1) {
         console.log('invalidProductVariantId', invalidProductVariantId);
         throw new Error(
-          `The item you want to order is currently in low stock, since you order this same item in the last 3 months, you can go to proware department to approve your order`
+          `The ${invalidProductVariantId.length} item you want to order is currently in low stock, since you order this same item in the last 3 months, you can go to proware department to approve your order`
         );
       }
     }
@@ -306,17 +306,29 @@ export class OrderService {
    * @param {'completed'|'on going'|'failed'} newStatus - new Status
    * @throws {NotFoundException} Student or Order not found
    */
-  static async updateOrderStatus(orderId, studentId, newStatus) {
+  static async updateOrderStatus(studentId, orderId, newStatus) {
     const order = await Order.findByPk(orderId);
     if (!order) throw new NotFoundException('Order not found', 404);
 
     const student = await Student.findByPk(studentId);
     if (!student) throw new NotFoundException('Student not found', 404);
 
+    if (newStatus === order.status) throw new Error('The order status and the new status is the same');
+
     if (newStatus === 'completed') {
-      // write Sales
-      // const sales = await SalesService.createSales();
+      await SalesService.createSales({
+        orderId,
+        total: order.total
+      });
+      await ActivityLogService.createLog(`New Sales Created`, 'A new complete transaction for sales', 'sales');
+      //TODO: Create notification
     }
+    await ActivityLogService.createLog(
+      `The order ${order.id} marked as ${newStatus}`,
+      `A order marked as ${newStatus}`,
+      'order'
+    );
+
     order.status = newStatus;
     await order.save();
 

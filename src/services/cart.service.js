@@ -95,5 +95,16 @@ export class CartService {
    * @param {string} studentId
    * @param {string} cartId
    */
-  static async archiveCart(studentId, cartId) {}
+  static async archiveCart(studentId, cartId) {
+    const student = await Student.findByPk(studentId);
+    if (!student) throw new NotFoundException('Student not found', 404);
+
+    const cartItem = await Cart.findByPk(cartId);
+    if (!cartItem) throw new NotFoundException('Cart not found', 404);
+
+    cartItem.destroy();
+    cartItem.save();
+
+    return cartItem;
+  }
 }

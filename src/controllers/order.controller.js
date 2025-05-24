@@ -110,6 +110,7 @@ export const updateOrderStatus = async (req, res) => {
 };
 
 /**
+ * Parang di need to
  *  Archive / delete/ cancel student order
  * @param {import('express').Request} req
  * @param {import('express').Response} res
@@ -127,10 +128,8 @@ export const deleteStudentOrder = async (req, res) => {
 };
 
 /**
- * *Suggestion ni sir bern nung mini capstone defense
- */
-/**
  *  Update student order items
+ *  *Suggestion ni sir bern nung mini capstone defense
  * @param {import('express').Request} req
  * @param {import('express').Response} res
  * @returns {Promise<import('express').Response>} Response object

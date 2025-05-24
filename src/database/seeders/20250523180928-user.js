@@ -82,6 +82,11 @@ export async function up(queryInterface, Sequelize) {
       firstName: {[Op.eq]: 'Ken Andrew'}
     }
   });
+  const alissaStudent = await DB.User.findOne({
+    where: {
+      firstName: {[Op.eq]: 'Alissa'}
+    }
+  });
 
   const program = await DB.Program.findOne({
     where: {
@@ -98,6 +103,14 @@ export async function up(queryInterface, Sequelize) {
         createdAt: new Date(),
         updatedAt: new Date(),
         programId: program.id
+      },
+      {
+        id: 2000309921,
+        userId: alissaStudent.id,
+        level: 'tertiary',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        programId: program.id
       }
     ],
     {}
@@ -110,6 +123,7 @@ export async function down(queryInterface, Sequelize) {
    * Example:
    * await queryInterface.bulkDelete('People', null, {});
    */
+  await queryInterface.bulkDelete('Student', null, {});
   await queryInterface.bulkDelete('Users', null, {});
 }
 

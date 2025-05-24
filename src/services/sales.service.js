@@ -1,5 +1,6 @@
 // @ts-check
 import {DB} from '../database/index.js';
+import {NotFoundException} from '../exceptions/notFound.js';
 
 const {Sales, Order, OrderItems, Student, User} = DB;
 
@@ -8,12 +9,22 @@ const {Sales, Order, OrderItems, Student, User} = DB;
  * @typedef {import ('../types/index.js').PaginatedResponse<Sales>} SalesResponse
  */
 export class SalesService {
+  /**
+   *
+   * @param {{total:number,orderId:string}} salesData
+   * @throws {NotFoundException} Order not found
+   * @returns {Promise<Sales>}
+   */
   static async createSales(salesData) {
+    const order = await Order.findByPk(salesData.orderId);
+
+    if (!order) throw new NotFoundException('Order not found', 404);
+
     const sales = await Sales.create(salesData);
     return sales;
   }
   /**
-   *
+   * Get All Sales
    * @param {QueryParams} query
    * @returns {Promise<SalesResponse>} Sales Pagination
    */
