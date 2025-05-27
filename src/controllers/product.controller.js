@@ -83,6 +83,22 @@ export const getProduct = async (req, res) => {
     return res.status(404).json({message: 'error', error});
   }
 };
+/**
+ *  Get Products of Department
+ * @param {import('express').Request<{id:string},{},{},QueryParams>} req
+ * @param {import('express').Response} res
+ * @returns {Promise<import('express').Response>}
+ */
+export const getDepartmentProducts = async (req, res) => {
+  const {id} = req.params;
+  const query = req.query;
+  try {
+    const result = await ProductService.getProductsByDepartment(id, query);
+    return res.status(200).json({message: 'product', result});
+  } catch (error) {
+    return res.status(404).json({message: 'error', error});
+  }
+};
 
 /**
  * Archive / Delete Product

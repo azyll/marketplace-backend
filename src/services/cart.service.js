@@ -102,8 +102,7 @@ export class CartService {
     const cartItem = await Cart.findByPk(cartId);
     if (!cartItem) throw new NotFoundException('Cart not found', 404);
 
-    cartItem.destroy();
-    cartItem.save();
+    await cartItem.destroy();
 
     return cartItem;
   }

@@ -1,6 +1,6 @@
-import { Joi, sequelizeJoi } from "sequelize-joi";
+import {Joi, sequelizeJoi} from 'sequelize-joi';
 
-import { Model, DataTypes } from "sequelize";
+import {Model, DataTypes} from 'sequelize';
 export default (sequelize) => {
   class Sales extends Model {
     /**
@@ -12,9 +12,9 @@ export default (sequelize) => {
       // define association here
       Sales.belongsTo(models.Order, {
         foreignKey: {
-          name: "orderId",
-          allowNull: false,
-        },
+          name: 'orderId',
+          allowNull: false
+        }
       });
     }
   }
@@ -24,23 +24,19 @@ export default (sequelize) => {
       id: {
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
-        primaryKey: true,
+        primaryKey: true
       },
       total: {
         type: DataTypes.DOUBLE,
         allowNull: false,
-        schema: Joi.number().integer().min(0).required(),
-      },
-      deletedAt: {
-        type: DataTypes.DATE,
-        allowNull: true,
-        schema: Joi.date().allow(null),
-      },
+        schema: Joi.number().integer().min(0).required()
+      }
     },
     {
       sequelize,
-      modelName: "Sales",
-    },
+      paranoid: true,
+      modelName: 'Sales'
+    }
   );
   return Sales;
 };

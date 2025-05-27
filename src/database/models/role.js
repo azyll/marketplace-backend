@@ -40,6 +40,7 @@ export default (sequelize) => {
     },
     {
       sequelize,
+      paranoid: true,
       modelName: 'Roles'
     }
   );

@@ -4,6 +4,7 @@ import {
   addProduct,
   createProductAttribute,
   getCreateProductData,
+  getDepartmentProducts,
   getProduct,
   getProducts
 } from '../../controllers/product.controller.js';
@@ -23,6 +24,9 @@ router.get('/create', getCreateProductData);
 
 //Get All Products
 router.get('/', getProducts);
+
+//Get Department Products
+router.get('/department/:id', getDepartmentProducts);
 
 // Create Product
 router.post(

@@ -36,15 +36,11 @@ export default (sequelize) => {
         type: DataTypes.ENUM,
         values: ['user', 'application', 'stock', 'sales', 'order'],
         schema: Joi.string().required().valid('user', 'application', 'stock', 'sales', 'order')
-      },
-      deletedAt: {
-        type: DataTypes.DATE,
-        allowNull: true,
-        schema: Joi.date().allow(null)
       }
     },
     {
       sequelize,
+      paranoid: true,
       modelName: 'ActivityLogs'
     }
   );

@@ -1,6 +1,6 @@
-"use strict";
-import { Model, DataTypes } from "sequelize";
-import { Joi, sequelizeJoi } from "sequelize-joi";
+'use strict';
+import {Model, DataTypes} from 'sequelize';
+import {Joi, sequelizeJoi} from 'sequelize-joi';
 
 export default (sequelize) => {
   class OrderItems extends Model {
@@ -13,15 +13,15 @@ export default (sequelize) => {
       // define association here
       OrderItems.belongsTo(models.Order, {
         foreignKey: {
-          name: "orderId",
-          allowNull: false,
-        },
+          name: 'orderId',
+          allowNull: false
+        }
       });
       OrderItems.belongsTo(models.ProductVariant, {
         foreignKey: {
-          name: "productVariantId",
-          allowNull: false,
-        },
+          name: 'productVariantId',
+          allowNull: false
+        }
       });
     }
   }
@@ -32,18 +32,14 @@ export default (sequelize) => {
       quantity: {
         type: DataTypes.INTEGER,
         allowNull: false,
-        schema: Joi.number().integer().min(0).required(),
-      },
-      deletedAt: {
-        type: DataTypes.DATE,
-        allowNull: true,
-        schema: Joi.date().allow(null),
-      },
+        schema: Joi.number().integer().min(0).required()
+      }
     },
     {
       sequelize,
-      modelName: "OrderItems",
-    },
+      paranoid: true,
+      modelName: 'OrderItems'
+    }
   );
   return OrderItems;
 };

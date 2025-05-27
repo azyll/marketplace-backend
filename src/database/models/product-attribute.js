@@ -29,15 +29,11 @@ export default (sequelize) => {
         type: DataTypes.STRING,
         schema: Joi.string().trim().required(),
         unique: true
-      },
-      deletedAt: {
-        type: DataTypes.DATE,
-        allowNull: true,
-        schema: Joi.date().allow(null)
       }
     },
     {
       sequelize,
+      paranoid: true,
       modelName: 'ProductAttributes'
     }
   );

@@ -32,11 +32,6 @@ export default (sequelize) => {
       quantity: {
         type: DataTypes.INTEGER,
         schema: Joi.number().integer().min(0).required()
-      },
-      deletedAt: {
-        type: DataTypes.DATE,
-        allowNull: true,
-        schema: Joi.date().allow(null)
       }
     },
 

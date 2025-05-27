@@ -53,15 +53,11 @@ export default (sequelize) => {
         type: DataTypes.ENUM,
         values: ['Uniform', 'Proware', 'Stationery', 'Accessory'],
         schema: Joi.string().required().valid('Uniform', 'Proware', 'Stationery', 'Accessory')
-      },
-      deletedAt: {
-        type: DataTypes.DATE,
-        allowNull: true,
-        schema: Joi.date().allow(null)
       }
     },
     {
       sequelize,
+      paranoid: true,
       modelName: 'Products'
     }
   );

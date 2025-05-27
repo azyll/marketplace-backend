@@ -50,15 +50,11 @@ export default (sequelize) => {
         type: DataTypes.ENUM,
         values: ['Out of Stock', 'Low Stock', 'In Stock', 'Over Stock', 'Re order'],
         schema: Joi.string().trim().required().valid('Out of Stock', 'Low Stock', 'In Stock', 'Over Stock', 'Re order')
-      },
-      deletedAt: {
-        type: DataTypes.DATE,
-        allowNull: true,
-        schema: Joi.date().allow(null)
       }
     },
     {
       sequelize,
+      paranoid: true,
       modelName: 'ProductVariants'
     }
   );

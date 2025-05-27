@@ -39,15 +39,11 @@ export default (sequelize) => {
         schema: Joi.string().trim().required(),
         allowNull: false,
         unique: true
-      },
-      deletedAt: {
-        type: DataTypes.DATE,
-        allowNull: true,
-        schema: Joi.date().allow(null)
       }
     },
     {
       sequelize,
+      paranoid: true,
       modelName: 'Programs'
     }
   );
