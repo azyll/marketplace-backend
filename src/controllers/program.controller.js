@@ -21,7 +21,7 @@ export const createProgram = async (req, res) => {
     if (error instanceof AlreadyExistException) {
       return res.status(error.statusCode).json({message: error.message || 'Error', error});
     }
-    return res.status(200).json({type: 'error', error: error});
+    return res.status(error.statusCode || 400).json({message: error.message || 'Error', error});
   }
 };
 

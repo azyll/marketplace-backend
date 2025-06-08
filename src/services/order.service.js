@@ -7,6 +7,7 @@ import {ActivityLogService} from './activity-log.service.js';
 import sequelize from '../database/config/sequelize.js';
 import {calculateStockCondition} from '../utils/stock-helper.js';
 import {SalesService} from './sales.service.js';
+import {NotificationService} from './notification.service.js';
 
 const {Order, Student, User, OrderItems, ProductVariant, Product} = DB;
 
@@ -164,6 +165,20 @@ export class OrderService {
       `Order created with a total of ${totalOrder || 0}`,
       'order'
     );
+    try {
+      await NotificationService.createNotification(
+        'Order Created',
+        `${student.user.id} pushed a new order`,
+        'order',
+        'employees',
+        {
+          userId: null,
+          departmentId: null
+        }
+      );
+    } catch (error) {
+      console.log(error);
+    }
     return order;
   }
 
@@ -304,35 +319,82 @@ export class OrderService {
    * @param {string} orderId - Order ID
    * @param {string} studentId - Student Id
    * @param {'completed'|'on going'|'failed'} newStatus - new Status
+   * @param {string} oracleInvoice
    * @throws {NotFoundException} Student or Order not found
    */
-  static async updateOrderStatus(studentId, orderId, newStatus) {
-    const order = await Order.findByPk(orderId);
-    if (!order) throw new NotFoundException('Order not found', 404);
-
-    const student = await Student.findByPk(studentId);
-    if (!student) throw new NotFoundException('Student not found', 404);
-
-    if (newStatus === order.status) throw new Error('The order status and the new status is the same');
-
-    if (newStatus === 'completed') {
-      await SalesService.createSales({
-        orderId,
-        total: order.total
+  static async updateOrderStatus(studentId, orderId, newStatus, oracleInvoice) {
+    const orderTransaction = sequelize.transaction(async (transaction) => {
+      const order = await Order.findByPk(orderId, {
+        include: [OrderItems],
+        transaction
       });
-      await ActivityLogService.createLog(`New Sales Created`, 'A new complete transaction for sales', 'sales');
-      //TODO: Create notification
-    }
-    await ActivityLogService.createLog(
-      `The order ${order.id} marked as ${newStatus}`,
-      `A order marked as ${newStatus}`,
-      'order'
-    );
+      if (!order) throw new NotFoundException('Order not found', 404);
 
-    order.status = newStatus;
-    await order.save();
+      const student = await Student.findByPk(studentId, {
+        include: [
+          {
+            model: User,
+            as: 'user'
+          }
+        ]
+      });
+      if (!student) throw new NotFoundException('Student not found', 404);
 
-    return order;
+      if (newStatus === order.status) throw new Error('The order status and the new status is the same');
+
+      if (newStatus === 'completed') {
+        await SalesService.createSales({
+          orderId,
+          total: order.total,
+          oracleInvoice
+        });
+        await ActivityLogService.createLog(`New Sales Created`, 'A new complete transaction for sales', 'sales');
+
+        await NotificationService.createNotification(
+          'Order Successful',
+          `Student :${student.id} marked order as ${newStatus}`,
+          'order',
+          'individual',
+          {
+            departmentId: null,
+            userId: student.user.id
+          }
+        );
+        await NotificationService.createNotification(
+          'New Sales',
+          `${student.id} created new Sales`,
+          'sale',
+          'employees',
+          {
+            departmentId: null,
+            userId: null
+          }
+        );
+      }
+      if (newStatus === 'failed') {
+        //TODO: Failed Revert stocks
+        for (const orderItem of order.OrderItems) {
+          const variant = await ProductVariant.findByPk(orderItem.productVariantId, {transaction});
+          if (!variant) throw new NotFoundException('Product not found', 404);
+
+          const newStockQuantity = Number(variant.stockQuantity) + Number(orderItem.quantity);
+          variant.stockQuantity = Number(newStockQuantity);
+          variant.stockCondition = calculateStockCondition(newStockQuantity);
+          await variant.save();
+        }
+      }
+      await ActivityLogService.createLog(
+        `The order ${order.id} marked as ${newStatus}`,
+        `A order marked as ${newStatus}`,
+        'order'
+      );
+
+      order.status = newStatus;
+      await order.save();
+
+      return order;
+    });
+    return orderTransaction;
   }
   /**
    *

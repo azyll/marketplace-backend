@@ -13,6 +13,9 @@ import ProgramModel from './models/program.js';
 import ProductAttribute from './models/product-attribute.js';
 import DepartmentModel from './models/department.js';
 
+import NotificationModel from './models/notification.js';
+import NotificationReceiverModel from './models/notification-receiver.js';
+
 export const DB = {
   sequelize,
   User: UserModel(sequelize),
@@ -27,7 +30,9 @@ export const DB = {
   ActivityLog: ActivityLogModel(sequelize),
   Program: ProgramModel(sequelize),
   Department: DepartmentModel(sequelize),
-  ProductAttribute: ProductAttribute(sequelize)
+  ProductAttribute: ProductAttribute(sequelize),
+  Notification: NotificationModel(sequelize),
+  NotificationReceiver: NotificationReceiverModel(sequelize)
 };
 
 Object.values(DB).forEach((model) => {

@@ -24,6 +24,11 @@ export default (sequelize) => {
           allowNull: false
         }
       });
+      // Department.hasMany(models.NotificationReceiver, {
+      //   foreignKey: {
+      //     name: 'departmentId'
+      //   }
+      // });
     }
   }
   sequelizeJoi(sequelize);

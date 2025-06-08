@@ -22,11 +22,12 @@ router.post('/attribute', createProductAttribute);
 // Create Product
 router.get('/create', getCreateProductData);
 
+router.get('/department/:id', getDepartmentProducts);
+
 //Get All Products
 router.get('/', getProducts);
 
 //Get Department Products
-router.get('/department/:id', getDepartmentProducts);
 
 // Create Product
 router.post(
@@ -44,7 +45,13 @@ router.post(
   addProduct
 );
 
+// Update Product
+router.put('/');
+
+//Archive Product
+router.delete('/');
+
 // Get Product
-router.get('/:id', getProduct);
+router.get('/:slug', getProduct);
 
 export default router;

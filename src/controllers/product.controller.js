@@ -39,6 +39,7 @@ export const addProduct = async (req, res) => {
 
     return res.status(200).json({message: 'success', result});
   } catch (error) {
+    console.log('create product error', error);
     if (error instanceof NotFoundException) {
       return res.status(error.statusCode).json({message: error.message || 'Error', error});
     } else if (error instanceof AlreadyExistException) {
@@ -75,9 +76,9 @@ export const getProducts = async (req, res) => {
  * @returns {Promise<import('express').Response>}
  */
 export const getProduct = async (req, res) => {
-  const {id} = req.params;
+  const {slug} = req.params;
   try {
-    const result = await ProductService.getProduct(id);
+    const result = await ProductService.getProduct(slug.toLowerCase());
     return res.status(200).json({message: 'product', result});
   } catch (error) {
     return res.status(404).json({message: 'error', error});

@@ -6,3 +6,12 @@ plan the model needed for the notification feature
 
 
 cron jobs for auto update of order that are past 24 hours
+
+
+notification that i test so far:
+student,
+employees,
+department student,
+individual
+
+need to test: notification to all

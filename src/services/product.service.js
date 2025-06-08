@@ -1,12 +1,13 @@
 //@ts-check
 
-import {Op} from 'sequelize';
+import {col, fn, Op, where} from 'sequelize';
 import {DB} from '../database/index.js';
 import {NotFoundException} from '../exceptions/notFound.js';
 import {AlreadyExistException} from '../exceptions/alreadyExist.js';
 import {calculateStockCondition} from '../utils/stock-helper.js';
 import fs from 'node:fs/promises';
 import {SupabaseService} from './supabase.service.js';
+import {NotificationService} from './notification.service.js';
 const {Product, Department, ProductVariant, ProductAttribute} = DB;
 
 /**
@@ -74,6 +75,17 @@ export class ProductService {
     }
     const fileBuffer = await fs.readFile(`./uploads/images/products/${image}`);
     await SupabaseService.uploadFile(fileBuffer, image);
+
+    await NotificationService.createNotification(
+      'New Product Added',
+      `New Product added for ${department.name}`,
+      'announcement',
+      department.name === 'Proware' ? 'students' : 'department students',
+      {
+        departmentId: departmentId,
+        userId: null
+      }
+    );
 
     // @ts-ignore
 
@@ -148,11 +160,11 @@ export class ProductService {
 
   /**
    * Get a single Product
-   * @param {string} id - Product Id
+   * @param {string} slug - Product slug
    * @returns {Promise<Product>} get a product and its variants
    * @throws {NotFoundException} Product not found
    */
-  static async getProduct(id) {
+  static async getProduct(slug) {
     const product = await Product.findOne({
       include: [
         {
@@ -160,10 +172,7 @@ export class ProductService {
           include: [ProductAttribute]
         }
       ],
-      where: {
-        id,
-        deletedAt: {[Op.is]: null}
-      }
+      where: where(fn('LOWER', col('name')), slug.replace(/-/g, ' '))
     });
     if (!product) throw new NotFoundException('Product not found', 404);
     return product;

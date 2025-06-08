@@ -108,7 +108,7 @@ export async function down(queryInterface, Sequelize) {
    * Example:
    * await queryInterface.bulkDelete('People', null, {});
    */
-  await queryInterface.bulkDelete('Student', null, {});
   await queryInterface.bulkDelete('Users', null, {});
+  await queryInterface.bulkDelete('Students', null, {});
 }
 

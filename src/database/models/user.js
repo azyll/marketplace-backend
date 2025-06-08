@@ -1,8 +1,8 @@
-import { Model, DataTypes } from "sequelize";
-import useBcrypt from "sequelize-bcrypt";
-import { Joi, sequelizeJoi } from "sequelize-joi";
-import Role from "./role.js";
-import { v4 as uuid } from "uuid";
+import {Model, DataTypes} from 'sequelize';
+import useBcrypt from 'sequelize-bcrypt';
+import {Joi, sequelizeJoi} from 'sequelize-joi';
+import Role from './role.js';
+import {v4 as uuid} from 'uuid';
 
 export default (sequelize) => {
   class User extends Model {
@@ -14,15 +14,27 @@ export default (sequelize) => {
     static associate(models) {
       User.belongsTo(models.Role, {
         foreignKey: {
-          name: "roleId",
-          allowNull: false,
+          name: 'roleId',
+          allowNull: false
         },
-        as: "role",
+        as: 'role'
       });
       User.hasOne(models.Student, {
-        foreignKey: "userId",
-        as: "student",
+        foreignKey: 'userId',
+        as: 'student'
       });
+      User.hasMany(models.NotificationReceiver, {
+        foreignKey: 'userId'
+      });
+
+      // !WAG MUNA
+      //   User.hasMany(models.Notification, {
+      //   foreignKey: {
+      //     name: 'userId',
+      //     allowNull: false
+      //   },
+      //   as:'notifier',
+      // });
     }
   }
   sequelizeJoi(sequelize);
@@ -30,58 +42,58 @@ export default (sequelize) => {
     {
       id: {
         type: DataTypes.UUID,
-        primaryKey: true,
+        primaryKey: true
       },
       firstName: {
         type: DataTypes.STRING,
-        schema: Joi.string().trim().required(),
+        schema: Joi.string().trim().required()
       },
 
       lastName: {
         type: DataTypes.STRING,
-        schema: Joi.string().trim().required(),
+        schema: Joi.string().trim().required()
       },
       fullName: {
         type: DataTypes.VIRTUAL,
         get() {
           return `${this.firstName} ${this.lastName}`;
-        },
+        }
       },
       email: {
         type: DataTypes.STRING,
         schema: Joi.string().trim().email().required(),
-        unique: true,
+        unique: true
       },
       password: {
         type: DataTypes.STRING,
-        schema: Joi.string().required(),
+        schema: Joi.string().required()
       },
       roleId: {
         type: DataTypes.UUID,
         references: {
           model: Role(sequelize),
-          key: "id",
+          key: 'id'
         },
-        allowNull: false,
+        allowNull: false
       },
       deletedAt: {
         type: DataTypes.DATE,
         allowNull: true,
-        schema: Joi.date().allow(null),
-      },
+        schema: Joi.date().allow(null)
+      }
     },
     {
       sequelize,
-      modelName: "Users",
+      modelName: 'Users',
       defaultScope: {
-        attributes: { exclude: ["password", "roleId"] },
+        attributes: {exclude: ['password', 'roleId']}
       },
       scopes: {
         withPassword: {
-          attributes: { include: ["password"] },
-        },
-      },
-    },
+          attributes: {include: ['password']}
+        }
+      }
+    }
   );
 
   User.beforeCreate((user) => (user.id = uuid()));

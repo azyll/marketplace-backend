@@ -90,16 +90,16 @@ export const getStudentOrder = async (req, res) => {
 /**
  *  Update student order
  * @param {import('express').Request<{studentId:string},{},
- * {orderId:string,newStatus:"completed"| "on going"| "failed"}>} req
+ * {orderId:string,newStatus:"completed"| "on going"| "failed",oracleInvoice:string}>} req
  * @param {import('express').Response} res
  * @returns {Promise<import('express').Response>} Response object
  */
 export const updateOrderStatus = async (req, res) => {
   const {studentId} = req.params;
-  const {orderId, newStatus} = req.body;
+  const {orderId, newStatus, oracleInvoice} = req.body;
 
   try {
-    const result = await OrderService.updateOrderStatus(studentId, orderId, newStatus);
+    const result = await OrderService.updateOrderStatus(studentId, orderId, newStatus, oracleInvoice);
     return res.status(200).json({message: 'success', result});
   } catch (error) {
     if (error instanceof NotFoundException) {

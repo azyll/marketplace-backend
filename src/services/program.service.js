@@ -2,8 +2,9 @@
 import {DB} from '../database/index.js';
 import {AlreadyExistException} from '../exceptions/alreadyExist.js';
 import {NotFoundException} from '../exceptions/notFound.js';
+import {NotificationService} from './notification.service.js';
 
-const {Program} = DB;
+const {Program, Department} = DB;
 
 /**
  * @typedef {import('../types/index.js').QueryParams} QueryParams
@@ -17,6 +18,8 @@ export class ProgramService {
    * @throws {AlreadyExistException} if the program is already exists
    */
   static async createProgram(name, departmentId) {
+    const department = await Department.findByPk(departmentId);
+    if (!department) throw new NotFoundException('Department not found', 404);
     const [program, isJustCreated] = await Program.findOrCreate({
       where: {name},
       defaults: {
@@ -27,6 +30,10 @@ export class ProgramService {
     if (!isJustCreated) {
       throw new AlreadyExistException('This program is already exists');
     }
+    await NotificationService.createNotification('New Program', 'A new Program Created', 'announcement', 'students', {
+      departmentId: null,
+      userId: null
+    });
 
     return program;
   }

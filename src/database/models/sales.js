@@ -30,6 +30,11 @@ export default (sequelize) => {
         type: DataTypes.DOUBLE,
         allowNull: false,
         schema: Joi.number().integer().min(0).required()
+      },
+      oracleInvoice: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        schema: Joi.string().trim().required()
       }
     },
     {

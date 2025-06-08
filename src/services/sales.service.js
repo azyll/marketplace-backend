@@ -2,7 +2,7 @@
 import {DB} from '../database/index.js';
 import {NotFoundException} from '../exceptions/notFound.js';
 
-const {Sales, Order, OrderItems, Student, User} = DB;
+const {Sales, Order, OrderItems, Student, User, Program} = DB;
 
 /**
  * @typedef {import ('../types/index.js').QueryParams} QueryParams
@@ -11,7 +11,7 @@ const {Sales, Order, OrderItems, Student, User} = DB;
 export class SalesService {
   /**
    *
-   * @param {{total:number,orderId:string}} salesData
+   * @param {{total:number,orderId:string,oracleInvoice:string}} salesData
    * @throws {NotFoundException} Order not found
    * @returns {Promise<Sales>}
    */
@@ -34,7 +34,28 @@ export class SalesService {
 
     const {count, rows: salesData} = await Sales.findAndCountAll({
       distinct: true,
-      include: [{model: Order, include: [OrderItems]}]
+      include: [
+        {
+          model: Order,
+          include: [
+            {
+              model: OrderItems
+            },
+            {
+              model: Student,
+              include: [
+                {
+                  model: User,
+                  as: 'user'
+                },
+                {
+                  model: Program
+                }
+              ]
+            }
+          ]
+        }
+      ]
     });
 
     return {

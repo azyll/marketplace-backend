@@ -34,6 +34,9 @@ export async function up(queryInterface, Sequelize) {
     },
     {
       name: 'Proware'
+    },
+    {
+      name: 'General Academics'
     }
   ]);
 
