@@ -212,7 +212,8 @@ export class OrderService {
             }
           ]
         }
-      ]
+      ],
+      order: [['createdAt', 'DESC']]
     });
 
     return {

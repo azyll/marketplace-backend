@@ -53,14 +53,14 @@ export const addProduct = async (req, res) => {
 
 /**
  * Get All Products
- * @param {import('express').Request<{},{},{},QueryParams>} req
+ * @param {import('express').Request<{},{},{}, QueryParams & {raw:boolean}>} req
  * @param {import('express').Response} res
  * @returns {Promise<import('express').Response>}
  */
 export const getProducts = async (req, res) => {
-  const query = req.query;
+  const {limit, page, raw = false} = req.query;
   try {
-    const result = await ProductService.getProducts(query);
+    const result = await ProductService.getProducts({limit, page}, raw);
 
     return res.status(200).json({message: 'products', result});
   } catch (error) {

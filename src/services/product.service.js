@@ -106,12 +106,14 @@ export class ProductService {
       include: [
         {
           model: ProductVariant,
-          include: [ProductAttribute]
+          include: [ProductAttribute],
+          order: [['name', 'DESC']]
         }
       ],
       distinct: true,
       raw,
-      nest: raw
+      nest: raw,
+      order: [['name', 'ASC']]
     });
 
     return {

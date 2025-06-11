@@ -136,3 +136,5 @@ dist
 .vscode
 
 uploads
+
+.env
