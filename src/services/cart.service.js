@@ -3,7 +3,7 @@ import {DB} from '../database/index.js';
 import {AlreadyExistException} from '../exceptions/alreadyExist.js';
 import {NotFoundException} from '../exceptions/notFound.js';
 
-const {Cart, Student, ProductVariant, Product} = DB;
+const {Cart, Student, User, ProductVariant, Product, ProductAttribute} = DB;
 
 /**
  * @typedef {import('../types/index.js').QueryParams} QueryParams
@@ -57,14 +57,21 @@ export class CartService {
    * @throws {NotFoundException}  Student not found
    */
   static async getCart(studentId, query) {
-    const student = await Student.findByPk(studentId);
-    if (!student) throw new NotFoundException('Student not found');
+    const user = await User.findByPk(studentId, {
+      include: [
+        {
+          model: Student,
+          as: 'student'
+        }
+      ]
+    });
+    if (!user) throw new NotFoundException('Student not found');
 
     const page = Number(query?.page) || 1;
     const limit = Number(query?.limit) || 10;
     const {count, rows: cartItems} = await Cart.findAndCountAll({
       where: {
-        studentId
+        studentId: user.student.id
       },
       offset: limit * (page - 1),
       limit,
@@ -72,9 +79,10 @@ export class CartService {
       include: [
         {
           model: ProductVariant,
-          include: [Product]
+          include: [Product, ProductAttribute]
         }
-      ]
+      ],
+      order: [['createdAt', 'DESC']]
     });
 
     return {

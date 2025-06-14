@@ -1,5 +1,6 @@
 // @ts-check
 import {DB} from '../database/index.js';
+import {AlreadyExistException} from '../exceptions/alreadyExist.js';
 import {NotFoundException} from '../exceptions/notFound.js';
 
 const {Sales, Order, OrderItems, Student, User, Program} = DB;
@@ -20,7 +21,12 @@ export class SalesService {
 
     if (!order) throw new NotFoundException('Order not found', 404);
 
-    const sales = await Sales.create(salesData);
+    const [sales, isNewSales] = await Sales.findOrCreate({
+      where: {oracleInvoice: salesData.oracleInvoice},
+      defaults: salesData
+    });
+    if (!isNewSales) throw new AlreadyExistException('The Oracle Invoice You Input is already existing', 409);
+
     return sales;
   }
   /**

@@ -41,7 +41,7 @@ export const getStudentCart = async (req, res) => {
   const query = req.query;
   try {
     const cart = await CartService.getCart(studentId, query);
-    return res.status(200).json({message: 'Your Cart', cart});
+    return res.status(200).json({message: 'Your Cart', result: cart});
   } catch (error) {
     if (error instanceof NotFoundException) {
       return res.status(error.statusCode).json({message: error.message || 'Error', error});

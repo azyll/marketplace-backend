@@ -3,7 +3,6 @@ import {DatabaseError} from 'sequelize';
 import {AlreadyExistException} from '../exceptions/alreadyExist.js';
 import {NotFoundException} from '../exceptions/notFound.js';
 import {ProductService} from '../services/product.service.js';
-import {ProgramService} from '../services/program.service.js';
 import {DepartmentService} from '../services/department.service.js';
 
 /**
@@ -25,12 +24,7 @@ export const addProduct = async (req, res) => {
     /**
      * @type {{ name:string,productAttributeId:string,size:string,price:number,stockQuantity:number}[]}
      */
-    const variants = [];
-    req.body.variants.split(')').map((variant) => {
-      if (variant === '') return;
-
-      variants.push(JSON.parse(variant.split('=')[1]));
-    });
+    const variants = JSON.parse(req.body.variants);
 
     const result = await ProductService.createProduct({
       ...req.body,

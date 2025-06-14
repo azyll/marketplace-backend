@@ -10,6 +10,7 @@ import inventoryRoute from './api/inventory.route.js';
 import DashboardRoute from './api/dashboard.route.js';
 import DepartmentRoute from './api/department.route.js';
 import SalesRoute from './api/sales.route.js';
+import NotificationRoute from './api/notification.route.js';
 
 const router = express.Router();
 
@@ -24,5 +25,6 @@ router.use('/order', orderRoute);
 router.use('/inventory', inventoryRoute);
 router.use('/dashboard', DashboardRoute);
 router.use('/sales', SalesRoute);
+router.use('/notification', NotificationRoute);
 
 export default router;

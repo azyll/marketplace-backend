@@ -17,7 +17,7 @@ export async function up(queryInterface, Sequelize) {
     [
       {
         id: uuid(),
-        name: 'n/a',
+        name: 'N/A',
         createdAt: new Date(),
         updatedAt: new Date()
       },

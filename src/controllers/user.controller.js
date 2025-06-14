@@ -38,6 +38,7 @@ export const getUser = async (req, res) => {
  * @returns {Promise<import('express').Response>}
  */
 export const getAllUsers = async (req, res) => {
+  console.log('get all user log');
   try {
     const query = req.query;
     const users = await UserService.getUsers(query);

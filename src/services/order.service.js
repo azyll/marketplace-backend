@@ -9,7 +9,7 @@ import {calculateStockCondition} from '../utils/stock-helper.js';
 import {SalesService} from './sales.service.js';
 import {NotificationService} from './notification.service.js';
 
-const {Order, Student, User, OrderItems, ProductVariant, Product} = DB;
+const {Order, Student, User, OrderItems, ProductVariant, Product, Program} = DB;
 
 /**
  * @typedef {import('../types/index.js').QueryParams} QueryParams
@@ -29,33 +29,35 @@ export class OrderService {
      * TODO: Add create notification and  log
      */
     const variantIds = orderItems.map((item) => item.productVariantId);
-    const student = await Student.findByPk(studentId, {
+    const user = await User.findByPk(studentId, {
       include: [
         {
-          model: User,
-          as: 'user'
-        },
-        {
-          model: Order,
+          model: Student,
+          as: 'student',
           include: [
             {
-              model: OrderItems,
-              where: {
-                //Orders for the past 3 months
-                createdAt: {
-                  [Op.lt]: new Date(),
-                  [Op.gt]: new Date(new Date().getMonth() - 3)
-                }
-                //!Not sure about this
-                // productVariantId: {
-                // [Op.in]: variantIds
-                // }
-                //!Not sure about this
-              },
+              model: Order,
               include: [
                 {
-                  model: ProductVariant,
-                  include: [Product]
+                  model: OrderItems,
+                  where: {
+                    //Orders for the past 3 months
+                    createdAt: {
+                      [Op.lt]: new Date(),
+                      [Op.gt]: new Date(new Date().getMonth() - 3)
+                    }
+                    //!Not sure about this
+                    // productVariantId: {
+                    // [Op.in]: variantIds
+                    // }
+                    //!Not sure about this
+                  },
+                  include: [
+                    {
+                      model: ProductVariant,
+                      include: [Product]
+                    }
+                  ]
                 }
               ]
             }
@@ -63,7 +65,7 @@ export class OrderService {
         }
       ]
     });
-    if (!student) throw new NotFoundException('Student not found', 404);
+    if (!user) throw new NotFoundException('Student not found', 404);
 
     const status = 'on going';
 
@@ -94,7 +96,7 @@ export class OrderService {
        */
       let invalidProductVariantId = [];
       //Iterate orders of student for the past 3 months
-      student.Orders.forEach((order) => {
+      user.student.Orders.forEach((order) => {
         const orderItems = order.OrderItems;
         //Iterate the order items so we can find whether the student wants to order again an item that he/she ordered 3 months ago
         orderItems.forEach((orderItem) => {
@@ -153,7 +155,7 @@ export class OrderService {
       {
         total: totalOrder || 0,
         status,
-        studentId,
+        studentId: user.student.id,
         OrderItems: orderItems
       },
       {
@@ -168,7 +170,7 @@ export class OrderService {
     try {
       await NotificationService.createNotification(
         'Order Created',
-        `${student.user.id} pushed a new order`,
+        `${user.student.id} pushed a new order`,
         'order',
         'employees',
         {
@@ -177,7 +179,7 @@ export class OrderService {
         }
       );
     } catch (error) {
-      console.log(error);
+      throw new Error(error);
     }
     return order;
   }
@@ -301,6 +303,9 @@ export class OrderService {
             {
               model: User,
               as: 'user'
+            },
+            {
+              model: Program
             }
           ]
         }

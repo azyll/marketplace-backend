@@ -1,18 +1,18 @@
-import express from "express";
-import { login } from "../../controllers/auth.controller.js";
-import { validate } from "../../middleware/validation.js";
-import { Joi } from "sequelize-joi";
+import express from 'express';
+import {login} from '../../controllers/auth.controller.js';
+import {validate} from '../../middleware/validation.js';
+import {Joi} from 'sequelize-joi';
 
 const router = express.Router();
 
 // User Login
 router.post(
-  "/login",
+  '/login',
   validate({
     email: Joi.string().email().required(),
-    password: Joi.string().required(),
+    password: Joi.string().required()
   }),
-  login,
+  login
 );
 
 export default router;

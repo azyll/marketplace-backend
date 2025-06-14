@@ -106,14 +106,20 @@ export class ProductService {
       include: [
         {
           model: ProductVariant,
-          include: [ProductAttribute],
-          order: [['name', 'DESC']]
+          include: [ProductAttribute]
+        },
+        {
+          model: Department
         }
       ],
       distinct: true,
       raw,
       nest: raw,
-      order: [['name', 'ASC']]
+      order: [
+        ['name', 'ASC'],
+        [{model: ProductVariant}, 'name', 'ASC'],
+        [{model: ProductVariant}, 'size', 'ASC']
+      ]
     });
 
     return {
@@ -172,6 +178,9 @@ export class ProductService {
         {
           model: ProductVariant,
           include: [ProductAttribute]
+        },
+        {
+          model: Department
         }
       ],
       where: where(fn('LOWER', col('name')), slug.replace(/-/g, ' '))

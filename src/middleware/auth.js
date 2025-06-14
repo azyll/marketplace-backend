@@ -1,6 +1,6 @@
-import { AuthService } from "../services/auth.service.js";
+import {AuthService} from '../services/auth.service.js';
 
-export const SYSTEM_TAG = ["student", "admin", "employee"];
+export const SYSTEM_TAG = ['student', 'admin', 'employee'];
 
 /**
  * @typedef SelfOnlyOptions
@@ -20,38 +20,40 @@ export const SYSTEM_TAG = ["student", "admin", "employee"];
  */
 export const auth = (roles, options) => {
   return async (req, res, next) => {
-    const accessToken = req.headers.authorization;
+    try {
+      const accessToken = req.headers.authorization;
 
-    if (!accessToken)
-      return res.status(401).json({
-        message: "Unauthorized",
-      });
-    console.log(req.headers);
-    const user = await AuthService.verifyToken(accessToken);
-
-    if (!roles.includes(user.roleSystemTag)) {
-      return res.status(401).json({
-        message: "Unauthorized",
-      });
-    }
-
-    if (
-      options?.selfOnly &&
-      options?.selfOnly?.param &&
-      options?.selfOnly?.roles?.length > 0
-    ) {
-      const selfOnlyRoles = options.selfOnly.roles;
-      const selfOnlyParam = options.selfOnly.param;
-
-      const isSameId = user.id === req.params[selfOnlyParam];
-
-      if (selfOnlyRoles.includes(user.roleSystemTag) && !isSameId) {
+      if (!accessToken)
         return res.status(401).json({
-          message: "Unauthorized",
+          message: 'Unauthorized'
+        });
+
+      const user = await AuthService.verifyToken(accessToken);
+
+      if (!roles.includes(user.roleSystemTag)) {
+        return res.status(401).json({
+          message: 'Unauthorized'
         });
       }
-    }
 
-    next();
+      if (options?.selfOnly && options?.selfOnly?.param && options?.selfOnly?.roles?.length > 0) {
+        const selfOnlyRoles = options.selfOnly.roles;
+        const selfOnlyParam = options.selfOnly.param;
+
+        const isSameId = user.id === req.params[selfOnlyParam];
+
+        if (selfOnlyRoles.includes(user.roleSystemTag) && !isSameId) {
+          return res.status(401).json({
+            message: 'Unauthorized'
+          });
+        }
+      }
+
+      next();
+    } catch (error) {
+      return res.status(400).json({
+        message: 'Invalid Request'
+      });
+    }
   };
 };
