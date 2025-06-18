@@ -194,8 +194,8 @@ export const productVariantWithGender = (gender, productAttributeId) => {
 export const productWithNoVariant = (productAttributeId) => {
   return [
     {
-      name: 'n/a',
-      size: 'n/a',
+      name: 'N/A',
+      size: 'N/A',
       price: 100,
       stockQuantity: 50,
       stockCondition: calculateStockCondition(50),

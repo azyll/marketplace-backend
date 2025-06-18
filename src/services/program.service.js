@@ -50,7 +50,9 @@ export class ProgramService {
 
    */
   static async getPrograms() {
-    const programs = await Program.findAll();
+    const programs = await Program.findAll({
+      include: [Department]
+    });
     return programs;
   }
 

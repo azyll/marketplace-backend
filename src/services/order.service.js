@@ -8,8 +8,9 @@ import sequelize from '../database/config/sequelize.js';
 import {calculateStockCondition} from '../utils/stock-helper.js';
 import {SalesService} from './sales.service.js';
 import {NotificationService} from './notification.service.js';
+import {CartService} from './cart.service.js';
 
-const {Order, Student, User, OrderItems, ProductVariant, Product, Program} = DB;
+const {Order, Student, User, OrderItems, ProductVariant, Product, Program, Cart} = DB;
 
 /**
  * @typedef {import('../types/index.js').QueryParams} QueryParams
@@ -21,10 +22,11 @@ export class OrderService {
    * Create order for student
    * @param {string} studentId - Student ID
    * @param {{productVariantId:string, quantity:number} []} orderItems - Order items
+   * @param {'cart'|'buy-now'} orderType
    * @returns {Promise<Order>} Order Data
    * @throws {NotFoundException}  Student or Product not found
    */
-  static async createOrder(studentId, orderItems) {
+  static async createOrder(studentId, orderItems, orderType) {
     /**
      * TODO: Add create notification and  log
      */
@@ -167,6 +169,9 @@ export class OrderService {
       `Order created with a total of ${totalOrder || 0}`,
       'order'
     );
+    if (orderType == 'cart') {
+      CartService.archiveCart(user.id, variantIds);
+    }
     try {
       await NotificationService.createNotification(
         'Order Created',
@@ -181,6 +186,7 @@ export class OrderService {
     } catch (error) {
       throw new Error(error);
     }
+
     return order;
   }
 
@@ -324,7 +330,7 @@ export class OrderService {
    * Update Order Status
    * @param {string} orderId - Order ID
    * @param {string} studentId - Student Id
-   * @param {'completed'|'on going'|'failed'} newStatus - new Status
+   * @param {'completed'|'on going'|'cancelled'} newStatus - new Status
    * @param {string} oracleInvoice
    * @throws {NotFoundException} Student or Order not found
    */
@@ -377,7 +383,7 @@ export class OrderService {
           }
         );
       }
-      if (newStatus === 'failed') {
+      if (newStatus === 'cancelled') {
         //TODO: Failed Revert stocks
         for (const orderItem of order.OrderItems) {
           const variant = await ProductVariant.findByPk(orderItem.productVariantId, {transaction});

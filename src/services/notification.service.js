@@ -203,9 +203,11 @@ export class NotificationService {
           model: NotificationReceiver,
           where: {
             [Op.or]: [{userId: null}, {userId}]
-          }
+          },
+          include: [User]
         }
-      ]
+      ],
+      order: [['createdAt', 'DESC']]
     });
     return notifications;
   }

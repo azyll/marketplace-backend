@@ -1,35 +1,35 @@
 /** @type {import('sequelize-cli').Migration} */
-import Sequelize, { DataTypes } from "sequelize";
+import Sequelize, {DataTypes} from 'sequelize';
 
 export async function up(queryInterface) {
-  await queryInterface.createTable("Orders", {
+  await queryInterface.createTable('Orders', {
     id: {
       primaryKey: true,
       type: DataTypes.UUID,
-      defaultValue: DataTypes.UUIDV4,
+      defaultValue: DataTypes.UUIDV4
     },
     total: {
       type: DataTypes.DOUBLE,
-      allowNull: false,
+      allowNull: false
     },
     status: {
       type: DataTypes.ENUM,
-      values: ["completed", "ongoing", "failed"],
+      values: ['completed', 'ongoing', 'cancelled']
     },
     deletedAt: {
       type: DataTypes.DATE,
-      allowNull: true,
+      allowNull: true
     },
     createdAt: {
       allowNull: false,
-      type: DataTypes.DATE,
+      type: DataTypes.DATE
     },
     updatedAt: {
       allowNull: false,
-      type: DataTypes.DATE,
-    },
+      type: DataTypes.DATE
+    }
   });
 }
 export async function down(queryInterface) {
-  await queryInterface.dropTable("Orders");
+  await queryInterface.dropTable('Orders');
 }

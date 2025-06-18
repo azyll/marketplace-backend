@@ -34,6 +34,7 @@ export default (sequelize) => {
       oracleInvoice: {
         type: DataTypes.STRING,
         allowNull: false,
+        unique: true,
         schema: Joi.string().trim().required()
       }
     },

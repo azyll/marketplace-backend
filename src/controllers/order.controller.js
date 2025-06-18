@@ -11,15 +11,16 @@ import {OrderService} from '../services/order.service.js';
 
 /**
  *  Create order
- * @param {import('express').Request<{studentId:string},{},{orderItems:TOrderItem[]}>} req
+ * @param {import('express').Request<{studentId:string},{},{orderItems:TOrderItem[]},{orderType:'cart'|'buy-now'}>} req
  * @param {import('express').Response} res
  * @returns {Promise<import('express').Response>} Response object
  */
 export const createOrder = async (req, res) => {
   const {studentId} = req.params;
   const {orderItems} = req.body;
+  const {orderType} = req.query;
   try {
-    const order = await OrderService.createOrder(studentId, orderItems);
+    const order = await OrderService.createOrder(studentId, orderItems, orderType);
     return res.status(200).json(order);
   } catch (error) {
     if (error instanceof NotFoundException) {
@@ -90,7 +91,7 @@ export const getStudentOrder = async (req, res) => {
 /**
  *  Update student order
  * @param {import('express').Request<{studentId:string},{},
- * {orderId:string,newStatus:"completed"| "on going"| "failed",oracleInvoice:string}>} req
+ * {orderId:string,newStatus:"completed"| "on going"| "cancelled",oracleInvoice:string}>} req
  * @param {import('express').Response} res
  * @returns {Promise<import('express').Response>} Response object
  */

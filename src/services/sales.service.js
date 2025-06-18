@@ -1,9 +1,10 @@
 // @ts-check
+import {getSales} from '../controllers/sales.controller.js';
 import {DB} from '../database/index.js';
 import {AlreadyExistException} from '../exceptions/alreadyExist.js';
 import {NotFoundException} from '../exceptions/notFound.js';
 
-const {Sales, Order, OrderItems, Student, User, Program} = DB;
+const {Sales, Order, OrderItems, Student, User, Program, Product, ProductVariant} = DB;
 
 /**
  * @typedef {import ('../types/index.js').QueryParams} QueryParams
@@ -72,5 +73,44 @@ export class SalesService {
         totalItems: count
       }
     };
+  }
+  /**
+   *
+   * @param {string} oracleInvoice
+   * @throws {NotFoundException} Sales not found
+   */
+  static async getSale(oracleInvoice) {
+    const sales = await Sales.findOne({
+      where: {oracleInvoice},
+      include: [
+        {
+          model: Order,
+          include: [
+            {
+              model: OrderItems,
+              include: [
+                {
+                  model: ProductVariant,
+                  include: [Product]
+                }
+              ]
+            },
+            {
+              model: Student,
+              include: [
+                Program,
+                {
+                  model: User,
+                  as: 'user'
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    });
+
+    if (!sales) throw new NotFoundException('Sales not found', 404);
+    return sales;
   }
 }

@@ -11,6 +11,8 @@ import DashboardRoute from './api/dashboard.route.js';
 import DepartmentRoute from './api/department.route.js';
 import SalesRoute from './api/sales.route.js';
 import NotificationRoute from './api/notification.route.js';
+import RoleRoute from './api/role.route.js';
+import LogRoute from './api/logs.route.js';
 
 const router = express.Router();
 
@@ -26,5 +28,7 @@ router.use('/inventory', inventoryRoute);
 router.use('/dashboard', DashboardRoute);
 router.use('/sales', SalesRoute);
 router.use('/notification', NotificationRoute);
+router.use('/role', RoleRoute);
+router.use('/log', LogRoute);
 
 export default router;

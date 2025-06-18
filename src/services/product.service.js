@@ -8,6 +8,8 @@ import {calculateStockCondition} from '../utils/stock-helper.js';
 import fs from 'node:fs/promises';
 import {SupabaseService} from './supabase.service.js';
 import {NotificationService} from './notification.service.js';
+import {validate} from 'uuid';
+import {BadRequestException} from '../exceptions/badRequest.js';
 const {Product, Department, ProductVariant, ProductAttribute} = DB;
 
 /**
@@ -204,6 +206,42 @@ export class ProductService {
    */
   static async updateProduct(productId, newProduct) {
     return;
+  }
+
+  /**
+   *
+   * @param {string} productId
+   * @param {string} productVariantId
+   * @param {number} newStock
+   * @returns {Promise<Product>}
+   * @throws {NotFoundException} Product not found
+   */
+  static async updateProductStock(productId, productVariantId, newStock) {
+    if (!validate(productId) || !validate(productVariantId)) throw new NotFoundException('Product not found', 404);
+    const product = await Product.findByPk(productId, {
+      include: [
+        {
+          model: ProductVariant,
+          include: [ProductAttribute],
+          where: {
+            id: productVariantId
+          }
+        },
+        {
+          model: Department
+        }
+      ]
+    });
+    if (!product) throw new NotFoundException('Product not found', 404);
+
+    if (newStock === product.ProductVariants[0].stockQuantity) {
+      return product;
+    }
+
+    product.ProductVariants[0].stockQuantity = newStock;
+    product.ProductVariants[0].stockCondition = calculateStockCondition(newStock);
+    await product.ProductVariants[0].save();
+    return product;
   }
 
   /**

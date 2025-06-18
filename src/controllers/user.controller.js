@@ -160,19 +160,3 @@ export const updatePassword = async (req, res) => {
     });
   }
 };
-/**
- * @param {import('express').Request} req
- * @param {import('express').Response} res
- * @returns {Promise<import('express').Response>}
- */
-export const createRole = async (req, res) => {
-  try {
-    const role = await UserService.createRole(req.body);
-    return res.status(200).json(role);
-  } catch (error) {
-    return res.status(400).json({
-      message: 'Failed to create role',
-      error
-    });
-  }
-};

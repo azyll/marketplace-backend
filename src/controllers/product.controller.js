@@ -25,7 +25,7 @@ export const addProduct = async (req, res) => {
      * @type {{ name:string,productAttributeId:string,size:string,price:number,stockQuantity:number}[]}
      */
     const variants = JSON.parse(req.body.variants);
-
+    console.log(variants);
     const result = await ProductService.createProduct({
       ...req.body,
       variants
@@ -76,6 +76,26 @@ export const getProduct = async (req, res) => {
     return res.status(200).json({message: 'product', result});
   } catch (error) {
     return res.status(404).json({message: 'error', error});
+  }
+};
+
+/**
+ *  Update Product Stock
+ * @param {import('express').Request} req
+ * @param {import('express').Response} res
+ * @returns {Promise<import('express').Response>}
+ */
+export const updateProductStock = async (req, res) => {
+  const {id} = req.params;
+  const {productVariantId, newStockQuantity} = req.body;
+  try {
+    const result = await ProductService.updateProductStock(id, productVariantId, newStockQuantity);
+    return res.status(200).json({message: 'product', result});
+  } catch (error) {
+    if (error instanceof NotFoundException) {
+      return res.status(error.statusCode).json({message: 'Failed To Update Stock', error: error.message});
+    }
+    return res.status(400).json({message: 'Failed', error});
   }
 };
 /**

@@ -205,13 +205,4 @@ export class UserService {
 
     return updatedUser;
   }
-  /**
-   *
-   * @param {{name:string,systemTag:"student"| "admin"| "employee"}} RoleData
-   * @returns {Promise<Role>}
-   */
-  static async createRole({name, systemTag}) {
-    const result = await Role.create({name, systemTag});
-    return result;
-  }
 }

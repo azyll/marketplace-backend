@@ -1,4 +1,5 @@
 // @ts-check
+import {Op} from 'sequelize';
 import {DB} from '../database/index.js';
 import {AlreadyExistException} from '../exceptions/alreadyExist.js';
 import {NotFoundException} from '../exceptions/notFound.js';
@@ -21,9 +22,16 @@ export class CartService {
    * @returns {Promise<ProductVariant>}  Inserted Product to the database
    **/
   static async addItemToCart(studentId, productVariantId) {
-    const student = await Student.findByPk(studentId);
+    const user = await User.findByPk(studentId, {
+      include: [
+        {
+          model: Student,
+          as: 'student'
+        }
+      ]
+    });
 
-    if (!student) {
+    if (!user) {
       throw new NotFoundException('Student not found', 404);
     }
     const product = await ProductVariant.findByPk(productVariantId);
@@ -33,10 +41,10 @@ export class CartService {
     }
 
     const [productVariant, isNewItem] = await Cart.findOrCreate({
-      where: {studentId, productVariantId},
+      where: {studentId: user.student.id, productVariantId},
       defaults: {
         quantity: 1,
-        studentId,
+        studentId: user.student.id,
         productVariantId
       }
     });
@@ -71,7 +79,7 @@ export class CartService {
     const limit = Number(query?.limit) || 10;
     const {count, rows: cartItems} = await Cart.findAndCountAll({
       where: {
-        studentId: user.student.id
+        studentId: Number(user.student.id)
       },
       offset: limit * (page - 1),
       limit,
@@ -101,17 +109,39 @@ export class CartService {
   /**
    *
    * @param {string} studentId
-   * @param {string} cartId
+   * @param {string[]} productVariantIds
    */
-  static async archiveCart(studentId, cartId) {
-    const student = await Student.findByPk(studentId);
+  static async archiveCart(studentId, productVariantIds) {
+    const student = await User.findByPk(studentId, {
+      include: [
+        {
+          model: Student,
+          as: 'student'
+        }
+      ]
+    });
     if (!student) throw new NotFoundException('Student not found', 404);
 
-    const cartItem = await Cart.findByPk(cartId);
-    if (!cartItem) throw new NotFoundException('Cart not found', 404);
+    const productVariants = await Cart.findAll({
+      where: {
+        productVariantId: {
+          [Op.in]: productVariantIds
+        },
+        studentId: student.student.id
+      }
+    });
 
-    await cartItem.destroy();
+    if (productVariants.length !== productVariantIds.length) throw new NotFoundException('Cart item not found');
 
-    return cartItem;
+    const cart = await Cart.destroy({
+      where: {
+        productVariantId: {
+          [Op.in]: productVariantIds
+        },
+        studentId: student.student.id
+      }
+    });
+
+    return cart;
   }
 }

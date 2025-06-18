@@ -22,7 +22,9 @@ export class ActivityLogService {
     return log;
   }
   static async getLogs() {
-    const logs = await DB.ActivityLog.findAll();
+    const logs = await DB.ActivityLog.findAll({
+      order: [['createdAt', 'DESC']]
+    });
     return logs;
   }
 }

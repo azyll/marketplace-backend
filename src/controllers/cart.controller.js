@@ -39,8 +39,10 @@ export const createStudentCart = async (req, res) => {
 export const getStudentCart = async (req, res) => {
   const {studentId} = req.params;
   const query = req.query;
+
   try {
     const cart = await CartService.getCart(studentId, query);
+
     return res.status(200).json({message: 'Your Cart', result: cart});
   } catch (error) {
     if (error instanceof NotFoundException) {
@@ -77,11 +79,16 @@ export const updateStudentCart = async (req, res) => {
  */
 export const deleteStudentCart = async (req, res) => {
   const {studentId} = req.params;
-  const {cartId} = req.body;
+  const {productVariantIds} = req.body;
   try {
-    const result = await CartService.archiveCart(studentId, cartId);
+    const result = await CartService.archiveCart(studentId, productVariantIds);
+
     return res.status(200).json({message: 'success', result});
   } catch (error) {
+    if (error instanceof NotFoundException) {
+      return res.status(error.statusCode).json({message: 'Failed to delete cart item', error: error.message});
+    }
+
     return res.status(error.statusCode || 400).json({message: 'error', error: error?.message || 'error'});
   }
 };

@@ -6,7 +6,8 @@ import {
   getCreateProductData,
   getDepartmentProducts,
   getProduct,
-  getProducts
+  getProducts,
+  updateProductStock
 } from '../../controllers/product.controller.js';
 import {validate} from '../../middleware/validation.js';
 import {Joi} from 'sequelize-joi';
@@ -18,6 +19,9 @@ const router = Router();
 
 // Create Product Attribute
 router.post('/attribute', createProductAttribute);
+
+// Create Product Attribute
+router.put('/stock/:id', updateProductStock);
 
 // Create Product
 router.get('/create', getCreateProductData);

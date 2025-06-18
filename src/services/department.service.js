@@ -17,14 +17,15 @@ export class DepartmentService {
    */
   static async createDepartment(name) {
     const [department, isJustCreated] = await Department.findOrCreate({
-      where: {name}
+      where: {name},
+      defaults: {name}
     });
 
     if (!isJustCreated) {
       throw new AlreadyExistException('This Department is already exists');
     }
 
-    return Department;
+    return department;
   }
 
   /**
