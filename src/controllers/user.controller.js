@@ -1,6 +1,7 @@
 // @ts-check
 import {UserService} from '../services/user.service.js';
 import {NotFoundException} from '../exceptions/notFound.js';
+import {ModulePermissionService} from '../services/module-permission.service.js';
 
 /**
  * @typedef {import('../types/index.js').QueryParams} QueryParams
@@ -105,6 +106,26 @@ export const archiveUser = async (req, res) => {
     const user = await UserService.archiveUser(userId);
 
     return res.status(200).json(user);
+  } catch (err) {
+    return res.status(400).json({
+      message: 'User cannot be deleted',
+      error: err
+    });
+  }
+};
+
+/**
+ * @param {import('express').Request} req
+ * @param {import('express').Response} res
+ * @returns {Promise<import('express').Response>}
+ */
+export const userModulesPermission = async (req, res) => {
+  try {
+    const {userId} = req.params;
+
+    const userModulePermission = await ModulePermissionService.getUserModulePermission(userId);
+
+    return res.status(200).json(userModulePermission);
   } catch (err) {
     return res.status(400).json({
       message: 'User cannot be deleted',

@@ -1,9 +1,10 @@
 'use strict';
-
+//@ts-check
 import bcrypt from 'bcrypt';
 import {Op} from 'sequelize';
 import {DB} from '../index.js';
 import {v4 as uuid} from 'uuid';
+import {ModulePermissionService} from '../../services/module-permission.service.js';
 
 /** @type {import('sequelize-cli').Migration} */
 export async function up(queryInterface, Sequelize) {
@@ -72,6 +73,10 @@ export async function up(queryInterface, Sequelize) {
       roleId: studentRole.id
     }
   ]);
+
+  await ModulePermissionService.createModulePermission(users[2].id, 'inventory', 'edit');
+  await ModulePermissionService.createModulePermission(users[2].id, 'orders', 'edit');
+  await ModulePermissionService.createModulePermission(users[2].id, 'sales', 'edit');
 
   const program = await DB.Program.findOne({
     where: {

@@ -16,6 +16,8 @@ import DepartmentModel from './models/department.js';
 import NotificationModel from './models/notification.js';
 import NotificationReceiverModel from './models/notification-receiver.js';
 
+import ModulePermission from './models/module-permission.js';
+
 export const DB = {
   sequelize,
   User: UserModel(sequelize),
@@ -32,7 +34,8 @@ export const DB = {
   Department: DepartmentModel(sequelize),
   ProductAttribute: ProductAttribute(sequelize),
   Notification: NotificationModel(sequelize),
-  NotificationReceiver: NotificationReceiverModel(sequelize)
+  NotificationReceiver: NotificationReceiverModel(sequelize),
+  ModulePermission: ModulePermission(sequelize)
 };
 
 Object.values(DB).forEach((model) => {

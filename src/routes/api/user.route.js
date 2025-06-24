@@ -6,7 +6,8 @@ import {
   getAllUsers,
   getUser,
   restoreUser,
-  updatePassword
+  updatePassword,
+  userModulesPermission
 } from '../../controllers/user.controller.js';
 import {validate} from '../../middleware/validation.js';
 import {Joi} from 'sequelize-joi';
@@ -40,6 +41,8 @@ router.put(
   }),
   updateUser
 );
+
+router.get('/:userId/module-permission', userModulesPermission);
 
 // Archive User
 router.delete('/:userId', auth(['admin']), archiveUser);

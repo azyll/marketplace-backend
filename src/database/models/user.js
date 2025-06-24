@@ -26,15 +26,9 @@ export default (sequelize) => {
       User.hasMany(models.NotificationReceiver, {
         foreignKey: 'userId'
       });
-
-      // !WAG MUNA
-      //   User.hasMany(models.Notification, {
-      //   foreignKey: {
-      //     name: 'userId',
-      //     allowNull: false
-      //   },
-      //   as:'notifier',
-      // });
+      User.hasMany(models.ModulePermission, {
+        foreignKey: 'userId'
+      });
     }
   }
   sequelizeJoi(sequelize);
