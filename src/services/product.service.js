@@ -240,7 +240,13 @@ export class ProductService {
 
     product.ProductVariants[0].stockQuantity = newStock;
     product.ProductVariants[0].stockCondition = calculateStockCondition(newStock);
+
     await product.ProductVariants[0].save();
+    await NotificationService.createNotificationForInventoryStockUpdate(
+      'Product Stock Update',
+      `New Product Stock for ${product.name} new stock is ${newStock}, buy it now before it ran out of stock`,
+      product.ProductVariants[0].id
+    );
     return product;
   }
 

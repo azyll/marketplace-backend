@@ -95,6 +95,7 @@ export const updateProductStock = async (req, res) => {
     if (error instanceof NotFoundException) {
       return res.status(error.statusCode).json({message: 'Failed To Update Stock', error: error.message});
     }
+    console.log('error', error);
     return res.status(400).json({message: 'Failed', error});
   }
 };

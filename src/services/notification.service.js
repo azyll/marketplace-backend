@@ -4,14 +4,14 @@ import sequelize from '../database/config/sequelize.js';
 import {DB} from '../database/index.js';
 import {NotFoundException} from '../exceptions/notFound.js';
 
-const {Notification, NotificationReceiver, User, Student, Role, Program, Department} = DB;
+const {Notification, NotificationReceiver, User, Student, Role, Program, Department, Cart} = DB;
 export class NotificationService {
   /**
    *
    * @param {string} title
    * @param {string} message
    * @param {'order'|'sale'|'announcement'|'n/a'} type
-   * @param {'all'|'employees'|'students'|'department students'|'individual'} audience
+   * @param {'all'|'employees'|'students'|'department students'|'individual'|} audience
    * @param {{departmentId:string|null,userId:string|null}} receiver
    * @throws {NotFoundException} Department pass is not found
    */
@@ -107,6 +107,45 @@ export class NotificationService {
       }
       return notification;
     });
+    return notificationTransaction;
+  }
+
+  /**
+   *
+   * @param {string} title
+   * @param {string} message
+   * @param {string} productVariantId
+   */
+  static async createNotificationForInventoryStockUpdate(title, message, productVariantId) {
+    const notificationTransaction = sequelize.transaction(async (transaction) => {
+      const notification = await Notification.create(
+        {title, message, type: 'announcement', audience: 'students'},
+        {transaction}
+      );
+
+      const studentsHaveProductVariantInCart = await Student.findAll({
+        include: [
+          {
+            model: Cart,
+            where: {
+              productVariantId
+            }
+          },
+          {
+            model: User,
+            as: 'user'
+          }
+        ]
+      });
+
+      if (!studentsHaveProductVariantInCart) {
+        return notification;
+      }
+      for (const student of studentsHaveProductVariantInCart) {
+        await NotificationReceiver.create({notificationId: notification.id, userId: student.user.id}, {transaction});
+      }
+    });
+
     return notificationTransaction;
   }
 
