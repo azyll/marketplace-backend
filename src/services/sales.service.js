@@ -1,4 +1,5 @@
 // @ts-check
+import {Op} from 'sequelize';
 import {getSales} from '../controllers/sales.controller.js';
 import {DB} from '../database/index.js';
 import {AlreadyExistException} from '../exceptions/alreadyExist.js';
@@ -112,5 +113,21 @@ export class SalesService {
 
     if (!sales) throw new NotFoundException('Sales not found', 404);
     return sales;
+  }
+
+  /**
+   *
+   * @param {Date} startDate
+   * @param {Date} endDate
+   */
+  static async getSalesFilterByDate(startDate, endDate) {
+    const filteredSales = await Sales.sum('total', {
+      where: {
+        createdAt: {
+          [Op.between]: [startDate, endDate]
+        }
+      }
+    });
+    return filteredSales || 0;
   }
 }

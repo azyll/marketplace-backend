@@ -278,4 +278,21 @@ export class ProductService {
     const productAttributes = await ProductAttribute.findAll();
     return productAttributes;
   }
+
+  static async getProductsByProductCondition() {
+    const products = await Product.findAll({
+      include: [
+        {
+          model: ProductVariant,
+          where: {
+            stockCondition: {
+              [Op.between]: ['Out of Stock', 'Low Stock']
+            }
+          }
+        }
+      ]
+    });
+
+    return products;
+  }
 }

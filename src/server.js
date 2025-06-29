@@ -1,10 +1,16 @@
-import http from "http";
-import app from "./app.js";
-import connectDB from "./services/connectDB.js";
+import http from 'http';
+import app from './app.js';
+import connectDB from './services/connectDB.js';
+import nodeCron from 'node-cron';
+import {OrderService} from './services/order.service.js';
 
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 const server = http.createServer(app);
+
+nodeCron.schedule('0 * * * *', () => {
+  OrderService.markOnGoingOrdersAsCancelled();
+});
 
 const startServer = async () => {
   await connectDB();

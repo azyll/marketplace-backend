@@ -250,4 +250,36 @@ export class NotificationService {
     });
     return notifications;
   }
+
+  /**
+   *
+   * @param {string} userId
+   * @param {string} notificationId
+   * @param {boolean} isAll
+   */
+
+  static async updateNotificationAsRead(userId, notificationId, isAll = false) {
+    const user = await User.findByPk(userId);
+    if (!user) throw new NotFoundException('User not found', 404);
+
+    if (isAll) {
+      return await NotificationReceiver.update(
+        {
+          isRead: true
+        },
+        {
+          where: {userId}
+        }
+      );
+    } else {
+      return await NotificationReceiver.update(
+        {
+          isRead: true
+        },
+        {
+          where: {userId, notificationId}
+        }
+      );
+    }
+  }
 }

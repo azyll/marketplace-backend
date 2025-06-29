@@ -1,6 +1,6 @@
 // @ts-check
 
-import {literal, Op} from 'sequelize';
+import {col, fn, literal, Op} from 'sequelize';
 import {DB} from '../database/index.js';
 import {NotFoundException} from '../exceptions/notFound.js';
 import {ActivityLogService} from './activity-log.service.js';
@@ -241,7 +241,14 @@ export class OrderService {
    * @throws {NotFoundException} Student not found
    */
   static async getStudentOrders(studentId, query) {
-    const student = await Student.findByPk(studentId);
+    const student = await User.findByPk(studentId, {
+      include: [
+        {
+          model: Student,
+          as: 'student'
+        }
+      ]
+    });
     if (!student) {
       throw new NotFoundException('Student not found', 404);
     }
@@ -250,8 +257,9 @@ export class OrderService {
     const limit = query.limit || 10;
     const {rows: orderData, count} = await Order.findAndCountAll({
       distinct: true,
+      order: [['createdAt', 'DESC   ']],
       where: {
-        studentId
+        studentId: student.student.id
       },
       include: [
         {
@@ -423,4 +431,62 @@ export class OrderService {
    * @throws {NotFoundException} Student and order not found
    */
   static async archiveStudentOrder(studentId, orderId) {}
+
+  /**
+   *
+   * @param {Date} startDate
+   * @param {Date} endDate
+   */
+  static async getOrdersFilterByDate(startDate, endDate) {
+    const {count, rows: orderItems} = await Order.findAndCountAll({
+      distinct: true,
+      where: {
+        createdAt: {[Op.between]: [startDate, endDate]}
+      }
+    });
+    return {
+      count,
+      orderItems
+    };
+  }
+  /**
+   *
+   * @param {Date} startDate
+   * @param {Date} endDate
+   */
+  static async getOrdersPerWeek(startDate, endDate) {
+    const ordersPerWeek = await Order.findAll({
+      attributes: [
+        [fn('date_part', 'week', col('createdAt')), 'week'],
+        [fn('COUNT', col('id')), 'order']
+      ],
+      where: {
+        createdAt: {
+          [Op.between]: [startDate, endDate]
+        }
+      },
+      group: [fn('date_part', 'week', col('createdAt'))],
+      order: [[fn('date_part', 'week', col('createdAt')), 'ASC']]
+    });
+
+    return ordersPerWeek;
+  }
+
+  static async markOnGoingOrdersAsCancelled() {
+    const thresholdDate = new Date(Date.now() - 24 * 60 * 60 * 1000); // 24 hours ago
+
+    return await Order.update(
+      {
+        status: 'cancelled'
+      },
+      {
+        where: {
+          status: 'on going',
+          createdAt: {
+            [Op.lt]: thresholdDate
+          }
+        }
+      }
+    );
+  }
 }
