@@ -4,7 +4,7 @@ import {
   addProduct,
   createProductAttribute,
   getCreateProductData,
-  getDepartmentProducts,
+  getProductsByStudentDepartment,
   getProduct,
   getProducts,
   updateProductStock
@@ -26,7 +26,7 @@ router.put('/stock/:id', updateProductStock);
 // Create Product
 router.get('/create', getCreateProductData);
 
-router.get('/department/:id', getDepartmentProducts);
+router.get('/user/:id', getProductsByStudentDepartment);
 
 //Get All Products
 router.get('/', getProducts);

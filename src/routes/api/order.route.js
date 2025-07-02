@@ -7,12 +7,14 @@ import {
   updateStudentOrder,
   deleteStudentOrder,
   getOrders,
-  getOrder
+  getOrder,
+  getAnnualOrders
 } from '../../controllers/order.controller.js';
 import {Joi} from 'sequelize-joi';
 const router = Router();
 
 router.get('/', getOrders);
+router.get('/annual', getAnnualOrders);
 
 // Get Student Orders by StudentId
 router.get('/student/:studentId', getStudentOrder);

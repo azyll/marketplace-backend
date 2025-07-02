@@ -4,6 +4,9 @@ import sequelize from '../database/config/sequelize.js';
 import {DB} from '../database/index.js';
 import {NotFoundException} from '../exceptions/notFound.js';
 
+/**
+ * @typedef {import ('../types/index.js').QueryParams} QueryParams
+ */
 const {Notification, NotificationReceiver, User, Student, Role, Program, Department, Cart} = DB;
 export class NotificationService {
   /**
@@ -228,15 +231,19 @@ export class NotificationService {
   /**
    *
    * @param {string} userId
+   * @param { QueryParams & {}} query
    * @throws {NotFoundException}  User not found
    * @returns
    */
-  static async getNotifications(userId) {
+  static async getNotifications(userId, query) {
     const user = await User.findByPk(userId);
 
     if (!user) throw new NotFoundException('User not found', 404);
 
-    const notifications = await Notification.findAll({
+    const page = Number(query?.page) || 1;
+    const limit = Number(query?.limit) || 10;
+
+    const {count, rows: notifications} = await Notification.findAndCountAll({
       include: [
         {
           model: NotificationReceiver,
@@ -246,9 +253,35 @@ export class NotificationService {
           include: [User]
         }
       ],
-      order: [['createdAt', 'DESC']]
+      order: [['createdAt', 'DESC']],
+      distinct: true,
+
+      limit,
+      offset: (page - 1) * limit
     });
-    return notifications;
+
+    const {count: unread} = await Notification.findAndCountAll({
+      include: [
+        {
+          model: NotificationReceiver,
+          where: {
+            [Op.or]: [{userId: null}, {userId}],
+            isRead: false
+          }
+        }
+      ],
+
+      distinct: true
+    });
+    return {
+      data: notifications,
+      meta: {
+        currentPage: page,
+        itemsPerPage: limit,
+        totalItems: count,
+        unread: unread
+      }
+    };
   }
 
   /**

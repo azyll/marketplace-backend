@@ -1,5 +1,5 @@
 // @ts-check
-import {Op} from 'sequelize';
+import {col, fn, Op} from 'sequelize';
 import {getSales} from '../controllers/sales.controller.js';
 import {DB} from '../database/index.js';
 import {AlreadyExistException} from '../exceptions/alreadyExist.js';
@@ -42,6 +42,7 @@ export class SalesService {
 
     const {count, rows: salesData} = await Sales.findAndCountAll({
       distinct: true,
+      order: [['createdAt', 'DESC']],
       include: [
         {
           model: Order,
@@ -129,5 +130,43 @@ export class SalesService {
       }
     });
     return filteredSales || 0;
+  }
+  static async getSalesPerMonth() {
+    const year = new Date().getFullYear();
+
+    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+    const salesPerMonth = await Sales.findAll({
+      attributes: [
+        [fn('DATE_TRUNC', 'month', col('createdAt')), 'month'],
+        [fn('SUM', col('total')), 'sales']
+      ],
+      where: {
+        createdAt: {
+          [Op.gte]: new Date(`${year}-01-01`),
+          [Op.lt]: new Date(`${year + 1}-01-01`)
+        }
+      },
+      group: [fn('DATE_TRUNC', 'month', col('createdAt'))],
+      order: [[fn('DATE_TRUNC', 'month', col('createdAt')), 'ASC']]
+    });
+    // Step 2: Map DB results into a sales map
+    const salesMap = {};
+    salesPerMonth.forEach((row) => {
+      const date = new Date(row.getDataValue('month'));
+      const monthKey = monthNames[date.getMonth() + 1];
+      salesMap[monthKey] = parseFloat(row.getDataValue('sales') || 0);
+    });
+
+    // Step 3: Build full list of months with sales totals
+    const fullYearSales = Array.from({length: 12}, (_, i) => {
+      const monthKey = monthNames[i];
+      return {
+        month: monthNames[i],
+        count: parseFloat(salesMap[monthKey] || 0).toFixed(2)
+      };
+    });
+
+    return fullYearSales;
   }
 }

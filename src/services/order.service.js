@@ -236,7 +236,10 @@ export class OrderService {
   /**
    * Get All Orders of Student
    * @param {string} studentId
-   * @param {{page:number|string,limit:number|string}} query
+   * @param {QueryParams & {
+   * status:"completed" | "on going" | "cancelled",
+   * id:string
+   * }} query
    * @returns {Promise<PaginatedOrders>} All of the student orders
    * @throws {NotFoundException} Student not found
    */
@@ -253,14 +256,26 @@ export class OrderService {
       throw new NotFoundException('Student not found', 404);
     }
 
-    const page = query.page || 1;
-    const limit = query.limit || 10;
+    const where = {
+      studentId: Number(student.student.id)
+    };
+
+    if (query?.status) {
+      where.status = query.status.replace(/-/g, ' '); // case-insensitive partial match
+    }
+    if (query?.id) {
+      where.id = query.id;
+    }
+
+    const page = Number(query.page || 1);
+    const limit = Number(query.limit || 10);
+
     const {rows: orderData, count} = await Order.findAndCountAll({
       distinct: true,
-      order: [['createdAt', 'DESC   ']],
-      where: {
-        studentId: student.student.id
-      },
+      limit,
+      offset: (page - 1) * limit,
+      order: [['createdAt', 'DESC']],
+      where,
       include: [
         {
           model: OrderItems,
@@ -449,27 +464,46 @@ export class OrderService {
       orderItems
     };
   }
-  /**
-   *
-   * @param {Date} startDate
-   * @param {Date} endDate
-   */
-  static async getOrdersPerWeek(startDate, endDate) {
-    const ordersPerWeek = await Order.findAll({
+
+  static async getOrdersPerMonth() {
+    const year = new Date().getFullYear();
+
+    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+    // Step 1: Get real data from DB
+    const ordersPerMonth = await Order.findAll({
       attributes: [
-        [fn('date_part', 'week', col('createdAt')), 'week'],
-        [fn('COUNT', col('id')), 'order']
+        [fn('DATE_TRUNC', 'month', col('createdAt')), 'month'],
+        [fn('COUNT', '*'), 'count']
       ],
       where: {
         createdAt: {
-          [Op.between]: [startDate, endDate]
+          [Op.gte]: new Date(`${year}-01-01`),
+          [Op.lt]: new Date(`${year + 1}-01-01`)
         }
       },
-      group: [fn('date_part', 'week', col('createdAt'))],
-      order: [[fn('date_part', 'week', col('createdAt')), 'ASC']]
+      group: [fn('DATE_TRUNC', 'month', col('createdAt'))],
+      order: [[fn('DATE_TRUNC', 'month', col('createdAt')), 'ASC']]
     });
 
-    return ordersPerWeek;
+    // Step 2: Map DB results into an object
+    const countsMap = {};
+    ordersPerMonth.forEach((row) => {
+      const date = new Date(row.getDataValue('month'));
+      const monthKey = monthNames[date.getMonth() + 1];
+      countsMap[monthKey] = parseInt(row.getDataValue('count'));
+    });
+
+    // Step 3: Build full list of months
+    const fullYearMonths = Array.from({length: 12}, (_, i) => {
+      const monthKey = monthNames[i];
+      return {
+        month: monthKey,
+        count: countsMap[monthKey] || 0
+      };
+    });
+
+    return fullYearMonths;
   }
 
   static async markOnGoingOrdersAsCancelled() {

@@ -47,15 +47,25 @@ export const addProduct = async (req, res) => {
 
 /**
  * Get All Products
- * @param {import('express').Request<{},{},{}, QueryParams & {raw:boolean}>} req
+ * /**
+ * @param {import('express').Request<
+ *   {},
+ *   {},
+ *   {},
+ *   QueryParams &{
+ *     category: string,
+ *     name: string,
+ *     department: string,
+ *     latest: boolean,
+ *   }
+ * >} req
+ 
  * @param {import('express').Response} res
  * @returns {Promise<import('express').Response>}
  */
 export const getProducts = async (req, res) => {
-  const {limit, page, raw = false} = req.query;
   try {
-    const result = await ProductService.getProducts({limit, page}, raw);
-
+    const result = await ProductService.getProducts(req.query, false);
     return res.status(200).json({message: 'products', result});
   } catch (error) {
     console.log(error, 'error');
@@ -105,16 +115,33 @@ export const updateProductStock = async (req, res) => {
  * @param {import('express').Response} res
  * @returns {Promise<import('express').Response>}
  */
-export const getDepartmentProducts = async (req, res) => {
+export const getProductsByStudentDepartment = async (req, res) => {
   const {id} = req.params;
-  const query = req.query;
+
   try {
-    const result = await ProductService.getProductsByDepartment(id, query);
+    const result = await ProductService.getProductsByStudentDepartment(id);
     return res.status(200).json({message: 'product', result});
   } catch (error) {
     return res.status(404).json({message: 'error', error});
   }
 };
+
+// /**
+//  *  Get Products of Department
+//  * @param {import('express').Request<{id:string},{},{},QueryParams>} req
+//  * @param {import('express').Response} res
+//  * @returns {Promise<import('express').Response>}
+//  */
+// export const getProductsByStudentDepartment = async (req, res) => {
+//   const {id} = req.params;
+//   const query = req.query;
+//   try {
+//     const result = await ProductService.getProductsByStudentDepartment(id, query);
+//     return res.status(200).json({message: 'product', result});
+//   } catch (error) {
+//     return res.status(404).json({message: 'error', error});
+//   }
+// };
 
 /**
  * Archive / Delete Product

@@ -3,6 +3,7 @@
 import {DatabaseError} from 'sequelize';
 import {NotFoundException} from '../exceptions/notFound.js';
 import {OrderService} from '../services/order.service.js';
+import {SalesService} from '../services/sales.service.js';
 
 /**
  * @typedef {import("../types/index.js").TOrderItem} TOrderItem
@@ -77,10 +78,12 @@ export const getOrder = async (req, res) => {
 export const getStudentOrder = async (req, res) => {
   const {studentId} = req.params;
   const query = req.query;
+  console.log(query);
   try {
     const result = await OrderService.getStudentOrders(studentId, query);
     return res.status(200).json({message: 'success', result});
   } catch (error) {
+    console.log(error);
     if (error instanceof NotFoundException) {
       return res.status(error.statusCode).json({message: error?.message || 'error', error});
     }
@@ -88,6 +91,20 @@ export const getStudentOrder = async (req, res) => {
   }
 };
 
+/**
+ *  All orders per month
+ * @param {import('express').Request<{studentId:string},{},{},QueryParams>} req
+ * @param {import('express').Response} res
+ * @returns {Promise<import('express').Response>} Response object
+ */
+export const getAnnualOrders = async (req, res) => {
+  try {
+    const result = await OrderService.getOrdersPerMonth();
+    return res.status(200).json({message: 'success', result});
+  } catch (error) {
+    return res.status(400).json({message: 'error', error});
+  }
+};
 /**
  *  Update student order
  * @param {import('express').Request<{studentId:string},{},

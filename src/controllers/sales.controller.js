@@ -34,3 +34,18 @@ export const getSale = async (req, res) => {
   }
 };
 
+/**
+ *  All orders per month
+ * @param {import('express').Request<{studentId:string},{},{}>} req
+ * @param {import('express').Response} res
+ * @returns {Promise<import('express').Response>} Response object
+ */
+export const getAnnualSales = async (req, res) => {
+  try {
+    const result = await SalesService.getSalesPerMonth();
+    return res.status(200).json({message: 'success', result});
+  } catch (error) {
+    return res.status(400).json({message: 'error', error});
+  }
+};
+

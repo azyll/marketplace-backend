@@ -8,7 +8,7 @@ const PORT = process.env.PORT || 3000;
 
 const server = http.createServer(app);
 
-nodeCron.schedule('0 * * * *', () => {
+nodeCron.schedule('* * * * *', () => {
   OrderService.markOnGoingOrdersAsCancelled();
 });
 

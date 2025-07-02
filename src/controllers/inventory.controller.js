@@ -13,7 +13,7 @@ import {ProductService} from '../services/product.service.js';
 export const getInventory = async (req, res) => {
   const query = req.query;
   try {
-    const products = await ProductService.getProducts(query, true);
+    const products = await ProductService.getProducts({});
     return res.status(200).json({
       message: 'inventory',
       response: {

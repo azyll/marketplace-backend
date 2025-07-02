@@ -81,7 +81,7 @@ export class CartService {
       where: {
         studentId: Number(user.student.id)
       },
-      offset: limit * (page - 1),
+      offset: (page - 1) * limit,
       limit,
       distinct: true,
       include: [

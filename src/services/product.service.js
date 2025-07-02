@@ -9,8 +9,7 @@ import fs from 'node:fs/promises';
 import {SupabaseService} from './supabase.service.js';
 import {NotificationService} from './notification.service.js';
 import {validate} from 'uuid';
-import {BadRequestException} from '../exceptions/badRequest.js';
-const {Product, Department, ProductVariant, ProductAttribute} = DB;
+const {Product, Department, ProductVariant, ProductAttribute, User, Student, Program} = DB;
 
 /**
  * @typedef {import ('../types/index.js').PaginatedResponse<Product>} ProductResponse
@@ -96,32 +95,63 @@ export class ProductService {
 
   /**
    * Get All Products
-   * @param {QueryParams} query Query
-   * @param {boolean} raw  - raw  (if true, product variants have own column)
+   * @param { QueryParams&{
+   *     category?: string,
+   *     name?: string,
+   *     department?: string,
+   *     latest?: boolean,
+   *      raw?: boolean
+   *   }} query Query
+   *
+   *
+   * raw - if true product variants have own columns
    * @returns {Promise<ProductResponse>} All products
    */
-  static async getProducts(query, raw = false) {
-    const page = Number(query.page) || 1;
-    const limit = Number(query.limit) || 10;
+  static async getProducts(query) {
+    const page = Number(query?.page) || 1;
+    const limit = Number(query?.limit) || 10;
+    const whereClause = {};
+
+    if (query?.category) {
+      whereClause.category = query.category; // case-insensitive partial match
+    }
+
+    if (query?.name) {
+      whereClause.name = {[Op.iLike]: `%${query.name.replace(/-/g, ' ')}%`}; // case-insensitive partial match
+    }
+    let raw = query.raw ? true : false;
 
     const {count, rows: productData} = await Product.findAndCountAll({
+      where: whereClause,
       include: [
         {
           model: ProductVariant,
           include: [ProductAttribute]
         },
         {
-          model: Department
+          model: Department,
+          where:
+            query.department ?
+              {
+                name: {
+                  [Op.iLike]: `%${query?.department}%`
+                }
+              }
+            : {}
         }
       ],
       distinct: true,
       raw,
       nest: raw,
       order: [
-        ['name', 'ASC'],
+        query?.latest ? ['createdAt', 'DESC'] : ['name', 'ASC'],
         [{model: ProductVariant}, 'name', 'ASC'],
         [{model: ProductVariant}, 'size', 'ASC']
-      ]
+      ],
+      ...(!raw && {
+        offset: (page - 1) * limit,
+        limit
+      })
     });
 
     return {
@@ -135,38 +165,97 @@ export class ProductService {
   }
   /**
    * Get All Products by Department
-   * @param {string} departmentId
-   * @param {QueryParams} query
+   * @param {string} userId
+ 
    * @throws {NotFoundException}  Department not found
-   * @returns {Promise<ProductResponse>} All products filtered by department
+   * @returns {Promise<{data:Product[]}>} All products filtered by department
    */
-  static async getProductsByDepartment(departmentId, query) {
-    const department = await Department.findByPk(departmentId);
-    if (!department) throw new NotFoundException('Department not found', 404);
+  static async getProductsByStudentDepartment(userId) {
+    const user = await User.findByPk(userId, {
+      include: [
+        {
+          model: Student,
+          as: 'student',
+          include: [
+            {
+              model: Program,
+              include: [Department]
+            }
+          ]
+        }
+      ]
+    });
 
-    const page = Number(query.page) || 1;
-    const limit = Number(query.limit) || 10;
+    if (!user) throw new NotFoundException('Student not found', 404);
 
-    const {count, rows: productData} = await Product.findAndCountAll({
+    const productData = await Product.findAll({
       where: {
-        departmentId
+        departmentId: user.student.Program.Department.id
       },
       include: [
         {
           model: ProductVariant,
           include: [ProductAttribute]
-        }
+        },
+        Department
       ]
     });
     return {
-      data: productData,
-      meta: {
-        currentPage: page,
-        itemsPerPage: limit,
-        totalItems: count
-      }
+      data: productData
     };
   }
+
+  //  /**
+  //  * Get All Products by Department
+  //  * @param {string} userId
+  //  * @param {QueryParams} query
+  //  * @throws {NotFoundException}  Department not found
+  //  * @returns {Promise<ProductResponse>} All products filtered by department
+  //  */
+  // static async getProductsByStudentDepartment(userId, query) {
+  //   const user = await User.findByPk(userId, {
+  //     include: [
+  //       {
+  //         model: Student,
+  //         as: 'student',
+  //         include: [
+  //           {
+  //             model: Program,
+  //             include: [Department]
+  //           }
+  //         ]
+  //       }
+  //     ]
+  //   });
+
+  //   if (!user) throw new NotFoundException('Student not found', 404);
+
+  //   const page = Number(query.page) || 1;
+  //   const limit = Number(query.limit) || 10;
+
+  //   const {count, rows: productData} = await Product.findAndCountAll({
+  //     distinct: true,
+  //     limit,
+  //     offset: (page-1) * limit,
+  //     where: {
+  //       departmentId: user.student.Program.Department.id
+  //     },
+  //     include: [
+  //       {
+  //         model: ProductVariant,
+  //         include: [ProductAttribute]
+  //       }
+  //     ]
+  //   });
+  //   return {
+  //     data: productData,
+  //     meta: {
+  //       currentPage: page,
+  //       itemsPerPage: limit,
+  //       totalItems: count
+  //     }
+  //   };
+  // }
 
   /**
    * Get a single Product
