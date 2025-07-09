@@ -30,10 +30,15 @@ export async function up(queryInterface, Sequelize) {
       type: 'Upper Wear',
       category: 'Uniform',
       departmentId: departments[0].id,
-      ProductVariants: productVariantWithGender('Male', productAttributes[1].id)
+      productVariant: productVariantWithGender('Male', productAttributes[1].id)
     },
     {
-      include: [DB.ProductVariant]
+      include: [
+        {
+          model: DB.ProductVariant,
+          as: 'productVariant'
+        }
+      ]
     }
   );
   await DB.Product.create(
@@ -44,10 +49,15 @@ export async function up(queryInterface, Sequelize) {
       type: 'Lower Wear',
       category: 'Uniform',
       departmentId: departments[0].id,
-      ProductVariants: productVariantWithMaleAndFemale(productAttributes[1].id)
+      productVariant: productVariantWithMaleAndFemale(productAttributes[1].id)
     },
     {
-      include: [DB.ProductVariant]
+      include: [
+        {
+          model: DB.ProductVariant,
+          as: 'productVariant'
+        }
+      ]
     }
   );
   await DB.Product.create(
@@ -58,10 +68,15 @@ export async function up(queryInterface, Sequelize) {
       type: 'Lower Wear',
       category: 'Uniform',
       departmentId: departments[0].id,
-      ProductVariants: productVariantWithGender('Female', productAttributes[1].id)
+      productVariant: productVariantWithGender('Female', productAttributes[1].id)
     },
     {
-      include: [DB.ProductVariant]
+      include: [
+        {
+          model: DB.ProductVariant,
+          as: 'productVariant'
+        }
+      ]
     }
   );
   await DB.Product.create(
@@ -72,10 +87,15 @@ export async function up(queryInterface, Sequelize) {
       type: 'Upper Wear',
       category: 'Uniform',
       departmentId: departments[5].id,
-      ProductVariants: productVariantWithGender('Male', productAttributes[1].id)
+      productVariant: productVariantWithGender('Male', productAttributes[1].id)
     },
     {
-      include: [DB.ProductVariant]
+      include: [
+        {
+          model: DB.ProductVariant,
+          as: 'productVariant'
+        }
+      ]
     }
   );
 
@@ -87,10 +107,15 @@ export async function up(queryInterface, Sequelize) {
       type: 'Lower Wear',
       category: 'Uniform',
       departmentId: departments[5].id,
-      ProductVariants: productVariantWithGender('Male', productAttributes[1].id)
+      productVariant: productVariantWithGender('Male', productAttributes[1].id)
     },
     {
-      include: [DB.ProductVariant]
+      include: [
+        {
+          model: DB.ProductVariant,
+          as: 'productVariant'
+        }
+      ]
     }
   );
 
@@ -104,10 +129,15 @@ export async function up(queryInterface, Sequelize) {
       type: 'Upper Wear',
       category: 'Uniform',
       departmentId: departments[5].id,
-      ProductVariants: productVariantWithGender('Female', productAttributes[1].id)
+      productVariant: productVariantWithGender('Female', productAttributes[1].id)
     },
     {
-      include: [DB.ProductVariant]
+      include: [
+        {
+          model: DB.ProductVariant,
+          as: 'productVariant'
+        }
+      ]
     }
   );
   await DB.Product.create(
@@ -118,10 +148,15 @@ export async function up(queryInterface, Sequelize) {
       type: 'Lower Wear',
       category: 'Uniform',
       departmentId: departments[5].id,
-      ProductVariants: productVariantWithGender('Female', productAttributes[1].id)
+      productVariant: productVariantWithGender('Female', productAttributes[1].id)
     },
     {
-      include: [DB.ProductVariant]
+      include: [
+        {
+          model: DB.ProductVariant,
+          as: 'productVariant'
+        }
+      ]
     }
   );
 
@@ -133,10 +168,15 @@ export async function up(queryInterface, Sequelize) {
       type: 'Upper Wear',
       category: 'Uniform',
       departmentId: departments[5].id,
-      ProductVariants: productWithNoVariant(productAttributes[0].id)
+      productVariant: productWithNoVariant(productAttributes[0].id)
     },
     {
-      include: [DB.ProductVariant]
+      include: [
+        {
+          model: DB.ProductVariant,
+          as: 'productVariant'
+        }
+      ]
     }
   );
   await DB.Product.create(
@@ -147,10 +187,15 @@ export async function up(queryInterface, Sequelize) {
       type: 'Upper Wear',
       category: 'Uniform',
       departmentId: departments[5].id,
-      ProductVariants: productWithNoVariant(productAttributes[0].id)
+      productVariant: productWithNoVariant(productAttributes[0].id)
     },
     {
-      include: [DB.ProductVariant]
+      include: [
+        {
+          model: DB.ProductVariant,
+          as: 'productVariant'
+        }
+      ]
     }
   );
   await DB.Product.create(
@@ -161,10 +206,15 @@ export async function up(queryInterface, Sequelize) {
       type: 'Upper Wear',
       category: 'Uniform',
       departmentId: departments[6].id,
-      ProductVariants: productWithNoVariant(productAttributes[0].id)
+      productVariant: productWithNoVariant(productAttributes[0].id)
     },
     {
-      include: [DB.ProductVariant]
+      include: [
+        {
+          model: DB.ProductVariant,
+          as: 'productVariant'
+        }
+      ]
     }
   );
 
@@ -178,10 +228,15 @@ export async function up(queryInterface, Sequelize) {
       type: 'Lower Wear',
       category: 'Uniform',
       departmentId: departments[1].id,
-      ProductVariants: productVariantWithMaleAndFemale(productAttributes[1].id)
+      productVariant: productVariantWithMaleAndFemale(productAttributes[1].id)
     },
     {
-      include: [DB.ProductVariant]
+      include: [
+        {
+          model: DB.ProductVariant,
+          as: 'productVariant'
+        }
+      ]
     }
   );
 
@@ -193,10 +248,15 @@ export async function up(queryInterface, Sequelize) {
       type: 'Upper Wear',
       category: 'Uniform',
       departmentId: departments[1].id,
-      ProductVariants: productVariantWithMaleAndFemale(productAttributes[1].id)
+      productVariant: productVariantWithMaleAndFemale(productAttributes[1].id)
     },
     {
-      include: [DB.ProductVariant]
+      include: [
+        {
+          model: DB.ProductVariant,
+          as: 'productVariant'
+        }
+      ]
     }
   );
 
@@ -208,10 +268,15 @@ export async function up(queryInterface, Sequelize) {
       type: 'Upper Wear',
       category: 'Uniform',
       departmentId: departments[1].id,
-      ProductVariants: productVariantWithMaleAndFemale(productAttributes[1].id)
+      productVariant: productVariantWithMaleAndFemale(productAttributes[1].id)
     },
     {
-      include: [DB.ProductVariant]
+      include: [
+        {
+          model: DB.ProductVariant,
+          as: 'productVariant'
+        }
+      ]
     }
   );
 }

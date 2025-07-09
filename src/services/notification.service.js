@@ -79,9 +79,11 @@ export class NotificationService {
                 include: [
                   {
                     model: Program,
+                    as: 'program',
                     include: [
                       {
                         model: Department,
+                        as: 'department',
                         where: {
                           id: receiver.departmentId
                         },
@@ -130,6 +132,7 @@ export class NotificationService {
         include: [
           {
             model: Cart,
+            as: 'cart',
             where: {
               productVariantId
             }
@@ -154,82 +157,6 @@ export class NotificationService {
 
   /**
    *
-   * @param {string} notificationId
-   * @param {Transaction} transaction
-   */
-  static async createNotificationStudents(notificationId, transaction) {}
-  /**
-   *
-   * @param {string} notificationId
-   * @param {Transaction} transaction
-   * @param {string} departmentId
-   */
-  static async createNotificationDepartment(notificationId, transaction, departmentId) {
-    const department = await Department.findByPk(departmentId);
-    if (!department) throw new NotFoundException('Department not found', 404);
-    const studentsWithDepartment = await User.findAll({
-      include: [
-        {
-          model: Role,
-          where: {
-            systemTag: 'student'
-          },
-          as: 'role',
-          required: true
-        },
-        {
-          model: Student,
-          include: [
-            {
-              model: Program,
-              include: [
-                {
-                  model: Department,
-                  where: {
-                    id: departmentId
-                  },
-                  required: true
-                }
-              ],
-              required: true
-            }
-          ],
-          required: true,
-          as: 'student'
-        }
-      ],
-      transaction
-    });
-    for (const student of studentsWithDepartment) {
-      await NotificationReceiver.create({notificationId, userId: student.id}, {transaction});
-    }
-  }
-  /**
-   * @param {string} notificationId
-   * @param {Transaction} transaction
-   */
-  static async createNotificationEmployees(notificationId, transaction) {
-    const employees = await User.findAll({
-      include: [
-        {
-          model: Role,
-          where: {
-            systemTag: 'employee'
-          },
-          as: 'role',
-          required: true
-        }
-      ],
-      transaction
-    });
-
-    for (const employee of employees) {
-      await NotificationReceiver.create({notificationId, userId: employee.id}, {transaction});
-    }
-  }
-
-  /**
-   *
    * @param {string} userId
    * @param { QueryParams & {}} query
    * @throws {NotFoundException}  User not found
@@ -247,10 +174,11 @@ export class NotificationService {
       include: [
         {
           model: NotificationReceiver,
+          as: 'notificationReceiver',
           where: {
             [Op.or]: [{userId: null}, {userId}]
           },
-          include: [User]
+          include: [{model: User, as: 'user'}]
         }
       ],
       order: [['createdAt', 'DESC']],
@@ -264,6 +192,7 @@ export class NotificationService {
       include: [
         {
           model: NotificationReceiver,
+          as: 'notificationReceiver',
           where: {
             [Op.or]: [{userId: null}, {userId}],
             isRead: false
@@ -287,7 +216,7 @@ export class NotificationService {
   /**
    *
    * @param {string} userId
-   * @param {string} notificationId
+   * @param {string| undefined} notificationId
    * @param {boolean} isAll
    */
 

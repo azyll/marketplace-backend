@@ -15,20 +15,17 @@ export default (sequelize) => {
         foreignKey: {
           name: 'departmentId',
           allowNull: false
-        }
+        },
+        as: 'product'
       });
 
       Department.hasMany(models.Program, {
         foreignKey: {
           name: 'departmentId',
           allowNull: false
-        }
+        },
+        as: 'program'
       });
-      // Department.hasMany(models.NotificationReceiver, {
-      //   foreignKey: {
-      //     name: 'departmentId'
-      //   }
-      // });
     }
   }
   sequelizeJoi(sequelize);

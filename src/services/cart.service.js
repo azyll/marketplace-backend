@@ -87,7 +87,11 @@ export class CartService {
       include: [
         {
           model: ProductVariant,
-          include: [Product, ProductAttribute]
+          include: [
+            {model: Product, as: 'product'},
+            {model: ProductAttribute, as: 'productAttribute'}
+          ],
+          as: 'productVariant'
         }
       ],
       order: [['createdAt', 'DESC']]

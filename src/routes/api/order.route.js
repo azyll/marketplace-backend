@@ -17,21 +17,21 @@ router.get('/', getOrders);
 router.get('/annual', getAnnualOrders);
 
 // Get Student Orders by StudentId
-router.get('/student/:studentId', getStudentOrder);
+router.get('/student/:userId', getStudentOrder);
 
 // Update Order Status
-router.put('/status/:studentId', updateOrderStatus);
+router.put('/status/:userId', updateOrderStatus);
 
 // Update Order Items
-router.put('/:studentId', updateStudentOrder);
+router.put('/:userId', updateStudentOrder);
 
 // Delete Order
-router.delete('/:studentId', deleteStudentOrder);
+router.delete('/:userId', deleteStudentOrder);
 
 // Get Order
 router.get('/:orderId', getOrder);
 
 // Create Order
-router.post('/:studentId', createOrder);
+router.post('/:userId', createOrder);
 
 export default router;

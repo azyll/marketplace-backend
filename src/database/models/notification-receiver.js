@@ -13,12 +13,14 @@ export default (sequelize) => {
         foreignKey: {
           name: 'notificationId',
           allowNull: false
-        }
+        },
+        as: 'notification'
       });
       NotificationReceiver.belongsTo(models.User, {
         foreignKey: {
           name: 'userId'
-        }
+        },
+        as: 'user'
       });
     }
   }

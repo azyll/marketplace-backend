@@ -9,6 +9,7 @@ import fs from 'node:fs/promises';
 import {SupabaseService} from './supabase.service.js';
 import {NotificationService} from './notification.service.js';
 import {validate} from 'uuid';
+import {convertFromSlug} from '../utils/slug-helper.js';
 const {Product, Department, ProductVariant, ProductAttribute, User, Student, Program} = DB;
 
 /**
@@ -66,7 +67,8 @@ export class ProductService {
       include: [
         {
           model: ProductVariant,
-          include: [ProductAttribute]
+          as: 'productVariant',
+          include: [{model: ProductAttribute, as: 'productAttribute'}]
         }
       ]
     });
@@ -117,7 +119,7 @@ export class ProductService {
     }
 
     if (query?.name) {
-      whereClause.name = {[Op.iLike]: `%${query.name.replace(/-/g, ' ')}%`}; // case-insensitive partial match
+      whereClause.name = {[Op.iLike]: `%${convertFromSlug(query.name)}%`}; // case-insensitive partial match
     }
     let raw = query.raw ? true : false;
 
@@ -126,10 +128,12 @@ export class ProductService {
       include: [
         {
           model: ProductVariant,
-          include: [ProductAttribute]
+          include: [{model: ProductAttribute, as: 'productAttribute'}],
+          as: 'productVariant'
         },
         {
           model: Department,
+          as: 'department',
           where:
             query.department ?
               {
@@ -145,8 +149,8 @@ export class ProductService {
       nest: raw,
       order: [
         query?.latest ? ['createdAt', 'DESC'] : ['name', 'ASC'],
-        [{model: ProductVariant}, 'name', 'ASC'],
-        [{model: ProductVariant}, 'size', 'ASC']
+        ['productVariant', 'name', 'ASC'],
+        ['productVariant', 'size', 'ASC']
       ],
       ...(!raw && {
         offset: (page - 1) * limit,
@@ -179,7 +183,13 @@ export class ProductService {
           include: [
             {
               model: Program,
-              include: [Department]
+              as: 'program',
+              include: [
+                {
+                  model: Department,
+                  as: 'department'
+                }
+              ]
             }
           ]
         }
@@ -188,21 +198,32 @@ export class ProductService {
 
     if (!user) throw new NotFoundException('Student not found', 404);
 
-    const productData = await Product.findAll({
+    const departmentId = user?.student?.program?.department?.id;
+    if (!departmentId) throw new NotFoundException('Department not found', 404);
+
+    const products = await Product.findAll({
       where: {
-        departmentId: user.student.Program.Department.id
+        departmentId: departmentId
       },
       include: [
         {
           model: ProductVariant,
-          include: [ProductAttribute]
+          as: 'productVariant',
+          include: [
+            {
+              model: ProductAttribute,
+              as: 'productAttribute'
+            }
+          ]
         },
-        Department
+        {
+          model: Department,
+          as: 'department'
+        }
       ]
     });
-    return {
-      data: productData
-    };
+
+    return products;
   }
 
   //  /**
@@ -268,13 +289,19 @@ export class ProductService {
       include: [
         {
           model: ProductVariant,
-          include: [ProductAttribute]
+          include: [{model: ProductAttribute, as: 'productAttribute'}],
+          as: 'productVariant'
         },
         {
-          model: Department
+          model: Department,
+          as: 'department'
         }
       ],
-      where: where(fn('LOWER', col('name')), slug.replace(/-/g, ' '))
+      where: {
+        name: {
+          [Op.iLike]: `%${slug}%`
+        }
+      }
     });
     if (!product) throw new NotFoundException('Product not found', 404);
     return product;
@@ -306,36 +333,52 @@ export class ProductService {
    * @throws {NotFoundException} Product not found
    */
   static async updateProductStock(productId, productVariantId, newStock) {
-    if (!validate(productId) || !validate(productVariantId)) throw new NotFoundException('Product not found', 404);
+    if (!validate(productId) || !validate(productVariantId)) {
+      throw new NotFoundException('Product not found', 404);
+    }
+
     const product = await Product.findByPk(productId, {
       include: [
         {
           model: ProductVariant,
-          include: [ProductAttribute],
+          as: 'productVariant',
+          include: [
+            {
+              model: ProductAttribute,
+              as: 'productAttribute'
+            }
+          ],
           where: {
             id: productVariantId
           }
         },
         {
-          model: Department
+          model: Department,
+          as: 'department'
         }
       ]
     });
+
     if (!product) throw new NotFoundException('Product not found', 404);
 
-    if (newStock === product.ProductVariants[0].stockQuantity) {
+    // Adjusted to match alias if needed (see note below)
+    const variant = product.productVariant?.[0];
+    if (!variant) throw new NotFoundException('Product Variant not found', 404);
+
+    if (newStock === variant.stockQuantity) {
       return product;
     }
 
-    product.ProductVariants[0].stockQuantity = newStock;
-    product.ProductVariants[0].stockCondition = calculateStockCondition(newStock);
+    variant.stockQuantity = newStock;
+    variant.stockCondition = calculateStockCondition(newStock);
 
-    await product.ProductVariants[0].save();
+    await variant.save();
     await NotificationService.createNotificationForInventoryStockUpdate(
       'Product Stock Update',
       `New Product Stock for ${product.name} new stock is ${newStock}, buy it now before it ran out of stock`,
-      product.ProductVariants[0].id
+      variant.id
     );
+
     return product;
   }
 
@@ -373,6 +416,7 @@ export class ProductService {
       include: [
         {
           model: ProductVariant,
+          as: 'productVariant',
           where: {
             stockCondition: {
               [Op.between]: ['Out of Stock', 'Low Stock']

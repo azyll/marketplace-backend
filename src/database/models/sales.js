@@ -14,7 +14,8 @@ export default (sequelize) => {
         foreignKey: {
           name: 'orderId',
           allowNull: false
-        }
+        },
+        as: 'order'
       });
     }
   }

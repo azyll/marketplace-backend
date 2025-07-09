@@ -8,12 +8,12 @@ import {
 const router = Router();
 
 // Create Student Cart
-router.post('/:studentId', createStudentCart);
+router.post('/:userId', createStudentCart);
 // Get Student`s Cart
-router.get('/:studentId', getStudentCart);
+router.get('/:userId', getStudentCart);
 // Update item in Student Cart
-router.put('/:studentId', updateStudentCart);
+router.put('/:userId', updateStudentCart);
 // Delete item in Student Cart
-router.delete('/:studentId', deleteStudentCart);
+router.delete('/:userId', deleteStudentCart);
 
 export default router;

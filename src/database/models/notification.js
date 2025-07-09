@@ -15,17 +15,9 @@ export default (sequelize) => {
         foreignKey: {
           name: 'notificationId',
           allowNull: false
-        }
+        },
+        as: 'notificationReceiver'
       });
-
-      // !WAG MUNA
-      //   Notification.belongsTo(models.User, {
-      //   foreignKey: {
-      //     name: 'userId',
-      //     allowNull: false
-      //   },
-      //   as:'notifier',
-      // });
     }
   }
   sequelizeJoi(sequelize);

@@ -15,13 +15,15 @@ export default (sequelize) => {
         foreignKey: {
           name: 'orderId',
           allowNull: false
-        }
+        },
+        as: 'order'
       });
       OrderItems.belongsTo(models.ProductVariant, {
         foreignKey: {
           name: 'productVariantId',
           allowNull: false
-        }
+        },
+        as: 'productVariant'
       });
     }
   }

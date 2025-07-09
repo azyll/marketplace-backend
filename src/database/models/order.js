@@ -15,19 +15,22 @@ export default (sequelize) => {
         foreignKey: {
           name: 'orderId',
           allowNull: false
-        }
+        },
+        as: 'sales'
       });
       Order.hasMany(models.OrderItems, {
         foreignKey: {
           name: 'orderId',
           allowNull: false
-        }
+        },
+        as: 'orderItems'
       });
       Order.belongsTo(models.Student, {
         foreignKey: {
           name: 'studentId',
           allowNull: false
-        }
+        },
+        as: 'student'
       });
     }
   }

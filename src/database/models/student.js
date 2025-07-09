@@ -21,19 +21,22 @@ export default (sequelize) => {
         foreignKey: {
           name: 'programId',
           allowNull: false
-        }
+        },
+        as: 'program'
       });
       Student.hasMany(models.Cart, {
         foreignKey: {
           name: 'studentId',
           allowNull: false
-        }
+        },
+        as: 'cart'
       });
       Student.hasMany(models.Order, {
         foreignKey: {
           name: 'studentId',
           allowNull: false
-        }
+        },
+        as: 'order'
       });
     }
   }

@@ -11,7 +11,8 @@ export default (sequelize) => {
     static associate(models) {
       // define association here
       ModulePermission.belongsTo(models.User, {
-        foreignKey: 'userId'
+        foreignKey: 'userId',
+        as: 'user'
       });
     }
   }

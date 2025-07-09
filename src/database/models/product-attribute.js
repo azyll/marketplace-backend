@@ -13,7 +13,8 @@ export default (sequelize) => {
         foreignKey: {
           name: 'productAttributeId',
           allowNull: false
-        }
+        },
+        as: 'productVariant'
       });
     }
   }

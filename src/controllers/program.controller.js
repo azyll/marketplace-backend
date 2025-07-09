@@ -1,6 +1,9 @@
 // @ts-check
 import {AlreadyExistException} from '../exceptions/alreadyExist.js';
+import {NotFoundException} from '../exceptions/notFound.js';
+import {UnauthorizedException} from '../exceptions/unauthorized.js';
 import {ProgramService} from '../services/program.service.js';
+import {defaultErrorMessage} from '../utils/error-message.js';
 
 /**
  * @typedef {import('../types/index.js').QueryParams} QueryParams
@@ -15,13 +18,18 @@ import {ProgramService} from '../services/program.service.js';
 export const createProgram = async (req, res) => {
   const {name, departmentId} = req.body;
   try {
-    const program = await ProgramService.createProgram(name, departmentId);
-    return res.status(200).json(program);
+    await ProgramService.createProgram(name, departmentId);
+    return res.status(200).json({message: 'Program create successfully'});
   } catch (error) {
-    if (error instanceof AlreadyExistException) {
-      return res.status(error.statusCode).json({message: error.message || 'Error', error});
+    const message = 'Failed to create program';
+    if (
+      error instanceof NotFoundException ||
+      error instanceof AlreadyExistException ||
+      error instanceof UnauthorizedException
+    ) {
+      return res.status(error.statusCode).json({message, error: error.message});
     }
-    return res.status(error.statusCode || 400).json({message: error.message || 'Error', error});
+    return res.status(400).json({message, error: error.message || defaultErrorMessage});
   }
 };
 
@@ -34,13 +42,18 @@ export const createProgram = async (req, res) => {
 export const archiveProgram = async (req, res) => {
   const {programId} = req.params;
   try {
-    const program = await ProgramService.archiveProgram(programId);
-    return res.status(200).json(program);
+    await ProgramService.archiveProgram(programId);
+    return res.status(200).json({message: 'Program deleted successfully'});
   } catch (error) {
-    if (error instanceof AlreadyExistException) {
-      return res.status(error.statusCode).json({message: error.message || 'Error', error});
+    const message = 'Failed to delete program';
+    if (
+      error instanceof NotFoundException ||
+      error instanceof AlreadyExistException ||
+      error instanceof UnauthorizedException
+    ) {
+      return res.status(error.statusCode).json({message, error: error.message});
     }
-    return res.status(200).json({type: 'error', error: error});
+    return res.status(400).json({message, error: error.message || defaultErrorMessage});
   }
 };
 
@@ -55,13 +68,18 @@ export const updateProgram = async (req, res) => {
   const {programId} = req.params;
 
   try {
-    const program = await ProgramService.updateProgram(programId, newProgram);
-    return res.status(200).json(program);
+    await ProgramService.updateProgram(programId, newProgram);
+    return res.status(200).json({message: 'Program update successfully'});
   } catch (error) {
-    if (error instanceof AlreadyExistException) {
-      return res.status(error.statusCode).json({message: error.message || 'Error', error});
+    const message = 'Failed to update program';
+    if (
+      error instanceof NotFoundException ||
+      error instanceof AlreadyExistException ||
+      error instanceof UnauthorizedException
+    ) {
+      return res.status(error.statusCode).json({message, error: error.message});
     }
-    return res.status(200).json({type: 'error', error: error});
+    return res.status(400).json({message, error: error.message || defaultErrorMessage});
   }
 };
 
@@ -73,14 +91,18 @@ export const updateProgram = async (req, res) => {
  */
 
 export const getPrograms = async (req, res) => {
-  const query = req.query;
   try {
-    const program = await ProgramService.getPrograms(query);
-    return res.status(200).json({message: 'success', result: program});
+    const program = await ProgramService.getPrograms();
+    return res.status(200).json({message: 'Program retrieve successfully', result: program});
   } catch (error) {
-    if (error instanceof AlreadyExistException) {
-      return res.status(error.statusCode).json({message: error.message || 'Error', error});
+    const message = 'Failed to get programs';
+    if (
+      error instanceof NotFoundException ||
+      error instanceof AlreadyExistException ||
+      error instanceof UnauthorizedException
+    ) {
+      return res.status(error.statusCode).json({message, error: error.message});
     }
-    return res.status(200).json({type: 'error', error: error});
+    return res.status(400).json({message, error: error.message || defaultErrorMessage});
   }
 };

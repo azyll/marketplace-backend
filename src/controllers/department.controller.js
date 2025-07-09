@@ -1,6 +1,9 @@
 // @ts-check
 import {AlreadyExistException} from '../exceptions/alreadyExist.js';
+import {NotFoundException} from '../exceptions/notFound.js';
+import {UnauthorizedException} from '../exceptions/unauthorized.js';
 import {DepartmentService} from '../services/department.service.js';
+import {defaultErrorMessage} from '../utils/error-message.js';
 
 /**
  * @typedef {import('../types/index.js').QueryParams} QueryParams
@@ -15,13 +18,14 @@ import {DepartmentService} from '../services/department.service.js';
 export const createDepartment = async (req, res) => {
   const {name} = req.body;
   try {
-    const program = await DepartmentService.createDepartment(name);
-    return res.status(200).json(program);
+    await DepartmentService.createDepartment(name);
+    return res.status(200).json({message: 'Department creation successful'});
   } catch (error) {
-    if (error instanceof AlreadyExistException) {
-      return res.status(error.statusCode).json({message: error.message || 'Error', error});
+    const message = 'Failed to create department';
+    if (error instanceof AlreadyExistException || error instanceof UnauthorizedException) {
+      return res.status(error.statusCode).json({message, error: error.message});
     }
-    return res.status(200).json({type: 'error', error: error});
+    return res.status(400).json({message, error: error.message || defaultErrorMessage});
   }
 };
 
@@ -32,15 +36,16 @@ export const createDepartment = async (req, res) => {
  * @returns {Promise<import('express').Response>}
  */
 export const archiveDepartment = async (req, res) => {
-  const {programId} = req.params;
+  const {departmentId} = req.params;
   try {
-    const program = await DepartmentService.archiveDepartment(programId);
-    return res.status(200).json(program);
+    await DepartmentService.archiveDepartment(departmentId);
+    return res.status(200).json({message: 'Department deletion successful'});
   } catch (error) {
-    if (error instanceof AlreadyExistException) {
-      return res.status(error.statusCode).json({message: error.message || 'Error', error});
+    const message = 'Failed to delete department';
+    if (error instanceof NotFoundException || error instanceof UnauthorizedException) {
+      return res.status(error.statusCode).json({message, error: error.message});
     }
-    return res.status(200).json({type: 'error', error: error});
+    return res.status(400).json({message, error: error.message || defaultErrorMessage});
   }
 };
 
@@ -52,16 +57,21 @@ export const archiveDepartment = async (req, res) => {
  */
 export const updateDepartment = async (req, res) => {
   const {newProgram} = req.body;
-  const {programId} = req.params;
+  const {departmentId} = req.params;
 
   try {
-    const program = await DepartmentService.updateDepartment(programId, newProgram);
-    return res.status(200).json(program);
+    await DepartmentService.updateDepartment(departmentId, newProgram);
+    return res.status(200).json({message: 'Department update successful'});
   } catch (error) {
-    if (error instanceof AlreadyExistException) {
-      return res.status(error.statusCode).json({message: error.message || 'Error', error});
+    const message = 'Failed to update department';
+    if (
+      error instanceof NotFoundException ||
+      error instanceof AlreadyExistException ||
+      error instanceof UnauthorizedException
+    ) {
+      return res.status(error.statusCode).json({message, error: error.message});
     }
-    return res.status(200).json({type: 'error', error: error});
+    return res.status(400).json({message, error: error.message || defaultErrorMessage});
   }
 };
 
@@ -75,12 +85,13 @@ export const updateDepartment = async (req, res) => {
 export const getDepartments = async (req, res) => {
   const query = req.query;
   try {
-    const program = await DepartmentService.getDepartments();
-    return res.status(200).json({message: 'success', result: program});
+    const department = await DepartmentService.getDepartments();
+    return res.status(200).json({message: 'Department deletion successful', data: department});
   } catch (error) {
-    if (error instanceof AlreadyExistException) {
-      return res.status(error.statusCode).json({message: error.message || 'Error', error});
+    const message = 'Failed to get departments';
+    if (error instanceof NotFoundException || error instanceof UnauthorizedException) {
+      return res.status(error.statusCode).json({message, error: error.message});
     }
-    return res.status(200).json({type: 'error', error: error});
+    return res.status(400).json({message, error: error.message || defaultErrorMessage});
   }
 };

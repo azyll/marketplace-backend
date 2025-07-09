@@ -1,6 +1,9 @@
 //@ts-check
+import {AlreadyExistException} from '../exceptions/alreadyExist.js';
 import {NotFoundException} from '../exceptions/notFound.js';
+import {UnauthorizedException} from '../exceptions/unauthorized.js';
 import {SalesService} from '../services/sales.service.js';
+import {defaultErrorMessage} from '../utils/error-message.js';
 
 /**
  *
@@ -10,9 +13,17 @@ import {SalesService} from '../services/sales.service.js';
 export const getSales = async (req, res) => {
   try {
     const sales = await SalesService.getSales({limit: 10, page: 1});
-    return res.status(200).json({message: 'Sales Fetching Successful', result: sales});
+    return res.status(200).json({message: 'Sales retrieve successfully', result: sales});
   } catch (error) {
-    res.status(error.statusCode || 400).json({message: 'Sales fetching failed', error});
+    const message = 'Failed to get sales';
+    if (
+      error instanceof NotFoundException ||
+      error instanceof AlreadyExistException ||
+      error instanceof UnauthorizedException
+    ) {
+      return res.status(error.statusCode).json({message, error: error.message});
+    }
+    return res.status(400).json({message, error: error.message || defaultErrorMessage});
   }
 };
 
@@ -25,12 +36,17 @@ export const getSale = async (req, res) => {
   const {oracleInvoice} = req.params;
   try {
     const sales = await SalesService.getSale(oracleInvoice);
-    return res.status(200).json({message: 'Sales Fetching Successful', result: sales});
+    return res.status(200).json({message: 'Sale retrieve successfully', result: sales});
   } catch (error) {
-    if (error instanceof NotFoundException) {
-      res.status(error.statusCode).json({message: 'Sales fetching failed', error: error.message});
+    const message = 'Failed to get sale';
+    if (
+      error instanceof NotFoundException ||
+      error instanceof AlreadyExistException ||
+      error instanceof UnauthorizedException
+    ) {
+      return res.status(error.statusCode).json({message, error: error.message});
     }
-    res.status(400).json({message: 'Sales fetching failed', error});
+    return res.status(400).json({message, error: error.message || defaultErrorMessage});
   }
 };
 
@@ -43,9 +59,17 @@ export const getSale = async (req, res) => {
 export const getAnnualSales = async (req, res) => {
   try {
     const result = await SalesService.getSalesPerMonth();
-    return res.status(200).json({message: 'success', result});
+    return res.status(200).json({message: 'Annual sales retrieve successfully', result});
   } catch (error) {
-    return res.status(400).json({message: 'error', error});
+    const message = 'Failed to get annual sales';
+    if (
+      error instanceof NotFoundException ||
+      error instanceof AlreadyExistException ||
+      error instanceof UnauthorizedException
+    ) {
+      return res.status(error.statusCode).json({message, error: error.message});
+    }
+    return res.status(400).json({message, error: error.message || defaultErrorMessage});
   }
 };
 

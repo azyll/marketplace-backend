@@ -1,7 +1,9 @@
 // @ts-check
 import {AlreadyExistException} from '../exceptions/alreadyExist.js';
 import {NotFoundException} from '../exceptions/notFound.js';
+import {UnauthorizedException} from '../exceptions/unauthorized.js';
 import {CartService} from '../services/cart.service.js';
+import {defaultErrorMessage} from '../utils/error-message.js';
 
 /**
  * @typedef {import("../types/index.js").QueryParams} QueryParams
@@ -9,47 +11,52 @@ import {CartService} from '../services/cart.service.js';
 
 /**
  *  Create student cart
- * @param {import('express').Request<{studentId:string},{},{product:string}>} req
+ * @param {import('express').Request<{userId:string},{},{product:string}>} req
  * @param {import('express').Response} res
  * @returns {Promise<import('express').Response>} Response object
  */
 export const createStudentCart = async (req, res) => {
-  const {studentId} = req.params;
+  const {userId} = req.params;
 
   const {product} = req.body;
 
   try {
-    const newItemToCart = await CartService.addItemToCart(studentId, product);
-    return res.status(200).json({message: 'Added to cart', product: newItemToCart});
+    await CartService.addItemToCart(userId, product);
+    return res.status(200).json({message: 'Cart adding successful'});
   } catch (error) {
-    if (error instanceof NotFoundException || error instanceof AlreadyExistException) {
-      return res.status(error.statusCode).json({message: error.message || 'Error', error});
+    const message = 'Failed to add cart';
+    if (
+      error instanceof NotFoundException ||
+      error instanceof AlreadyExistException ||
+      error instanceof UnauthorizedException
+    ) {
+      return res.status(error.statusCode).json({message, error: error.message});
     }
-    return res.status(400).json({message: 'Error', error});
+    return res.status(400).json({message, error: error.message || defaultErrorMessage});
   }
 };
 
 /**
  *   Get Student Cart
- * @param {import('express').Request<{studentId:string},{},{},QueryParams>} req
+ * @param {import('express').Request<{userId:string},{},{},QueryParams>} req
  * @param {import('express').Response} res
  * @returns {Promise<import('express').Response>} Response object
  *
  */
 export const getStudentCart = async (req, res) => {
-  const {studentId} = req.params;
+  const {userId} = req.params;
   const query = req.query;
 
   try {
-    const cart = await CartService.getCart(studentId, query);
+    const cart = await CartService.getCart(userId, query);
 
-    return res.status(200).json({message: 'Your Cart', result: cart});
+    return res.status(200).json({message: 'Your cart retrieve successfully', ...cart});
   } catch (error) {
-    if (error instanceof NotFoundException) {
-      return res.status(error.statusCode).json({message: error.message || 'Error', error});
+    const message = 'Failed to get student cart';
+    if (error instanceof NotFoundException || error instanceof UnauthorizedException) {
+      return res.status(error.statusCode).json({message, error: error.message});
     }
-
-    return res.status(400).json({message: 'Error', error});
+    return res.status(400).json({message, error: error.message || defaultErrorMessage});
   }
 };
 
@@ -61,13 +68,21 @@ export const getStudentCart = async (req, res) => {
  * @returns
  */
 export const updateStudentCart = async (req, res) => {
-  const {studentId} = req.params;
+  const {userId} = req.params;
   const {cartId} = req.body;
   try {
-    const result = await CartService.updateCartItems(studentId, cartId);
-    return res.status(200).json({message: 'success', result});
+    await CartService.updateCartItems(userId, cartId);
+    return res.status(200).json({message: 'Cart updating successful'});
   } catch (error) {
-    return res.status(error.statusCode || 400).json({message: 'error', error: error?.message || 'error'});
+    const message = 'Failed to update student cart';
+    if (
+      error instanceof NotFoundException ||
+      error instanceof AlreadyExistException ||
+      error instanceof UnauthorizedException
+    ) {
+      return res.status(error.statusCode).json({message, error: error.message});
+    }
+    return res.status(400).json({message, error: error.message || defaultErrorMessage});
   }
 };
 
@@ -78,17 +93,16 @@ export const updateStudentCart = async (req, res) => {
  * @returns
  */
 export const deleteStudentCart = async (req, res) => {
-  const {studentId} = req.params;
+  const {userId} = req.params;
   const {productVariantIds} = req.body;
   try {
-    const result = await CartService.archiveCart(studentId, productVariantIds);
-
-    return res.status(200).json({message: 'success', result});
+    await CartService.archiveCart(userId, productVariantIds);
+    return res.status(200).json({message: 'Cart item deletion successful'});
   } catch (error) {
-    if (error instanceof NotFoundException) {
-      return res.status(error.statusCode).json({message: 'Failed to delete cart item', error: error.message});
+    const message = 'Failed to add cart';
+    if (error instanceof NotFoundException || error instanceof UnauthorizedException) {
+      return res.status(error.statusCode).json({message, error: error.message});
     }
-
-    return res.status(error.statusCode || 400).json({message: 'error', error: error?.message || 'error'});
+    return res.status(400).json({message, error: error.message || defaultErrorMessage});
   }
 };

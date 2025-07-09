@@ -15,14 +15,16 @@ export default (sequelize) => {
         foreignKey: {
           name: 'programId',
           allowNull: false
-        }
+        },
+        as: 'student'
       });
 
       Program.belongsTo(models.Department, {
         foreignKey: {
           name: 'departmentId',
           allowNull: false
-        }
+        },
+        as: 'department'
       });
     }
   }

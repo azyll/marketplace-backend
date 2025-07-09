@@ -1,5 +1,6 @@
 import {Model, DataTypes} from 'sequelize';
 import {sequelizeJoi, Joi} from 'sequelize-joi';
+import {convertToSlug} from '../../utils/slug-helper.js';
 export default (sequelize) => {
   class Product extends Model {
     /**
@@ -13,13 +14,15 @@ export default (sequelize) => {
         foreignKey: {
           name: 'productId',
           allowNull: false
-        }
+        },
+        as: 'productVariant'
       });
       Product.belongsTo(models.Department, {
         foreignKey: {
           name: 'departmentId',
           allowNull: false
-        }
+        },
+        as: 'department'
       });
     }
   }
@@ -53,6 +56,12 @@ export default (sequelize) => {
         type: DataTypes.ENUM,
         values: ['Uniform', 'Proware', 'Stationery', 'Accessory'],
         schema: Joi.string().required().valid('Uniform', 'Proware', 'Stationery', 'Accessory')
+      },
+      productSlug: {
+        type: DataTypes.VIRTUAL,
+        get() {
+          return `${convertToSlug(this.name)}`;
+        }
       }
     },
     {

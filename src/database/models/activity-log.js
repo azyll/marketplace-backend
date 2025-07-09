@@ -12,13 +12,6 @@ export default (sequelize) => {
      */
     static associate(models) {
       // define association here
-      // ActivityLog.belongsTo(models.Role, {
-      //   foreignKey: {
-      //     name: 'roleId',
-      //     allowNull: false
-      //   },
-      //   as: 'actor'
-      // });
     }
   }
   sequelizeJoi(sequelize);
@@ -26,7 +19,8 @@ export default (sequelize) => {
     {
       title: {
         type: DataTypes.STRING,
-        schema: Joi.string().trim().required()
+        schema: Joi.string().trim().required(),
+        allowNull: false
       },
       content: {
         type: DataTypes.STRING,

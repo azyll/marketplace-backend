@@ -51,7 +51,7 @@ export class ProgramService {
    */
   static async getPrograms() {
     const programs = await Program.findAll({
-      include: [Department]
+      include: [{model: Department, as: 'department'}]
     });
     return programs;
   }

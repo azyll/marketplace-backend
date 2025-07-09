@@ -1,6 +1,9 @@
 //@ts-check
 import {AlreadyExistException} from '../exceptions/alreadyExist.js';
+import {NotFoundException} from '../exceptions/notFound.js';
+import {UnauthorizedException} from '../exceptions/unauthorized.js';
 import {RoleService} from '../services/role.service.js';
+import {defaultErrorMessage} from '../utils/error-message.js';
 
 /**
  * @param {import('express').Request} req
@@ -31,10 +34,15 @@ export const archiveRole = async (req, res) => {
     const program = await RoleService.archiveRole(roleId);
     return res.status(200).json(program);
   } catch (error) {
-    if (error instanceof AlreadyExistException) {
-      return res.status(error.statusCode).json({message: error.message || 'Error', error});
+    const message = 'Failed to archive role';
+    if (
+      error instanceof NotFoundException ||
+      error instanceof AlreadyExistException ||
+      error instanceof UnauthorizedException
+    ) {
+      return res.status(error.statusCode).json({message, error: error.message});
     }
-    return res.status(200).json({type: 'error', error: error});
+    return res.status(400).json({message, error: error.message || defaultErrorMessage});
   }
 };
 
@@ -52,10 +60,15 @@ export const updateRoles = async (req, res) => {
     const program = await RoleService.updateRole(programId, newProgram);
     return res.status(200).json(program);
   } catch (error) {
-    if (error instanceof AlreadyExistException) {
-      return res.status(error.statusCode).json({message: error.message || 'Error', error});
+    const message = 'Failed to update role';
+    if (
+      error instanceof NotFoundException ||
+      error instanceof AlreadyExistException ||
+      error instanceof UnauthorizedException
+    ) {
+      return res.status(error.statusCode).json({message, error: error.message});
     }
-    return res.status(200).json({type: 'error', error: error});
+    return res.status(400).json({message, error: error.message || defaultErrorMessage});
   }
 };
 
@@ -71,10 +84,15 @@ export const getRoles = async (req, res) => {
     const program = await RoleService.getRoles();
     return res.status(200).json({message: 'success', result: program});
   } catch (error) {
-    if (error instanceof AlreadyExistException) {
-      return res.status(error.statusCode).json({message: error.message || 'Error', error});
+    const message = 'Failed to get roles';
+    if (
+      error instanceof NotFoundException ||
+      error instanceof AlreadyExistException ||
+      error instanceof UnauthorizedException
+    ) {
+      return res.status(error.statusCode).json({message, error: error.message});
     }
-    return res.status(200).json({type: 'error', error: error});
+    return res.status(400).json({message, error: error.message || defaultErrorMessage});
   }
 };
 

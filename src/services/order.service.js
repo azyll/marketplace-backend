@@ -39,9 +39,11 @@ export class OrderService {
           include: [
             {
               model: Order,
+              as: 'order',
               include: [
                 {
                   model: OrderItems,
+                  as: 'orderItems',
                   where: {
                     //Orders for the past 3 months
                     createdAt: {
@@ -57,7 +59,8 @@ export class OrderService {
                   include: [
                     {
                       model: ProductVariant,
-                      include: [Product]
+                      as: 'productVariant',
+                      include: [{model: Product, as: 'product'}]
                     }
                   ]
                 }
@@ -72,7 +75,7 @@ export class OrderService {
     const status = 'on going';
 
     const productVariants = await ProductVariant.findAll({
-      include: [Product],
+      include: [{model: Product, as: 'product'}],
       where: {
         id: {
           [Op.in]: variantIds
@@ -161,7 +164,7 @@ export class OrderService {
         OrderItems: orderItems
       },
       {
-        include: [OrderItems]
+        include: [{model: OrderItems, as: 'orderItems'}]
       }
     );
     await ActivityLogService.createLog(
@@ -172,20 +175,17 @@ export class OrderService {
     if (orderType == 'cart') {
       CartService.archiveCart(user.id, variantIds);
     }
-    try {
-      await NotificationService.createNotification(
-        'Order Created',
-        `${user.student.id} pushed a new order`,
-        'order',
-        'employees',
-        {
-          userId: null,
-          departmentId: null
-        }
-      );
-    } catch (error) {
-      throw new Error(error);
-    }
+
+    await NotificationService.createNotification(
+      'Order Created',
+      `${user.student.id} pushed a new order`,
+      'order',
+      'employees',
+      {
+        userId: null,
+        departmentId: null
+      }
+    );
 
     return order;
   }
@@ -204,15 +204,18 @@ export class OrderService {
       include: [
         {
           model: OrderItems,
+          as: 'orderItems',
           include: [
             {
               model: ProductVariant,
-              include: [Product]
+              as: 'productVariant',
+              include: [{model: Product, as: 'product'}]
             }
           ]
         },
         {
           model: Student,
+          as: 'student',
           include: [
             {
               model: User,
@@ -237,8 +240,7 @@ export class OrderService {
    * Get All Orders of Student
    * @param {string} studentId
    * @param {QueryParams & {
-   * status:"completed" | "on going" | "cancelled",
-   * id:string
+   * status:"completed" | "on going" | "cancelled"
    * }} query
    * @returns {Promise<PaginatedOrders>} All of the student orders
    * @throws {NotFoundException} Student not found
@@ -263,9 +265,6 @@ export class OrderService {
     if (query?.status) {
       where.status = query.status.replace(/-/g, ' '); // case-insensitive partial match
     }
-    if (query?.id) {
-      where.id = query.id;
-    }
 
     const page = Number(query.page || 1);
     const limit = Number(query.limit || 10);
@@ -279,15 +278,18 @@ export class OrderService {
       include: [
         {
           model: OrderItems,
+          as: 'orderItems',
           include: [
             {
               model: ProductVariant,
-              include: [Product]
+              as: 'productVariant',
+              include: [{model: Product, as: 'product'}]
             }
           ]
         },
         {
           model: Student,
+          as: 'student',
           include: [
             {
               model: User,
@@ -319,22 +321,31 @@ export class OrderService {
       include: [
         {
           model: OrderItems,
+          as: 'orderItems',
           include: [
             {
               model: ProductVariant,
-              include: [Product]
+              as: 'productVariant',
+              include: [
+                {
+                  model: Product,
+                  as: 'product'
+                }
+              ]
             }
           ]
         },
         {
           model: Student,
+          as: 'student',
           include: [
             {
               model: User,
               as: 'user'
             },
             {
-              model: Program
+              model: Program,
+              as: 'program'
             }
           ]
         }
@@ -360,7 +371,7 @@ export class OrderService {
   static async updateOrderStatus(studentId, orderId, newStatus, oracleInvoice) {
     const orderTransaction = sequelize.transaction(async (transaction) => {
       const order = await Order.findByPk(orderId, {
-        include: [OrderItems],
+        include: [{model: OrderItems, as: 'orderItems'}],
         transaction
       });
       if (!order) throw new NotFoundException('Order not found', 404);

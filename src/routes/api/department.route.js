@@ -12,7 +12,7 @@ const router = Router();
 // Create Program
 router.post('/', createDepartment);
 router.get('/', getDepartments);
-router.put('/', updateDepartment);
-router.delete('/', archiveDepartment);
+router.put('/:departmentId', updateDepartment);
+router.delete('/departmentId', archiveDepartment);
 
 export default router;

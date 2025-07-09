@@ -8,9 +8,9 @@ import {
 
 const route = Router();
 
-route.get('/:id', getNotifications);
+route.get('/:userId', getNotifications);
 
-route.put('/:id/all', updateAllNotification);
-route.put('/:id', updateNotification);
+route.put('/:userId/all', updateAllNotification);
+route.put('/:userId', updateNotification);
 export default route;
 

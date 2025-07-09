@@ -46,19 +46,23 @@ export class SalesService {
       include: [
         {
           model: Order,
+          as: 'order',
           include: [
             {
-              model: OrderItems
+              model: OrderItems,
+              as: 'orderItems'
             },
             {
               model: Student,
+              as: 'student',
               include: [
                 {
                   model: User,
                   as: 'user'
                 },
                 {
-                  model: Program
+                  model: Program,
+                  as: 'program'
                 }
               ]
             }
@@ -87,23 +91,23 @@ export class SalesService {
       include: [
         {
           model: Order,
+          as: 'order',
           include: [
             {
               model: OrderItems,
-              include: [
-                {
-                  model: ProductVariant,
-                  include: [Product]
-                }
-              ]
+              as: 'orderItems'
             },
             {
               model: Student,
+              as: 'student',
               include: [
-                Program,
                 {
                   model: User,
                   as: 'user'
+                },
+                {
+                  model: Program,
+                  as: 'program'
                 }
               ]
             }

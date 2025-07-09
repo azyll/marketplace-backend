@@ -21,12 +21,12 @@ const router = Router();
 router.post('/attribute', createProductAttribute);
 
 // Create Product Attribute
-router.put('/stock/:id', updateProductStock);
+router.put('/stock/:productId', updateProductStock);
 
 // Create Product
 router.get('/create', getCreateProductData);
 
-router.get('/user/:id', getProductsByStudentDepartment);
+router.get('/user/:userId', getProductsByStudentDepartment);
 
 //Get All Products
 router.get('/', getProducts);
@@ -56,6 +56,6 @@ router.put('/');
 router.delete('/');
 
 // Get Product
-router.get('/:slug', getProduct);
+router.get('/:productSlug', getProduct);
 
 export default router;

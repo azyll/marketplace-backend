@@ -24,10 +24,12 @@ export default (sequelize) => {
         as: 'student'
       });
       User.hasMany(models.NotificationReceiver, {
-        foreignKey: 'userId'
+        foreignKey: 'userId',
+        as: 'notificationReceiver'
       });
       User.hasMany(models.ModulePermission, {
-        foreignKey: 'userId'
+        foreignKey: 'userId',
+        as: 'modulePermission'
       });
     }
   }

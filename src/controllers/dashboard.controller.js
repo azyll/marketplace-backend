@@ -1,10 +1,11 @@
 //@ts-check
 import {NotFoundException} from '../exceptions/notFound.js';
-import {NotificationService} from '../services/notification.service.js';
+import {UnauthorizedException} from '../exceptions/unauthorized.js';
 import {OrderService} from '../services/order.service.js';
 import {ProductService} from '../services/product.service.js';
 import {SalesService} from '../services/sales.service.js';
-import {getStartAndEndOfMonth, getStartAndEndOfTheYear, parseDateAsUTC} from '../utils/date-helper.js';
+import {getStartAndEndOfTheYear} from '../utils/date-helper.js';
+import {defaultErrorMessage} from '../utils/error-message.js';
 
 /**
  * Update Student
@@ -32,21 +33,19 @@ export const getDashboard = async (req, res) => {
     const {count: totalOrders} = await OrderService.getOrdersFilterByDate(filterFrom, filterTo);
     const riskProducts = await ProductService.getProductsByProductCondition();
 
-    const returnJson = {
-      message: 'dashboard',
+    return res.status(200).json({
+      message: 'Employee dashboard retrieve successfully',
       cardData: {
         totalOrders,
         totalSales: totalSales,
         riskProducts: riskProducts.length
       }
-    };
-
-    return res.status(200).json(returnJson);
-
-    // const ordersForTheMonth = await OrderService.getOrdersFilterByDate(startOfToday, endOfToday);
-    // return res.status(200).json({message: 'notifications', orders: ordersForTheMonth});
+    });
   } catch (error) {
-    console.log(error);
-    return res.status(error.statusCode).json({message: error.message || 'Error', error});
+    const message = 'Failed to get dashboard';
+    if (error instanceof NotFoundException || error instanceof UnauthorizedException) {
+      return res.status(error.statusCode).json({message, error: error.message});
+    }
+    return res.status(400).json({message, error: error.message || defaultErrorMessage});
   }
 };
