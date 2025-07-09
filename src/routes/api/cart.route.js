@@ -13,7 +13,7 @@ router.post('/:userId', createStudentCart);
 router.get('/:userId', getStudentCart);
 // Update item in Student Cart
 router.put('/:userId', updateStudentCart);
-// Delete item in Student Cart
+// Archive cart item
 router.delete('/:userId', deleteStudentCart);
 
 export default router;

@@ -9,10 +9,13 @@ import {
 
 const router = Router();
 
-// Create Program
+// Create Department
 router.post('/', createDepartment);
+// Get Departments
 router.get('/', getDepartments);
+// Update Department
 router.put('/:departmentId', updateDepartment);
+// Archive Department
 router.delete('/departmentId', archiveDepartment);
 
 export default router;

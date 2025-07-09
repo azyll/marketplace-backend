@@ -13,7 +13,10 @@ import {
 import {Joi} from 'sequelize-joi';
 const router = Router();
 
+//Get All Order
 router.get('/', getOrders);
+
+//Get Annual Orders
 router.get('/annual', getAnnualOrders);
 
 // Get Student Orders by StudentId
@@ -28,7 +31,7 @@ router.put('/:userId', updateStudentOrder);
 // Delete Order
 router.delete('/:userId', deleteStudentOrder);
 
-// Get Order
+// Get Order by order id
 router.get('/:orderId', getOrder);
 
 // Create Order

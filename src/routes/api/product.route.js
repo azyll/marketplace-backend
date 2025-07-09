@@ -20,12 +20,13 @@ const router = Router();
 // Create Product Attribute
 router.post('/attribute', createProductAttribute);
 
-// Create Product Attribute
+// Update Product Stock
 router.put('/stock/:productId', updateProductStock);
 
-// Create Product
+// Get Create Product
 router.get('/create', getCreateProductData);
 
+// GET products by student department
 router.get('/user/:userId', getProductsByStudentDepartment);
 
 //Get All Products

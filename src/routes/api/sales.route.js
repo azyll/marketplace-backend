@@ -3,8 +3,12 @@ import {getAnnualSales, getSale, getSales} from '../../controllers/sales.control
 
 const router = Router();
 
+//Get All Sales
 router.get('/', getSales);
+
+//Annual Sales
 router.get('/annual', getAnnualSales);
+//Annual Sale
 router.get('/:oracleInvoice', getSale);
 export default router;
 

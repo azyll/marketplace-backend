@@ -3,10 +3,13 @@ import {archiveRole, createRole, getRoles, updateRoles} from '../../controllers/
 
 const router = Router();
 
-// Create Program
+// Create Role
 router.post('/', createRole);
+// Get Role
 router.get('/', getRoles);
+// Update Role
 router.put('/', updateRoles);
+// Archive Role
 router.delete('/', archiveRole);
 
 export default router;

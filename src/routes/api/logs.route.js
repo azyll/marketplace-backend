@@ -3,8 +3,9 @@ import {createLog, getLogs} from '../../controllers/logs.controller.js';
 
 const router = Router();
 
-// Create Program
+// Create Log
 router.post('/', createLog);
+// Get Logs
 router.get('/', getLogs);
 
 export default router;
