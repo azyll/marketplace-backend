@@ -49,13 +49,13 @@ export default (sequelize) => {
       },
       type: {
         type: DataTypes.ENUM,
-        values: ['Upper Wear', 'Lower Wear', 'Non-wearable'],
-        schema: Joi.string().trim().required().valid('Upper Wear', 'Lower Wear', 'Non-wearable')
+        values: ['upper-wear', 'lower-wear', 'non-wearable'],
+        schema: Joi.string().trim().required().valid('upper-wear', 'lower-wear', 'non-wearable')
       },
       category: {
         type: DataTypes.ENUM,
-        values: ['Uniform', 'Proware', 'Stationery', 'Accessory'],
-        schema: Joi.string().required().valid('Uniform', 'Proware', 'Stationery', 'Accessory')
+        values: ['uniform', 'proware', 'stationery', 'accessory'],
+        schema: Joi.string().required().valid('uniform', 'proware', 'stationery', 'accessory')
       },
       productSlug: {
         type: DataTypes.VIRTUAL,

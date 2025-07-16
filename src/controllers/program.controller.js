@@ -1,4 +1,3 @@
-// @ts-check
 import {AlreadyExistException} from '../exceptions/alreadyExist.js';
 import {NotFoundException} from '../exceptions/notFound.js';
 import {UnauthorizedException} from '../exceptions/unauthorized.js';
@@ -93,7 +92,7 @@ export const updateProgram = async (req, res) => {
 export const getPrograms = async (req, res) => {
   try {
     const program = await ProgramService.getPrograms();
-    return res.status(200).json({message: 'Program retrieve successfully', result: program});
+    return res.status(200).json({message: 'Program retrieve successfully', data: program});
   } catch (error) {
     const message = 'Failed to get programs';
     if (

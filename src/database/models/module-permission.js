@@ -26,8 +26,8 @@ export default (sequelize) => {
       },
       permission: {
         type: DataTypes.ENUM,
-        values: ['view', 'edit', 'n/a'],
-        schema: Joi.string().trim().required().valid('view', 'edit', 'n/a')
+        values: ['view', 'edit'],
+        schema: Joi.string().trim().required().valid('view', 'edit')
       }
     },
     {

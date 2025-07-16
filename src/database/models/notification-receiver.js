@@ -1,5 +1,6 @@
 'use strict';
 import {Model, DataTypes} from 'sequelize';
+import {Joi, sequelizeJoi} from 'sequelize-joi';
 export default (sequelize) => {
   class NotificationReceiver extends Model {
     /**
@@ -24,6 +25,7 @@ export default (sequelize) => {
       });
     }
   }
+  sequelizeJoi(sequelize);
   NotificationReceiver.init(
     {
       id: {
@@ -33,12 +35,14 @@ export default (sequelize) => {
       },
       isRead: {
         defaultValue: false,
-        type: DataTypes.BOOLEAN
+        type: DataTypes.BOOLEAN,
+        schema: Joi.boolean().required()
       },
       readAt: {
         type: DataTypes.DATE,
         allowNull: true,
-        defaultValue: null
+        defaultValue: null,
+        schema: Joi.date()
       }
     },
     {

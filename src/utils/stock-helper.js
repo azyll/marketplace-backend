@@ -1,12 +1,11 @@
 /**
  *
  * @param {number} quantity
- * @returns {'Out of Stock' | 'Low Stock' | 'In Stock' | 'Over Stock' | 'Re order'}
+ * @returns {'out-of-stock' | 'low-stock' | 'in-stock'}
  */
 export function calculateStockCondition(quantity) {
-  if (quantity === 0) return 'Out of Stock';
-  if (quantity < 10) return 'Low Stock';
-  if (quantity > 50) return 'Over Stock';
+  if (quantity === 0) return 'out-of-stock';
+  if (quantity < 10) return 'low-stock';
 
-  return 'In Stock';
+  return 'in-stock';
 }

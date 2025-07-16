@@ -39,10 +39,6 @@ export default (sequelize) => {
       type: {
         type: DataTypes.ENUM,
         values: ['order', 'sale', 'announcement', 'n/a']
-      },
-      audience: {
-        type: DataTypes.ENUM,
-        values: ['all', 'employees', 'students', 'department students', 'individual']
       }
     },
     {

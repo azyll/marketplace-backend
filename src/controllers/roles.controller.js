@@ -13,7 +13,7 @@ import {defaultErrorMessage} from '../utils/error-message.js';
 export const createRole = async (req, res) => {
   try {
     const role = await RoleService.createRole(req.body);
-    return res.status(200).json({message: 'Fetch Role Successfully', result: role});
+    return res.status(200).json({message: 'Fetch Role Successfully', data: role});
   } catch (error) {
     return res.status(400).json({
       message: 'Failed to create role',
@@ -82,7 +82,7 @@ export const updateRoles = async (req, res) => {
 export const getRoles = async (req, res) => {
   try {
     const program = await RoleService.getRoles();
-    return res.status(200).json({message: 'success', result: program});
+    return res.status(200).json({message: 'success', data: program});
   } catch (error) {
     const message = 'Failed to get roles';
     if (

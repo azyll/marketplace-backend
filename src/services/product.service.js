@@ -375,7 +375,7 @@ export class ProductService {
     await variant.save();
     await NotificationService.createNotificationForInventoryStockUpdate(
       'Product Stock Update',
-      `New Product Stock for ${product.name} new stock is ${newStock}, buy it now before it ran out of stock`,
+      `New Product Stock for ${product.name} new stock is ${newStock}, buy it now before it ran out-of-stock`,
       variant.id
     );
 
@@ -419,7 +419,7 @@ export class ProductService {
           as: 'productVariant',
           where: {
             stockCondition: {
-              [Op.between]: ['Out of Stock', 'Low Stock']
+              [Op.between]: ['out-of-stock', 'low-stock']
             }
           }
         }

@@ -49,8 +49,8 @@ export default (sequelize) => {
       },
       status: {
         type: DataTypes.ENUM,
-        values: ['completed', 'on going', 'cancelled'],
-        schema: Joi.string().required().trim().valid('completed', 'on going', 'cancelled')
+        values: ['completed', 'ongoing', 'cancelled'],
+        schema: Joi.string().required().trim().valid('completed', 'ongoing', 'cancelled')
       }
     },
     {

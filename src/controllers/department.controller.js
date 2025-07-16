@@ -1,20 +1,9 @@
-// @ts-check
 import {AlreadyExistException} from '../exceptions/alreadyExist.js';
 import {NotFoundException} from '../exceptions/notFound.js';
 import {UnauthorizedException} from '../exceptions/unauthorized.js';
 import {DepartmentService} from '../services/department.service.js';
 import {defaultErrorMessage} from '../utils/error-message.js';
 
-/**
- * @typedef {import('../types/index.js').QueryParams} QueryParams
- *
- */
-/**
- *  Create Department
- * @param {import('express').Request} req
- * @param {import('express').Response} res
- * @returns {Promise<import('express').Response>}
- */
 export const createDepartment = async (req, res) => {
   const {name} = req.body;
   try {
@@ -29,12 +18,6 @@ export const createDepartment = async (req, res) => {
   }
 };
 
-/**
- * Archive/Disable/Delete Department
- * @param {import('express').Request} req
- * @param {import('express').Response} res
- * @returns {Promise<import('express').Response>}
- */
 export const archiveDepartment = async (req, res) => {
   const {departmentId} = req.params;
   try {
@@ -49,12 +32,6 @@ export const archiveDepartment = async (req, res) => {
   }
 };
 
-/**
- * Update/Edit/Modify Department
- * @param {import('express').Request} req
- * @param {import('express').Response} res
- * @returns {Promise<import('express').Response>}
- */
 export const updateDepartment = async (req, res) => {
   const {newProgram} = req.body;
   const {departmentId} = req.params;
@@ -75,18 +52,11 @@ export const updateDepartment = async (req, res) => {
   }
 };
 
-/**
- * Get all program
- * @param {import('express').Request<{},{},{},QueryParams>} req
- * @param {import('express').Response} res
- * @returns {Promise<import('express').Response>}
- */
-
 export const getDepartments = async (req, res) => {
   const query = req.query;
   try {
     const department = await DepartmentService.getDepartments();
-    return res.status(200).json({message: 'Department deletion successful', data: department});
+    return res.status(200).json({message: 'Department retrieve successful', data: department});
   } catch (error) {
     const message = 'Failed to get departments';
     if (error instanceof NotFoundException || error instanceof UnauthorizedException) {

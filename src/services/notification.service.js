@@ -14,13 +14,13 @@ export class NotificationService {
    * @param {string} title
    * @param {string} message
    * @param {'order'|'sale'|'announcement'|'n/a'} type
-   * @param {'all'|'employees'|'students'|'department students'|'individual'|} audience
+   * @param {'all'|'employees'|'students'|'department students'|'individual'} audience
    * @param {{departmentId:string|null,userId:string|null}} receiver
    * @throws {NotFoundException} Department pass is not found
    */
   static async createNotification(title, message, type, audience, receiver) {
     const notificationTransaction = sequelize.transaction(async (transaction) => {
-      const notification = await Notification.create({title, message, type, audience}, {transaction});
+      const notification = await Notification.create({title, message, type}, {transaction});
       switch (audience) {
         case 'employees':
           const employees = await User.findAll({

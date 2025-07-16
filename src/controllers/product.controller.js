@@ -1,5 +1,5 @@
 // @ts-check
-import {DatabaseError} from 'sequelize';
+
 import {AlreadyExistException} from '../exceptions/alreadyExist.js';
 import {NotFoundException} from '../exceptions/notFound.js';
 import {ProductService} from '../services/product.service.js';
@@ -155,23 +155,6 @@ export const getProductsByStudentDepartment = async (req, res) => {
   }
 };
 
-// /**
-//  *  Get Products of Department
-//  * @param {import('express').Request<{id:string},{},{},QueryParams>} req
-//  * @param {import('express').Response} res
-//  * @returns {Promise<import('express').Response>}
-//  */
-// export const getProductsByStudentDepartment = async (req, res) => {
-//   const {id} = req.params;
-//   const query = req.query;
-//   try {
-//     const result = await ProductService.getProductsByStudentDepartment(id, query);
-//     return res.status(200).json({message: 'product', result});
-//   } catch (error) {
-//     return res.status(404).json({message: 'error', error});
-//   }
-// };
-
 /**
  * Archive / Delete Product
  * @param {import('express').Request} req
@@ -236,7 +219,7 @@ export const getCreateProductData = async (req, res) => {
 
     return res.status(200).json({
       message: 'Product creation retrieve successfully',
-      result: {
+      data: {
         productAttribute,
         departments
       }

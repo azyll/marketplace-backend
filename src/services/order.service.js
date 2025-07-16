@@ -72,7 +72,7 @@ export class OrderService {
     });
     if (!user) throw new NotFoundException('Student not found', 404);
 
-    const status = 'on going';
+    const status = 'ongoing';
 
     const productVariants = await ProductVariant.findAll({
       include: [{model: Product, as: 'product'}],
@@ -118,7 +118,7 @@ export class OrderService {
       if (invalidProductVariantId.length >= 1) {
         console.log('invalidProductVariantId', invalidProductVariantId);
         throw new Error(
-          `The ${invalidProductVariantId.length} item you want to order is currently in low stock, since you order this same item in the last 3 months, you can go to proware department to approve your order`
+          `The ${invalidProductVariantId.length} item you want to order is currently in low-stock, since you order this same item in the last 3 months, you can go to proware department to approve your order`
         );
       }
     }
@@ -134,7 +134,12 @@ export class OrderService {
           throw new NotFoundException('A product not found', 404);
         }
         const productVariant = await ProductVariant.findByPk(orderItem.productVariantId, {
-          include: [Product]
+          include: [
+            {
+              model: Product,
+              as: 'product'
+            }
+          ]
         });
 
         if (!productVariant) throw new NotFoundException('Invalid credential, The product not found', 404);
@@ -240,7 +245,7 @@ export class OrderService {
    * Get All Orders of Student
    * @param {string} studentId
    * @param {QueryParams & {
-   * status:"completed" | "on going" | "cancelled"
+   * status:"completed" | "ongoing" | "cancelled"
    * }} query
    * @returns {Promise<PaginatedOrders>} All of the student orders
    * @throws {NotFoundException} Student not found
@@ -364,7 +369,7 @@ export class OrderService {
    * Update Order Status
    * @param {string} orderId - Order ID
    * @param {string} studentId - Student Id
-   * @param {'completed'|'on going'|'cancelled'} newStatus - new Status
+   * @param {'completed'|'ongoing'|'cancelled'} newStatus - new Status
    * @param {string} oracleInvoice
    * @throws {NotFoundException} Student or Order not found
    */
@@ -526,7 +531,7 @@ export class OrderService {
       },
       {
         where: {
-          status: 'on going',
+          status: 'ongoing',
           createdAt: {
             [Op.lt]: thresholdDate
           }

@@ -13,7 +13,7 @@ import {defaultErrorMessage} from '../utils/error-message.js';
 export const getSales = async (req, res) => {
   try {
     const sales = await SalesService.getSales({limit: 10, page: 1});
-    return res.status(200).json({message: 'Sales retrieve successfully', result: sales});
+    return res.status(200).json({message: 'Sales retrieve successfully', ...sales});
   } catch (error) {
     const message = 'Failed to get sales';
     if (
@@ -36,7 +36,7 @@ export const getSale = async (req, res) => {
   const {oracleInvoice} = req.params;
   try {
     const sales = await SalesService.getSale(oracleInvoice);
-    return res.status(200).json({message: 'Sale retrieve successfully', result: sales});
+    return res.status(200).json({message: 'Sale retrieve successfully', data: sales});
   } catch (error) {
     const message = 'Failed to get sale';
     if (
@@ -58,8 +58,8 @@ export const getSale = async (req, res) => {
  */
 export const getAnnualSales = async (req, res) => {
   try {
-    const result = await SalesService.getSalesPerMonth();
-    return res.status(200).json({message: 'Annual sales retrieve successfully', result});
+    const data = await SalesService.getSalesPerMonth();
+    return res.status(200).json({message: 'Annual sales retrieve successfully', data});
   } catch (error) {
     const message = 'Failed to get annual sales';
     if (

@@ -1,4 +1,3 @@
-//@ts-check
 import {AlreadyExistException} from '../exceptions/alreadyExist.js';
 import {NotFoundException} from '../exceptions/notFound.js';
 import {UnauthorizedException} from '../exceptions/unauthorized.js';
@@ -8,8 +7,8 @@ import {defaultErrorMessage} from '../utils/error-message.js';
 export const getNotifications = async (req, res) => {
   try {
     const {userId} = req.params;
-    const result = await NotificationService.getNotifications(userId, req.query);
-    return res.status(200).json({message: 'Notifications retrieve successfully', ...result});
+    const data = await NotificationService.getNotifications(userId, req.query);
+    return res.status(200).json({message: 'Notifications retrieve successfully', ...data});
   } catch (error) {
     const message = 'Failed to get notifications';
     if (error instanceof NotFoundException || error instanceof UnauthorizedException) {

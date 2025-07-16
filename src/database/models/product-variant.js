@@ -50,8 +50,8 @@ export default (sequelize) => {
       },
       stockCondition: {
         type: DataTypes.ENUM,
-        values: ['Out of Stock', 'Low Stock', 'In Stock', 'Over Stock', 'Re order'],
-        schema: Joi.string().trim().required().valid('Out of Stock', 'Low Stock', 'In Stock', 'Over Stock', 'Re order')
+        values: ['out-of-stock', 'low-stock', 'in-stock'],
+        schema: Joi.string().trim().required().valid('out-of-stock', 'low-stock', 'in-stock')
       }
     },
     {

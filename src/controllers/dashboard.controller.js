@@ -1,4 +1,3 @@
-//@ts-check
 import {NotFoundException} from '../exceptions/notFound.js';
 import {UnauthorizedException} from '../exceptions/unauthorized.js';
 import {OrderService} from '../services/order.service.js';
@@ -7,12 +6,6 @@ import {SalesService} from '../services/sales.service.js';
 import {getStartAndEndOfTheYear} from '../utils/date-helper.js';
 import {defaultErrorMessage} from '../utils/error-message.js';
 
-/**
- * Update Student
- * @param {import('express').Request<{},{},{},{from:string,to:string}>} req
- * @param {import('express').Response} res
- * @returns
- */
 export const getDashboard = async (req, res) => {
   try {
     const {from, to} = req.query;
