@@ -6,13 +6,17 @@ import {SalesService} from '../services/sales.service.js';
 import {defaultErrorMessage} from '../utils/error-message.js';
 
 /**
+ * @typedef {import ('../types/index.js').QueryParams} QueryParams
+ * /
+ * 
+/**
  *
- * @param {import("express").Request} req
+ * @param {import("express").Request<{},{},{},QueryParams>} req
  * @param {import("express").Response} res
  */
 export const getSales = async (req, res) => {
   try {
-    const sales = await SalesService.getSales({limit: 10, page: 1});
+    const sales = await SalesService.getSales(req.query);
     return res.status(200).json({message: 'Sales retrieve successfully', ...sales});
   } catch (error) {
     const message = 'Failed to get sales';

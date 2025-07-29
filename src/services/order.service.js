@@ -1,6 +1,6 @@
 // @ts-check
 
-import {col, fn, literal, Op} from 'sequelize';
+import {col, fn, literal, Op, or} from 'sequelize';
 import {DB} from '../database/index.js';
 import {NotFoundException} from '../exceptions/notFound.js';
 import {ActivityLogService} from './activity-log.service.js';
@@ -118,7 +118,7 @@ export class OrderService {
       if (invalidProductVariantId.length >= 1) {
         console.log('invalidProductVariantId', invalidProductVariantId);
         throw new Error(
-          `The ${invalidProductVariantId.length} item you want to order is currently in low-stock, since you order this same item in the last 3 months, you can go to proware department to approve your order`
+          `The item you want to order is currently low in stock. Since you ordered this same item in the last 3 months, you can add it to your cart to be notified when it is restocked.`
         );
       }
     }
@@ -139,7 +139,8 @@ export class OrderService {
               model: Product,
               as: 'product'
             }
-          ]
+          ],
+          transaction
         });
 
         if (!productVariant) throw new NotFoundException('Invalid credential, The product not found', 404);
@@ -149,6 +150,7 @@ export class OrderService {
           throw new Error(`You over order the item ${productVariant.Product.name}`);
         }
 
+        // TODO: lipat sa update order status, kasi don dapat mag d-deduct ng stock quantity
         productVariant.stockQuantity = newStockQuantity;
         productVariant.stockCondition = calculateStockCondition(newStockQuantity);
         await productVariant?.save({
@@ -160,39 +162,42 @@ export class OrderService {
 
       return total;
     });
-
-    const order = await Order.create(
-      {
-        total: totalOrder || 0,
-        status,
-        studentId: user.student.id,
-        OrderItems: orderItems
-      },
-      {
-        include: [{model: OrderItems, as: 'orderItems'}]
+    let orderTransaction = await sequelize.transaction(async (transaction) => {
+      const order = await Order.create(
+        {
+          total: totalOrder || 0,
+          status,
+          studentId: user.student.id,
+          orderItems
+        },
+        {
+          transaction,
+          include: [{model: OrderItems, as: 'orderItems'}]
+        }
+      );
+      await ActivityLogService.createLog(
+        'Order Created Successfully',
+        `Order created with a total of ${totalOrder || 0}`,
+        'order'
+      );
+      if (orderType == 'cart') {
+        await CartService.archiveCart(user.id, variantIds);
       }
-    );
-    await ActivityLogService.createLog(
-      'Order Created Successfully',
-      `Order created with a total of ${totalOrder || 0}`,
-      'order'
-    );
-    if (orderType == 'cart') {
-      CartService.archiveCart(user.id, variantIds);
-    }
 
-    await NotificationService.createNotification(
-      'Order Created',
-      `${user.student.id} pushed a new order`,
-      'order',
-      'employees',
-      {
-        userId: null,
-        departmentId: null
-      }
-    );
+      await NotificationService.createNotification(
+        'Order Created',
+        `${user.student.id} pushed a new order`,
+        'order',
+        'employees',
+        {
+          userId: null,
+          departmentId: null
+        }
+      );
+      return order;
+    });
 
-    return order;
+    return orderTransaction;
   }
 
   /**

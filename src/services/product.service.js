@@ -10,6 +10,7 @@ import {SupabaseService} from './supabase.service.js';
 import {NotificationService} from './notification.service.js';
 import {validate} from 'uuid';
 import {convertFromSlug} from '../utils/slug-helper.js';
+import sequelize from '../database/config/sequelize.js';
 const {Product, Department, ProductVariant, ProductAttribute, User, Student, Program} = DB;
 
 /**
@@ -52,47 +53,50 @@ export class ProductService {
         stockCondition: calculateStockCondition(variant.stockQuantity)
       };
     });
+    const createdProduct = await sequelize.transaction(async (transaction) => {
+      const [product, isJustCreated] = await Product.findOrCreate({
+        where: {name},
+        defaults: {
+          name,
+          description,
+          image,
+          type,
+          category,
+          departmentId,
+          productVariant: productVariantWithStockCondition
+        },
+        include: [
+          {
+            model: ProductVariant,
+            as: 'productVariant',
+            include: [{model: ProductAttribute, as: 'productAttribute'}]
+          }
+        ],
+        transaction
+      });
 
-    const [product, isJustCreated] = await Product.findOrCreate({
-      where: {name},
-      defaults: {
-        name,
-        description,
-        image,
-        type,
-        category,
-        departmentId,
-        ProductVariants: productVariantWithStockCondition
-      },
-      include: [
-        {
-          model: ProductVariant,
-          as: 'productVariant',
-          include: [{model: ProductAttribute, as: 'productAttribute'}]
-        }
-      ]
-    });
-
-    if (!isJustCreated) {
-      throw new AlreadyExistException('Product is already exists');
-    }
-    const fileBuffer = await fs.readFile(`./uploads/images/products/${image}`);
-    await SupabaseService.uploadFile(fileBuffer, image);
-
-    await NotificationService.createNotification(
-      'New Product Added',
-      `New Product added for ${department.name}`,
-      'announcement',
-      department.name === 'Proware' ? 'students' : 'department students',
-      {
-        departmentId: departmentId,
-        userId: null
+      if (!isJustCreated) {
+        throw new AlreadyExistException('Product is already exists');
       }
-    );
+      const fileBuffer = await fs.readFile(`./uploads/images/products/${image}`);
+      await SupabaseService.uploadFile(fileBuffer, image);
 
-    // @ts-ignore
+      await NotificationService.createNotification(
+        'New Product Added',
+        `New Product added for ${department.name}`,
+        'announcement',
+        department.name === 'Proware' ? 'students' : 'department students',
+        {
+          departmentId: departmentId,
+          userId: null
+        }
+      );
 
-    return product;
+      // @ts-ignore
+
+      return product;
+    });
+    return createdProduct;
   }
 
   /**

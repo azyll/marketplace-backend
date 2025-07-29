@@ -43,6 +43,12 @@ export class SalesService {
     const {count, rows: salesData} = await Sales.findAndCountAll({
       distinct: true,
       order: [['createdAt', 'DESC']],
+      // If may may limit and page na query, then may pagination
+      ...(query.limit &&
+        query.page && {
+          offset: (page - 1) * limit,
+          limit
+        }),
       include: [
         {
           model: Order,
@@ -116,7 +122,7 @@ export class SalesService {
       ]
     });
 
-    if (!sales) throw new NotFoundException('Sales not found', 404);
+    if (!sales) throw new NotFoundException('Sale not found', 404);
     return sales;
   }
 
