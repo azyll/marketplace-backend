@@ -1,6 +1,10 @@
 'use strict';
 import {Model, DataTypes} from 'sequelize';
 import {Joi, sequelizeJoi} from 'sequelize-joi';
+import {customAlphabet} from 'nanoid';
+import {getDateAndTimeStamp} from '../../utils/date-helper.js';
+
+const nanoid = customAlphabet('1234567890', 5);
 
 export default (sequelize) => {
   class Order extends Model {
@@ -39,8 +43,7 @@ export default (sequelize) => {
     {
       id: {
         primaryKey: true,
-        type: DataTypes.UUID,
-        defaultValue: DataTypes.UUIDV4
+        type: DataTypes.STRING
       },
       total: {
         type: DataTypes.DOUBLE,
@@ -59,5 +62,17 @@ export default (sequelize) => {
       modelName: 'Orders'
     }
   );
+  Order.beforeCreate(async (order) => {
+    let id;
+    let exists = true;
+
+    while (exists) {
+      id = nanoid();
+      const existing = await Order.findByPk(`OR-${getDateAndTimeStamp()}-${id}`);
+      exists = !!existing;
+    }
+
+    order.id = `OR-${getDateAndTimeStamp()}-${id}`;
+  });
   return Order;
 };

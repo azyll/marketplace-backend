@@ -29,6 +29,7 @@ export const createOrder = async (req, res) => {
 
 export const getOrders = async (req, res) => {
   const query = req.query;
+
   try {
     const data = await OrderService.getOrders(query);
     return res.status(200).json({message: 'Orders retrieve successfully', ...data});
@@ -103,6 +104,7 @@ export const updateOrderStatus = async (req, res) => {
     await OrderService.updateOrderStatus(userId, orderId, newStatus, oracleInvoice);
     return res.status(200).json({message: 'Order update successfully'});
   } catch (error) {
+    console.log(error);
     const message = 'Failed to update order status';
     if (
       error instanceof NotFoundException ||

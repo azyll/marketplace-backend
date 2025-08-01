@@ -1,6 +1,10 @@
 import {Joi, sequelizeJoi} from 'sequelize-joi';
 
 import {Model, DataTypes} from 'sequelize';
+import {customAlphabet} from 'nanoid';
+import {getDateAndTimeStamp} from '../../utils/date-helper.js';
+
+const nanoid = customAlphabet('1234567890', 5);
 export default (sequelize) => {
   class Sales extends Model {
     /**
@@ -23,9 +27,8 @@ export default (sequelize) => {
   Sales.init(
     {
       id: {
-        type: DataTypes.UUID,
-        defaultValue: DataTypes.UUIDV4,
-        primaryKey: true
+        primaryKey: true,
+        type: DataTypes.STRING
       },
       total: {
         type: DataTypes.DOUBLE,
@@ -45,5 +48,17 @@ export default (sequelize) => {
       modelName: 'Sales'
     }
   );
+  Sales.beforeCreate(async (sales) => {
+    let id;
+    let exists = true;
+
+    while (exists) {
+      id = nanoid();
+      const existing = await Sales.findByPk(`SL-${getDateAndTimeStamp()}-${id}`);
+      exists = !!existing;
+    }
+
+    sales.id = `SL-${getDateAndTimeStamp()}-${id}`;
+  });
   return Sales;
 };

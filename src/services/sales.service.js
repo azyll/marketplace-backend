@@ -101,7 +101,14 @@ export class SalesService {
           include: [
             {
               model: OrderItems,
-              as: 'orderItems'
+              as: 'orderItems',
+              include: [
+                {
+                  model: ProductVariant,
+                  as: 'productVariant',
+                  include: [{model: Product, as: 'product'}]
+                }
+              ]
             },
             {
               model: Student,

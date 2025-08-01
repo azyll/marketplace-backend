@@ -394,10 +394,10 @@ export class ProductService {
   static async createAttribute(name) {
     const [productAttribute, isJustCreated] = await ProductAttribute.findOrCreate({
       where: {
-        name: name.toLowerCase()
+        name: name
       },
       defaults: {
-        name: name.toLowerCase()
+        name: name
       }
     });
 

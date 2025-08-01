@@ -242,6 +242,147 @@ export async function up(queryInterface, Sequelize) {
 
   await DB.Product.create(
     {
+      name: 'BM Female Skirt',
+      description: 'Business & Management Daily Skirt Uniform. For Tertiary (BSBA)',
+      image: 'bm.jpg',
+      type: 'lower-wear',
+      category: 'uniform',
+      departmentId: departments[1].id,
+      productVariant: productVariantWithGender('Female', productAttributes[1].id)
+    },
+    {
+      include: [
+        {
+          model: DB.ProductVariant,
+          as: 'productVariant'
+        }
+      ]
+    }
+  );
+
+  await DB.Product.create(
+    {
+      name: 'BM Long Sleeve Polo Male',
+      description: 'Business & Management Daily Long Sleeve Polo Uniform Male. For Tertiary (BSBA)',
+      image: 'bm.jpg',
+      type: 'upper-wear',
+      category: 'uniform',
+      departmentId: departments[1].id,
+      productVariant: productVariantWithGender('Male', productAttributes[1].id)
+    },
+    {
+      include: [
+        {
+          model: DB.ProductVariant,
+          as: 'productVariant'
+        }
+      ]
+    }
+  );
+  await DB.Product.create(
+    {
+      name: 'BM Long Sleeve Blouse Female',
+      description: 'Business & Management Daily Long Sleeve Blouse Uniform Female. For Tertiary (BSBA)',
+      image: 'bm.jpg',
+      type: 'upper-wear',
+      category: 'uniform',
+      departmentId: departments[1].id,
+      productVariant: productVariantWithGender('Female', productAttributes[1].id)
+    },
+    {
+      include: [
+        {
+          model: DB.ProductVariant,
+          as: 'productVariant'
+        }
+      ]
+    }
+  );
+
+  await DB.Product.create(
+    {
+      name: 'BM Blazer',
+      description: 'Business & Management Daily Blazer Uniform. For Tertiary (BSBA)',
+      image: 'bm.jpg',
+      type: 'upper-wear',
+      category: 'uniform',
+      departmentId: departments[1].id,
+      productVariant: productVariantWithMaleAndFemale(productAttributes[1].id)
+    },
+    {
+      include: [
+        {
+          model: DB.ProductVariant,
+          as: 'productVariant'
+        }
+      ]
+    }
+  );
+
+  await DB.Product.create(
+    {
+      name: 'BM Red Scarf',
+      description: 'Business & Management Daily Red Scarf Uniform. For Tertiary (BSBA)',
+      image: 'bm.jpg',
+      type: 'upper-wear',
+      category: 'uniform',
+      departmentId: departments[1].id,
+      productVariant: productVariantWithGender('Female', productAttributes[1].id)
+    },
+    {
+      include: [
+        {
+          model: DB.ProductVariant,
+          as: 'productVariant'
+        }
+      ]
+    }
+  );
+
+  await DB.Product.create(
+    {
+      name: 'BM Red Necktie',
+      description: 'Business & Management Daily Red Necktie Uniform. For Tertiary (BSBA)',
+      image: 'bm.jpg',
+      type: 'upper-wear',
+      category: 'uniform',
+      departmentId: departments[1].id,
+      productVariant: productVariantWithGender('Male', productAttributes[1].id)
+    },
+    {
+      include: [
+        {
+          model: DB.ProductVariant,
+          as: 'productVariant'
+        }
+      ]
+    }
+  );
+
+  // TM
+
+  await DB.Product.create(
+    {
+      name: 'TM Pants',
+      description: 'Business & Management Daily Pants Uniform. For Tertiary (BSBA)',
+      image: 'bm.jpg',
+      type: 'lower-wear',
+      category: 'uniform',
+      departmentId: departments[1].id,
+      productVariant: productVariantWithMaleAndFemale(productAttributes[1].id)
+    },
+    {
+      include: [
+        {
+          model: DB.ProductVariant,
+          as: 'productVariant'
+        }
+      ]
+    }
+  );
+
+  await DB.Product.create(
+    {
       name: 'BM Long Sleeve Polo',
       description: 'Business & Management Daily Long Sleeve Polo Uniform. For Tertiary (BSBA)',
       image: 'bm.jpg',

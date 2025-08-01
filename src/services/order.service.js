@@ -101,8 +101,8 @@ export class OrderService {
        */
       let invalidProductVariantId = [];
       //Iterate orders of student for the past 3 months
-      user.student.Orders.forEach((order) => {
-        const orderItems = order.OrderItems;
+      user.student.order.forEach((order) => {
+        const orderItems = order.orderItems;
         //Iterate the order items so we can find whether the student wants to order again an item that he/she ordered 3 months ago
         orderItems.forEach((orderItem) => {
           if (
@@ -202,15 +202,29 @@ export class OrderService {
 
   /**
    * Get all Orders
-   * @param {QueryParams} query
+   * @param {QueryParams & { from:string, to:string}} query
    * @returns {Promise<PaginatedOrders>} All of the orders
    */
   static async getOrders(query) {
-    const page = query.page || 1;
-    const limit = query.limit || 10;
+    const page = Number(query.page) || 1;
+    const limit = Number(query.limit) || 10;
+
+    const whereClause = {};
+
+    if (query?.from && query?.to) {
+      let filterFrom = new Date(query?.from);
+      let filterTo = new Date(new Date(query?.to).setHours(23, 59, 59, 999));
+      whereClause.createdAt = {[Op.between]: [filterFrom, filterTo]};
+    }
 
     const {rows: orderData, count} = await Order.findAndCountAll({
       distinct: true,
+      where: whereClause,
+      ...(query.limit &&
+        query.page && {
+          offset: (page - 1) * limit,
+          limit
+        }),
       include: [
         {
           model: OrderItems,
@@ -429,7 +443,7 @@ export class OrderService {
       }
       if (newStatus === 'cancelled') {
         //TODO: Failed Revert stocks
-        for (const orderItem of order.OrderItems) {
+        for (const orderItem of order.orderItems) {
           const variant = await ProductVariant.findByPk(orderItem.productVariantId, {transaction});
           if (!variant) throw new NotFoundException('Product not found', 404);
 

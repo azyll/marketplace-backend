@@ -11,16 +11,12 @@ export const getDashboard = async (req, res) => {
     const {from, to} = req.query;
 
     let filterFrom = new Date(from);
-    let filterTo = new Date(to);
+    let filterTo = new Date(new Date(to).setHours(23, 59, 59, 999));
     if (!filterFrom || isNaN(filterFrom.getTime()) || !filterTo || isNaN(filterTo.getTime())) {
       const {endOfTheYear, startOfTheYear} = getStartAndEndOfTheYear();
       filterFrom = startOfTheYear;
       filterTo = endOfTheYear;
-    } else {
-      filterFrom = new Date(from);
-      filterTo = new Date(new Date(to).setHours(23, 59, 59, 999));
     }
-    console.log(filterFrom, filterTo);
 
     const totalSales = await SalesService.getSalesFilterByDate(filterFrom, filterTo);
     const {count: totalOrders} = await OrderService.getOrdersFilterByDate(filterFrom, filterTo);
