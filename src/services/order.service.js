@@ -202,7 +202,7 @@ export class OrderService {
 
   /**
    * Get all Orders
-   * @param {QueryParams & { from:string, to:string}} query
+   * @param {QueryParams & {from:string, to:string, status:'ongoing'|'completed'|'cancelled'}} query
    * @returns {Promise<PaginatedOrders>} All of the orders
    */
   static async getOrders(query) {
@@ -215,6 +215,9 @@ export class OrderService {
       let filterFrom = new Date(query?.from);
       let filterTo = new Date(new Date(query?.to).setHours(23, 59, 59, 999));
       whereClause.createdAt = {[Op.between]: [filterFrom, filterTo]};
+    }
+    if (query?.status) {
+      whereClause.status = query.status;
     }
 
     const {rows: orderData, count} = await Order.findAndCountAll({
