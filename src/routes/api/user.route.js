@@ -7,7 +7,8 @@ import {
   getUser,
   restoreUser,
   updatePassword,
-  userModulesPermission
+  userModulesPermission,
+  getUserDetails
 } from '../../controllers/user.controller.js';
 import {validate} from '../../middleware/validation.js';
 import {Joi} from 'sequelize-joi';

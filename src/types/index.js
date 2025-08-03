@@ -50,4 +50,13 @@
  * @typedef {InstanceType<ReturnType<typeof import('../database/models/user').default>>} IUser
  */
 
+/**
+ * @typedef JWTUserData
+ * @property {string} id
+ * @property {string} email
+ * @property {("student" | "admin" | "employee")} roleSystemTag
+ * @property {number} iat
+ * @property {number} exp
+ */
+
 export {};

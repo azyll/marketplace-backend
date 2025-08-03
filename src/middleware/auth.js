@@ -49,10 +49,13 @@ export const auth = (roles, options) => {
         }
       }
 
+      req.user = user;
+
       next();
     } catch (error) {
       return res.status(400).json({
-        message: 'Invalid Request'
+        message: 'Invalid Request',
+        error
       });
     }
   };

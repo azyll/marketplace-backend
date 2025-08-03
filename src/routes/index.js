@@ -13,6 +13,9 @@ import NotificationRoute from './api/notification.route.js';
 import RoleRoute from './api/role.route.js';
 import LogRoute from './api/logs.route.js';
 
+import {auth} from '../middleware/auth.js';
+import {getUserDetails} from '../controllers/user.controller.js';
+
 const router = express.Router();
 
 router.use('/user', userRoutes);
@@ -28,5 +31,8 @@ router.use('/sales', SalesRoute);
 router.use('/notification', NotificationRoute);
 router.use('/role', RoleRoute);
 router.use('/log', LogRoute);
+
+// Get Currently loggedin user details
+router.get('/me', auth(['admin', 'student', 'employee']), getUserDetails);
 
 export default router;
