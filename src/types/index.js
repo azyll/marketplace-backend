@@ -38,11 +38,16 @@
 
 /**
  * @typedef {Object} QueryParams
- * @property {string|number} limit
- * @property {string|number} page
+ * @property {number} limit
+ * @property {number} page
  */
 
 /**
  * @typedef {'user'|'application'|'stock'|'sales'|'order'} TLog
  */
+
+/**
+ * @typedef {InstanceType<ReturnType<typeof import('../database/models/user').default>>} IUser
+ */
+
 export {};
