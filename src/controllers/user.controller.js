@@ -39,7 +39,6 @@ export const getUser = async (req, res) => {
  * @returns {Promise<import('express').Response>}
  */
 export const getAllUsers = async (req, res) => {
-  console.log('get all user log');
   try {
     const query = req.query;
     const users = await UserService.getUsers(query);
@@ -48,6 +47,26 @@ export const getAllUsers = async (req, res) => {
   } catch (err) {
     return res.status(400).json({
       message: 'Failed to fetch users',
+      error: err
+    });
+  }
+};
+
+/**
+ * Get Currently Logged-in user details
+ * @param {import('express').Request<{},{},{},QueryParams> & { user: import('../types/index.js').JWTUserData }} req
+ * @param {import('express').Response} res
+ * @returns {Promise<import('express').Response>}
+ */
+export const getUserDetails = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const users = await UserService.getUser(userId);
+
+    return res.status(200).json(users);
+  } catch (err) {
+    return res.status(400).json({
+      message: 'Failed to fetch user details',
       error: err
     });
   }
@@ -81,6 +100,7 @@ export const addUser = async (req, res) => {
 export const updateUser = async (req, res) => {
   try {
     const {userId} = req.params;
+
     const payload = req.body;
 
     const newUser = await UserService.updateUser(userId, payload);

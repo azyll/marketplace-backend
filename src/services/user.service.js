@@ -8,6 +8,7 @@ const {User, Role} = DB;
 /**
  * @typedef {import ('../types/index.js').QueryParams} QueryParams
  * @typedef {import ('../types/index.js').PaginatedResponse<User>} UserResponse
+ * @typedef {import ('../types/index.js').IUser} IUser
  */
 
 const DEFAULT_FIELDS = ['id', 'firstName', 'lastName', 'email', 'createdAt', 'updatedAt', 'deletedAt'];
@@ -20,7 +21,7 @@ export class UserService {
   /**
    * Get User
    * @param {string} userId
-   * @returns {Promise<User>}
+   * @returns {Promise<IUser | null>}
    */
 
   static async getUser(userId) {
@@ -78,7 +79,7 @@ export class UserService {
 
   /**
    * Add User
-   * @param {object} data
+   * @param {any} data
    * @returns {Promise<Omit<any, "password">>}
    */
   static async addUser(data) {
@@ -92,17 +93,24 @@ export class UserService {
   }
 
   /**
+   * @typedef IUpdateUserInput
+   * @property {string} firstName
+   * @property {string} lastName
+   * @property {string} email
+   * @property {string} password
+   * @property {string} roleId
+   */
+
+  /**
    * Update User Details
    * @param {string} userId
-   * @param {object} data
-   * @returns {Promise<User>}
+   * @param {IUpdateUserInput} data
+   * @returns {Promise<IUser>}
    */
   static async updateUser(userId, data) {
-    // * Bat mat role id, pero wla role id na pinasa? base sa postman
-    const {password, roleId, ...rest} = data;
+    const {password, ...rest} = data;
 
     const result = await User.update(rest, {
-      include: role,
       where: {
         id: userId
       },
@@ -119,8 +127,8 @@ export class UserService {
 
   /**
    * Archive User
-   * @param userId
-   * @returns {Promise<User>}
+   * @param {string} userId
+   * @returns {Promise<IUser>}
    */
   static async archiveUser(userId) {
     const result = await User.update(
@@ -145,8 +153,8 @@ export class UserService {
 
   /**
    * Restore Archived User
-   * @param userId
-   * @returns {Promise<User>}
+   * @param {string} userId
+   * @returns {Promise<IUser>}
    */
   static async restoreUser(userId) {
     const result = await User.update(
@@ -171,7 +179,7 @@ export class UserService {
    * Update User Password
    * @param {string} userId
    * @param {{oldPassword:string,newPassword:string}} data
-   * @returns {Promise<User>}
+   * @returns {Promise<IUser>}
    */
   static async updatePassword(userId, data) {
     const {oldPassword, newPassword} = data;

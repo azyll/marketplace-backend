@@ -1,6 +1,6 @@
 //@ts-check
 
-import {col, fn, Op, where} from 'sequelize';
+import {cast, col, fn, Op, where} from 'sequelize';
 import {DB} from '../database/index.js';
 import {NotFoundException} from '../exceptions/notFound.js';
 import {AlreadyExistException} from '../exceptions/alreadyExist.js';
@@ -119,7 +119,9 @@ export class ProductService {
     const whereClause = {};
 
     if (query?.category) {
-      whereClause.category = query.category; // case-insensitive partial match
+      whereClause.category = where(cast(col('category'), 'TEXT'), {
+        [Op.iLike]: `%${query.category}%`
+      }); // case-insensitive partial match
     }
 
     if (query?.name) {

@@ -7,6 +7,17 @@ import {v4 as uuid} from 'uuid';
 export default (sequelize) => {
   class User extends Model {
     /**
+     * Compares a plain text password with the hashed password.
+     * (Added by sequelize-bcrypt at runtime)
+     * @param {string} password
+     * @returns {boolean}
+     */
+    authenticate(password) {
+      // This is just a type declaration — sequelize-bcrypt handles the actual logic
+      return true;
+    }
+
+    /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
