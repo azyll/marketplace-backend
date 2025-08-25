@@ -150,13 +150,6 @@ export class OrderService {
           throw new Error(`You over order the item ${productVariant.Product.name}`);
         }
 
-        // TODO: lipat sa update order status, kasi don dapat mag d-deduct ng stock quantity
-        productVariant.stockQuantity = newStockQuantity;
-        productVariant.stockCondition = calculateStockCondition(newStockQuantity);
-        await productVariant?.save({
-          transaction
-        });
-
         total += Number(productVariant.price) * orderItem.quantity;
       }
 
@@ -416,6 +409,20 @@ export class OrderService {
       if (newStatus === order.status) throw new Error('The order status and the new status is the same');
 
       if (newStatus === 'completed') {
+        for (const orderItem of order.orderItems) {
+          const variant = await ProductVariant.findByPk(orderItem.productVariantId, {transaction});
+          if (!variant) throw new NotFoundException('Product not found', 404);
+
+          const newStockQuantity = Number(variant.stockQuantity) - Number(orderItem.quantity);
+          if (newStockQuantity < 0)
+            throw new Error(
+              `Variant ${variant.id} ran out of stock. Requested: ${orderItem.quantity}, Available: ${variant.stockQuantity}`
+            );
+          variant.stockQuantity = Number(newStockQuantity);
+          variant.stockCondition = calculateStockCondition(newStockQuantity);
+          await variant.save();
+        }
+
         await SalesService.createSales({
           orderId,
           total: order.total,
