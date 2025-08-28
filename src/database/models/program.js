@@ -11,7 +11,7 @@ export default (sequelize) => {
     static associate(models) {
       // define association here
 
-      Program.hasOne(models.Student, {
+      Program.hasMany(models.Student, {
         foreignKey: {
           name: 'programId',
           allowNull: false

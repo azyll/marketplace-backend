@@ -33,7 +33,13 @@ export class UserService {
         },
         {
           as: 'student',
-          model: DB.Student
+          model: DB.Student,
+          include: [
+            {
+              as: 'program',
+              model: DB.Program
+            }
+          ]
         }
       ],
       where: {id: userId, deletedAt: {[Op.is]: null}}
