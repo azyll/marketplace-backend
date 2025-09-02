@@ -53,6 +53,11 @@ export class StudentService {
         {
           model: DB.User,
           as: 'user'
+        },
+        {
+          model: DB.Program,
+          as: 'program',
+          include: [{model: DB.Department, as: 'department'}]
         }
       ]
     });

@@ -37,7 +37,8 @@ export class UserService {
           include: [
             {
               as: 'program',
-              model: DB.Program
+              model: DB.Program,
+              include: [{model: DB.Department, as: 'department'}]
             }
           ]
         }
