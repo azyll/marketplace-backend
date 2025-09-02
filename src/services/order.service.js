@@ -190,7 +190,7 @@ export class OrderService {
       return order;
     });
 
-    return orderTransaction;
+    return this.getOrder(orderTransaction.id);
   }
 
   /**
