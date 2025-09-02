@@ -190,7 +190,7 @@ export class OrderService {
       return order;
     });
 
-    return orderTransaction.id;
+    return orderTransaction;
   }
 
   /**
@@ -569,4 +569,5 @@ export class OrderService {
     );
   }
 }
+
 
