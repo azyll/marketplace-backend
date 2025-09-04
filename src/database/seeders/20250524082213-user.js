@@ -90,6 +90,7 @@ export async function up(queryInterface, Sequelize) {
         id: 2000309926,
         userId: users[3].id,
         level: 'tertiary',
+        sex: 'male',
         createdAt: new Date(),
         updatedAt: new Date(),
         programId: program.id
@@ -98,6 +99,7 @@ export async function up(queryInterface, Sequelize) {
         id: 2000309921,
         userId: users[0].id,
         level: 'tertiary',
+        sex: 'female',
         createdAt: new Date(),
         updatedAt: new Date(),
         programId: program.id

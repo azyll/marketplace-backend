@@ -10,7 +10,7 @@ import {SalesService} from './sales.service.js';
 import {NotificationService} from './notification.service.js';
 import {CartService} from './cart.service.js';
 
-const {Order, Student, User, OrderItems, ProductVariant, Product, Program, Cart} = DB;
+const {Order, Student, User, OrderItems, ProductVariant, Product, Program, ProductAttribute, OrderLimit} = DB;
 
 /**
  * @typedef {import('../types/index.js').QueryParams} QueryParams
@@ -31,6 +31,14 @@ export class OrderService {
      * TODO: Add create notification and  log
      */
     const variantIds = orderItems.map((item) => item.productVariantId);
+
+    for (const orderItem of orderItems) {
+      const orderLimit = await this.getOrderLimit();
+      if (orderItem.quantity > orderLimit)
+        throw new Error(
+          `One or more order items have a quantity that exceeds the maximum allowed limit of ${orderLimit}.`
+        );
+    }
     const user = await User.findByPk(studentId, {
       include: [
         {
@@ -88,6 +96,17 @@ export class OrderService {
 
     if (productVariants.length !== variantIds.length || !productVariants) {
       throw new NotFoundException('Invalid credential, The product not found', 404);
+    }
+    const genderAttribute = await ProductAttribute.findOne({
+      where: {
+        name: 'Gender'
+      }
+    });
+    if (!genderAttribute) throw new Error('Attribute not found');
+    for (const product of productVariants) {
+      if (product.productAttributeId === genderAttribute.id && product.name.toLowerCase() !== user.student.sex) {
+        throw new Error('You cannot order an item that is not for your sex');
+      }
     }
 
     const plainProductVariants = productVariants.map((variant) => variant.get({plain: true}));
@@ -568,6 +587,9 @@ export class OrderService {
       }
     );
   }
+  static async getOrderLimit() {
+    const limit = await OrderLimit.findByPk(1);
+    if (!limit) return 1;
+    return limit.limit;
+  }
 }
-
-

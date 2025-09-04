@@ -15,7 +15,7 @@ import DepartmentModel from './models/department.js';
 
 import NotificationModel from './models/notification.js';
 import NotificationReceiverModel from './models/notification-receiver.js';
-
+import OrderLimitModel from './models/order-limit.js';
 import ModulePermission from './models/module-permission.js';
 
 export const DB = {
@@ -35,7 +35,8 @@ export const DB = {
   ProductAttribute: ProductAttribute(sequelize),
   Notification: NotificationModel(sequelize),
   NotificationReceiver: NotificationReceiverModel(sequelize),
-  ModulePermission: ModulePermission(sequelize)
+  ModulePermission: ModulePermission(sequelize),
+  OrderLimit: OrderLimitModel(sequelize)
 };
 
 Object.values(DB).forEach((model) => {

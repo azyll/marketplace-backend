@@ -22,6 +22,7 @@ export async function up(queryInterface, Sequelize) {
   const departments = await DB.Department.findAll();
   const productAttributes = await DB.ProductAttribute.findAll();
 
+  // ICT
   await DB.Product.create(
     {
       name: 'ICT Polo',
@@ -31,6 +32,26 @@ export async function up(queryInterface, Sequelize) {
       category: 'uniform',
       departmentId: departments[0].id,
       productVariant: productVariantWithGender('Male', productAttributes[1].id)
+    },
+    {
+      include: [
+        {
+          model: DB.ProductVariant,
+          as: 'productVariant'
+        }
+      ]
+    }
+  );
+
+  await DB.Product.create(
+    {
+      name: 'ICT Blouse',
+      description: 'Information and Communication Technology Daily Blouse Uniform. For Tertiary (BSIT,BSCS,and BSCpE)',
+      image: 'ict.jpg',
+      type: 'upper-wear',
+      category: 'uniform',
+      departmentId: departments[0].id,
+      productVariant: productVariantWithGender('Female', productAttributes[1].id)
     },
     {
       include: [
@@ -79,6 +100,8 @@ export async function up(queryInterface, Sequelize) {
       ]
     }
   );
+
+  //SH
   await DB.Product.create(
     {
       name: 'Senior High Polo',
@@ -360,16 +383,167 @@ export async function up(queryInterface, Sequelize) {
   );
 
   // TM
-
   await DB.Product.create(
     {
-      name: 'TM Pants',
-      description: 'Business & Management Daily Pants Uniform. For Tertiary (BSBA)',
-      image: 'bm.jpg',
+      name: 'TM Long Sleeve White Polo',
+      description: 'Tourism Management Daily Long Sleeve White Polo Uniform. For Tertiary (BSTM)',
+      image: 'tm.jpg',
+      type: 'upper-wear',
+      category: 'uniform',
+      departmentId: departments[3].id,
+      productVariant: productVariantWithGender('Male', productAttributes[1].id)
+    },
+    {
+      include: [
+        {
+          model: DB.ProductVariant,
+          as: 'productVariant'
+        }
+      ]
+    }
+  );
+  await DB.Product.create(
+    {
+      name: 'TM Pin',
+      description: 'Tourism Management Daily Uniform Pin. For Tertiary (BSTM)',
+      image: 'tm.jpg',
+      type: 'upper-wear',
+      category: 'uniform',
+      departmentId: departments[3].id,
+      productVariant: productWithNoVariant(productAttributes[0].id)
+    },
+    {
+      include: [
+        {
+          model: DB.ProductVariant,
+          as: 'productVariant'
+        }
+      ]
+    }
+  );
+  await DB.Product.create(
+    {
+      name: 'TM Necktie',
+      description: 'Tourism Management Daily Uniform NeckTie. For Tertiary (BSTM)',
+      image: 'tm.jpg',
+      type: 'upper-wear',
+      category: 'uniform',
+      departmentId: departments[3].id,
+      productVariant: productVariantWithGender('Male', productAttributes[1].id)
+    },
+    {
+      include: [
+        {
+          model: DB.ProductVariant,
+          as: 'productVariant'
+        }
+      ]
+    }
+  );
+  await DB.Product.create(
+    {
+      name: 'TM Gray Pants',
+      description: 'Tourism Management Daily Gray Pants Uniform. For Tertiary (BSTM)',
+      image: 'tm.jpg',
       type: 'lower-wear',
       category: 'uniform',
-      departmentId: departments[1].id,
+      departmentId: departments[3].id,
+      productVariant: productVariantWithGender('Male', productAttributes[1].id)
+    },
+    {
+      include: [
+        {
+          model: DB.ProductVariant,
+          as: 'productVariant'
+        }
+      ]
+    }
+  );
+  await DB.Product.create(
+    {
+      name: 'TM Blazer',
+      description: 'Tourism Management Daily Blazer Uniform. For Tertiary (BSTM)',
+      image: 'tm.jpg',
+      type: 'upper-wear',
+      category: 'uniform',
+      departmentId: departments[3].id,
       productVariant: productVariantWithMaleAndFemale(productAttributes[1].id)
+    },
+    {
+      include: [
+        {
+          model: DB.ProductVariant,
+          as: 'productVariant'
+        }
+      ]
+    }
+  );
+  await DB.Product.create(
+    {
+      name: 'TM Beret',
+      description: 'Tourism Management Daily Uniform Beret. For Tertiary (BSTM)',
+      image: 'tm.jpg',
+      type: 'upper-wear',
+      category: 'uniform',
+      departmentId: departments[3].id,
+      productVariant: productVariantWithGender('Female', productAttributes[1].id)
+    },
+    {
+      include: [
+        {
+          model: DB.ProductVariant,
+          as: 'productVariant'
+        }
+      ]
+    }
+  );
+  await DB.Product.create(
+    {
+      name: 'TM Yellow Scarf',
+      description: 'Tourism Management Daily Uniform Yellow Scarf. For Tertiary (BSTM)',
+      image: 'tm.jpg',
+      type: 'upper-wear',
+      category: 'uniform',
+      departmentId: departments[3].id,
+      productVariant: productVariantWithGender('Female', productAttributes[1].id)
+    },
+    {
+      include: [
+        {
+          model: DB.ProductVariant,
+          as: 'productVariant'
+        }
+      ]
+    }
+  );
+  await DB.Product.create(
+    {
+      name: 'TM White Blouse',
+      description: 'Tourism Management Daily White Blouse Uniform. For Tertiary (BSTM)',
+      image: 'tm.jpg',
+      type: 'upper-wear',
+      category: 'uniform',
+      departmentId: departments[3].id,
+      productVariant: productVariantWithGender('Female', productAttributes[1].id)
+    },
+    {
+      include: [
+        {
+          model: DB.ProductVariant,
+          as: 'productVariant'
+        }
+      ]
+    }
+  );
+  await DB.Product.create(
+    {
+      name: 'TM Gray Skirt',
+      description: 'Tourism Management Daily Gray Skirt Uniform. For Tertiary (BSTM)',
+      image: 'tm.jpg',
+      type: 'lower-wear',
+      category: 'uniform',
+      departmentId: departments[3].id,
+      productVariant: productVariantWithGender('Female', productAttributes[1].id)
     },
     {
       include: [
@@ -381,15 +555,16 @@ export async function up(queryInterface, Sequelize) {
     }
   );
 
+  // Arts and Sciences
   await DB.Product.create(
     {
-      name: 'BM Long Sleeve Polo',
-      description: 'Business & Management Daily Long Sleeve Polo Uniform. For Tertiary (BSBA)',
-      image: 'bm.jpg',
+      name: 'Arts and Sciences Long Sleeve Blue Polo ',
+      description: 'Tourism Management Daily Long Sleeve Blue Polo Uniform. For Tertiary (BACOMM)',
+      image: 'arts-and-sciences.jpg',
       type: 'upper-wear',
       category: 'uniform',
-      departmentId: departments[1].id,
-      productVariant: productVariantWithMaleAndFemale(productAttributes[1].id)
+      departmentId: departments[4].id,
+      productVariant: productVariantWithGender('Male', productAttributes[1].id)
     },
     {
       include: [
@@ -400,26 +575,158 @@ export async function up(queryInterface, Sequelize) {
       ]
     }
   );
-
-  await DB.Product.create(
-    {
-      name: 'BM Blazer',
-      description: 'Business & Management Daily Blazer Uniform. For Tertiary (BSBA)',
-      image: 'bm.jpg',
-      type: 'upper-wear',
-      category: 'uniform',
-      departmentId: departments[1].id,
-      productVariant: productVariantWithMaleAndFemale(productAttributes[1].id)
-    },
-    {
-      include: [
-        {
-          model: DB.ProductVariant,
-          as: 'productVariant'
-        }
-      ]
-    }
-  );
+  // await DB.Product.create(
+  //   {
+  //     name: 'TM Pin',
+  //     description: 'Tourism Management Daily Uniform Pin. For Tertiary (BSTM)',
+  //     image: 'tm.jpg',
+  //     type: 'upper-wear',
+  //     category: 'uniform',
+  //     departmentId: departments[4].id,
+  //     productVariant: productWithNoVariant(productAttributes[0].id)
+  //   },
+  //   {
+  //     include: [
+  //       {
+  //         model: DB.ProductVariant,
+  //         as: 'productVariant'
+  //       }
+  //     ]
+  //   }
+  // );
+  // await DB.Product.create(
+  //   {
+  //     name: 'TM Necktie',
+  //     description: 'Tourism Management Daily Uniform NeckTie. For Tertiary (BSTM)',
+  //     image: 'tm.jpg',
+  //     type: 'upper-wear',
+  //     category: 'uniform',
+  //     departmentId: departments[4].id,
+  //     productVariant: productVariantWithGender('Male', productAttributes[1].id)
+  //   },
+  //   {
+  //     include: [
+  //       {
+  //         model: DB.ProductVariant,
+  //         as: 'productVariant'
+  //       }
+  //     ]
+  //   }
+  // );
+  // await DB.Product.create(
+  //   {
+  //     name: 'TM Gray Pants',
+  //     description: 'Tourism Management Daily Gray Pants Uniform. For Tertiary (BSTM)',
+  //     image: 'tm.jpg',
+  //     type: 'lower-wear',
+  //     category: 'uniform',
+  //     departmentId: departments[4].id,
+  //     productVariant: productVariantWithGender('Male', productAttributes[1].id)
+  //   },
+  //   {
+  //     include: [
+  //       {
+  //         model: DB.ProductVariant,
+  //         as: 'productVariant'
+  //       }
+  //     ]
+  //   }
+  // );
+  // await DB.Product.create(
+  //   {
+  //     name: 'TM Blazer',
+  //     description: 'Tourism Management Daily Blazer Uniform. For Tertiary (BSTM)',
+  //     image: 'tm.jpg',
+  //     type: 'upper-wear',
+  //     category: 'uniform',
+  //     departmentId: departments[4].id,
+  //     productVariant: productVariantWithMaleAndFemale(productAttributes[1].id)
+  //   },
+  //   {
+  //     include: [
+  //       {
+  //         model: DB.ProductVariant,
+  //         as: 'productVariant'
+  //       }
+  //     ]
+  //   }
+  // );
+  // await DB.Product.create(
+  //   {
+  //     name: 'TM Beret',
+  //     description: 'Tourism Management Daily Uniform Beret. For Tertiary (BSTM)',
+  //     image: 'tm.jpg',
+  //     type: 'upper-wear',
+  //     category: 'uniform',
+  //     departmentId: departments[4].id,
+  //     productVariant: productVariantWithGender('Female', productAttributes[1].id)
+  //   },
+  //   {
+  //     include: [
+  //       {
+  //         model: DB.ProductVariant,
+  //         as: 'productVariant'
+  //       }
+  //     ]
+  //   }
+  // );
+  // await DB.Product.create(
+  //   {
+  //     name: 'TM Yellow Scarf',
+  //     description: 'Tourism Management Daily Uniform Yellow Scarf. For Tertiary (BSTM)',
+  //     image: 'tm.jpg',
+  //     type: 'upper-wear',
+  //     category: 'uniform',
+  //     departmentId: departments[4].id,
+  //     productVariant: productVariantWithGender('Female', productAttributes[1].id)
+  //   },
+  //   {
+  //     include: [
+  //       {
+  //         model: DB.ProductVariant,
+  //         as: 'productVariant'
+  //       }
+  //     ]
+  //   }
+  // );
+  // await DB.Product.create(
+  //   {
+  //     name: 'TM White Blouse',
+  //     description: 'Tourism Management Daily White Blouse Uniform. For Tertiary (BSTM)',
+  //     image: 'tm.jpg',
+  //     type: 'upper-wear',
+  //     category: 'uniform',
+  //     departmentId: departments[4].id,
+  //     productVariant: productVariantWithGender('Female', productAttributes[1].id)
+  //   },
+  //   {
+  //     include: [
+  //       {
+  //         model: DB.ProductVariant,
+  //         as: 'productVariant'
+  //       }
+  //     ]
+  //   }
+  // );
+  // await DB.Product.create(
+  //   {
+  //     name: 'TM Gray Skirt',
+  //     description: 'Tourism Management Daily Gray Skirt Uniform. For Tertiary (BSTM)',
+  //     image: 'tm.jpg',
+  //     type: 'upper-wear',
+  //     category: 'uniform',
+  //     departmentId: departments[4].id,
+  //     productVariant: productVariantWithGender('Female', productAttributes[1].id)
+  //   },
+  //   {
+  //     include: [
+  //       {
+  //         model: DB.ProductVariant,
+  //         as: 'productVariant'
+  //       }
+  //     ]
+  //   }
+  // );
 }
 export async function down(queryInterface, Sequelize) {
   await queryInterface.bulkDelete('Products', null, {});

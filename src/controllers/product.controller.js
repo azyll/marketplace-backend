@@ -81,6 +81,28 @@ export const getProducts = async (req, res) => {
     return res.status(400).json({message, error: error.message || defaultErrorMessage});
   }
 };
+/**
+ * @param {import('express').Response} res
+ * @param {import('express').Request} req
+ * @returns {Promise<import('express').Response>}
+ */
+export const getProductsFilteredByStudentDepartment = async (req, res) => {
+  try {
+    const {userId} = req.params;
+    const data = await ProductService.getProductsFilteredByStudentDepartment(userId);
+    return res.status(200).json({message: 'Products retrieve successfully', data});
+  } catch (error) {
+    const message = 'Failed to get products';
+    if (
+      error instanceof NotFoundException ||
+      error instanceof AlreadyExistException ||
+      error instanceof UnauthorizedException
+    ) {
+      return res.status(error.statusCode).json({message, error: error.message});
+    }
+    return res.status(400).json({message, error: error.message || defaultErrorMessage});
+  }
+};
 
 /**
  *  Get Single Product

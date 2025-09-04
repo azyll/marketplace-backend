@@ -7,7 +7,8 @@ import {
   getProductsByStudentDepartment,
   getProduct,
   getProducts,
-  updateProductStock
+  updateProductStock,
+  getProductsFilteredByStudentDepartment
 } from '../../controllers/product.controller.js';
 import {validate} from '../../middleware/validation.js';
 import {Joi} from 'sequelize-joi';
@@ -25,6 +26,8 @@ router.put('/stock/:productId', updateProductStock);
 
 // Get Create Product
 router.get('/create', getCreateProductData);
+
+router.get('/user/:userId/all', getProductsFilteredByStudentDepartment);
 
 // GET products by student department
 router.get('/user/:userId', getProductsByStudentDepartment);

@@ -1,4 +1,4 @@
-'use strict';
+import {DB} from '../index.js';
 
 /** @type {import('sequelize-cli').Migration} */
 export async function up(queryInterface, Sequelize) {
@@ -11,6 +11,14 @@ export async function up(queryInterface, Sequelize) {
    *   isBetaMember: false
    * }], {});
    */
+  await DB.OrderLimit.findOrCreate({
+    where: {
+      id: 1
+    },
+    defaults: {
+      limit: 1
+    }
+  });
 }
 export async function down(queryInterface, Sequelize) {
   /**

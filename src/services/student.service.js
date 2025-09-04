@@ -61,7 +61,6 @@ export class StudentService {
         }
       ]
     });
-    if (!student) throw new NotFoundException(`Student not found`, 404);
 
     return student;
   }

@@ -62,6 +62,11 @@ export default (sequelize) => {
         values: ['shs', 'tertiary'],
         schema: Joi.string().trim().required().valid('shs', 'tertiary')
       },
+      sex: {
+        type: DataTypes.ENUM,
+        values: ['male', 'female'],
+        schema: Joi.string().trim().required().valid('male', 'female')
+      },
       deletedAt: {
         type: DataTypes.DATE,
         allowNull: true,

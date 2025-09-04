@@ -174,6 +174,71 @@ export class ProductService {
     };
   }
   /**
+   * Get All Products by filtered by Department
+   * @param {string} userId
+ 
+   * @throws {NotFoundException}  Department not found
+   * @returns {Promise<{data:Product[]}>} All products filtered by department
+   */
+  static async getProductsFilteredByStudentDepartment(userId) {
+    const user = await User.findByPk(userId, {
+      include: [
+        {
+          model: Student,
+          as: 'student',
+          include: [
+            {
+              model: Program,
+              as: 'program',
+              include: [
+                {
+                  model: Department,
+                  as: 'department'
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    });
+
+    if (!user) throw new NotFoundException('Student not found', 404);
+
+    const departmentId = user?.student?.program?.department?.id;
+    const proware = await Department.findOne({
+      where: {
+        name: 'Proware'
+      }
+    });
+
+    if (!departmentId || !proware) throw new NotFoundException('Department not found', 404);
+    const products = await Product.findAll({
+      where: {
+        departmentId: {
+          [Op.in]: [departmentId, proware.id]
+        }
+      },
+      include: [
+        {
+          model: ProductVariant,
+          as: 'productVariant',
+          include: [
+            {
+              model: ProductAttribute,
+              as: 'productAttribute'
+            }
+          ]
+        },
+        {
+          model: Department,
+          as: 'department'
+        }
+      ]
+    });
+
+    return products;
+  }
+  /**
    * Get All Products by Department
    * @param {string} userId
  
@@ -231,58 +296,6 @@ export class ProductService {
 
     return products;
   }
-
-  //  /**
-  //  * Get All Products by Department
-  //  * @param {string} userId
-  //  * @param {QueryParams} query
-  //  * @throws {NotFoundException}  Department not found
-  //  * @returns {Promise<ProductResponse>} All products filtered by department
-  //  */
-  // static async getProductsByStudentDepartment(userId, query) {
-  //   const user = await User.findByPk(userId, {
-  //     include: [
-  //       {
-  //         model: Student,
-  //         as: 'student',
-  //         include: [
-  //           {
-  //             model: Program,
-  //             include: [Department]
-  //           }
-  //         ]
-  //       }
-  //     ]
-  //   });
-
-  //   if (!user) throw new NotFoundException('Student not found', 404);
-
-  //   const page = Number(query.page) || 1;
-  //   const limit = Number(query.limit) || 10;
-
-  //   const {count, rows: productData} = await Product.findAndCountAll({
-  //     distinct: true,
-  //     limit,
-  //     offset: (page-1) * limit,
-  //     where: {
-  //       departmentId: user.student.Program.Department.id
-  //     },
-  //     include: [
-  //       {
-  //         model: ProductVariant,
-  //         include: [ProductAttribute]
-  //       }
-  //     ]
-  //   });
-  //   return {
-  //     data: productData,
-  //     meta: {
-  //       currentPage: page,
-  //       itemsPerPage: limit,
-  //       totalItems: count
-  //     }
-  //   };
-  // }
 
   /**
    * Get a single Product
