@@ -27,60 +27,19 @@ export class OrderService {
    * @throws {NotFoundException}  Student or Product not found
    */
   static async createOrder(studentId, orderItems, orderType) {
-    /**
-     * TODO: Add create notification and  log
-     */
+    // const now = new Date();
+    // const day = now.getDay();
+    // const hours = now.getHours();
+
+    // const isWeekendWindow = (day === 5 && hours >= 16) || day === 6 || (day === 0 && hours < 13);
+
+    // if (isWeekendWindow) {
+    //   throw new Error(
+    //     'The Proware office is closed on weekends. Orders can only be processed from Sunday to Friday at 4 PM.'
+    //   );
+    // }
+
     const variantIds = orderItems.map((item) => item.productVariantId);
-
-    for (const orderItem of orderItems) {
-      const orderLimit = await this.getOrderLimit();
-      if (orderItem.quantity > orderLimit)
-        throw new Error(
-          `One or more order items have a quantity that exceeds the maximum allowed limit of ${orderLimit}.`
-        );
-    }
-    const user = await User.findByPk(studentId, {
-      include: [
-        {
-          model: Student,
-          as: 'student',
-          include: [
-            {
-              model: Order,
-              as: 'order',
-              include: [
-                {
-                  model: OrderItems,
-                  as: 'orderItems',
-                  where: {
-                    //Orders for the past 3 months
-                    createdAt: {
-                      [Op.lt]: new Date(),
-                      [Op.gt]: new Date(new Date().getMonth() - 3)
-                    }
-                    //!Not sure about this
-                    // productVariantId: {
-                    // [Op.in]: variantIds
-                    // }
-                    //!Not sure about this
-                  },
-                  include: [
-                    {
-                      model: ProductVariant,
-                      as: 'productVariant',
-                      include: [{model: Product, as: 'product'}]
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
-        }
-      ]
-    });
-    if (!user) throw new NotFoundException('Student not found', 404);
-
-    const status = 'ongoing';
 
     const productVariants = await ProductVariant.findAll({
       include: [{model: Product, as: 'product'}],
@@ -97,6 +56,69 @@ export class OrderService {
     if (productVariants.length !== variantIds.length || !productVariants) {
       throw new NotFoundException('Invalid credential, The product not found', 404);
     }
+    const orderLimit = await this.getOrderLimit();
+    for (const orderItem of orderItems) {
+      if (orderItem.quantity > orderLimit)
+        throw new Error(
+          `One or more order items have a quantity that exceeds the maximum allowed limit of ${orderLimit}.`
+        );
+    }
+
+    const threeMonthsAgo = new Date();
+    threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
+
+    const user = await User.findByPk(studentId, {
+      include: [
+        {
+          model: Student,
+          as: 'student',
+          include: [
+            {
+              model: Order,
+              as: 'order',
+              // required:true,
+              // where:{
+              // status:'completed'
+              // }
+              include: [
+                {
+                  model: OrderItems,
+                  as: 'orderItems',
+                  required: true,
+                  where: {
+                    //Orders for the past 3 months
+                    createdAt: {
+                      [Op.gt]: threeMonthsAgo,
+                      [Op.lt]: new Date()
+                    },
+                    productVariantId: {
+                      [Op.in]: variantIds
+                    }
+                  },
+                  include: [
+                    {
+                      model: ProductVariant,
+                      as: 'productVariant',
+                      required: true, // Ensure productVariant matches
+                      include: [{model: Product, as: 'product'}],
+                      where: {
+                        stockAvailable: {
+                          [Op.lt]: 20
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    });
+
+    if (!user) throw new NotFoundException('Student not found', 404);
+
+    const status = 'ongoing';
     const genderAttribute = await ProductAttribute.findOne({
       where: {
         name: 'Gender'
@@ -111,35 +133,11 @@ export class OrderService {
 
     const plainProductVariants = productVariants.map((variant) => variant.get({plain: true}));
 
-    const productVariantWithLowStock = plainProductVariants.filter((variant) => variant.stockQuantity <= 20);
-
-    //Check The last transaction of the user
-    if (productVariantWithLowStock.length >= 1) {
-      /**
-       * @type {string[]}
-       */
-      let invalidProductVariantId = [];
-      //Iterate orders of student for the past 3 months
-      user.student.order.forEach((order) => {
-        const orderItems = order.orderItems;
-        //Iterate the order items so we can find whether the student wants to order again an item that he/she ordered 3 months ago
-        orderItems.forEach((orderItem) => {
-          if (
-            variantIds.find((id) => id === orderItem.productVariantId) &&
-            !invalidProductVariantId.find((id) => id === orderItem.productVariantId)
-          ) {
-            //Create table for invalid product variants for order of student
-            invalidProductVariantId.push(orderItem.productVariantId);
-          }
-        });
-      });
-
-      if (invalidProductVariantId.length >= 1) {
-        console.log('invalidProductVariantId', invalidProductVariantId);
-        throw new Error(
-          `The item you want to order is currently low in stock. Since you ordered this same item in the last 3 months, you can add it to your cart to be notified when it is restocked.`
-        );
-      }
+    const numberOfOrderForPastMonths = user.student.order.length;
+    if (numberOfOrderForPastMonths >= orderLimit) {
+      throw new Error(
+        `One of the items you're trying to order is currently low in stock. You've already purchased this item ${numberOfOrderForPastMonths} ${numberOfOrderForPastMonths > 1 ? 'times' : 'time'} in the past three months, which exceeds the allowed limit of ${orderLimit}. You can't order it again right now, but you can add it to your cart to be notified when it's restocked.`
+      );
     }
 
     //Used transaction so when have a over order product all the stock update will be roll back
@@ -164,10 +162,18 @@ export class OrderService {
 
         if (!productVariant) throw new NotFoundException('Invalid credential, The product not found', 404);
 
-        let newStockQuantity = Number(productVariant?.stockQuantity) - Number(orderItem.quantity);
-        if (newStockQuantity < 0) {
-          throw new Error(`You over order the item ${productVariant.Product.name}`);
+        let newStockAvailable = Number(productVariant?.stockAvailable) - Number(orderItem.quantity);
+        if (newStockAvailable < 0) {
+          throw new Error(
+            `You over order the item ${productVariant.product.name} the available stock is ${productVariant?.stockAvailable} and the reserved stock is ${productVariant.stockReserved}`
+          );
         }
+        productVariant.stockAvailable = newStockAvailable;
+        productVariant.stockReserved = productVariant.stockReserved + Number(orderItem.quantity);
+        productVariant.stockCondition = calculateStockCondition(newStockAvailable);
+        await productVariant?.save({
+          transaction
+        });
 
         total += Number(productVariant.price) * orderItem.quantity;
       }
@@ -432,13 +438,9 @@ export class OrderService {
           const variant = await ProductVariant.findByPk(orderItem.productVariantId, {transaction});
           if (!variant) throw new NotFoundException('Product not found', 404);
 
-          const newStockQuantity = Number(variant.stockQuantity) - Number(orderItem.quantity);
-          if (newStockQuantity < 0)
-            throw new Error(
-              `Variant ${variant.id} ran out of stock. Requested: ${orderItem.quantity}, Available: ${variant.stockQuantity}`
-            );
-          variant.stockQuantity = Number(newStockQuantity);
-          variant.stockCondition = calculateStockCondition(newStockQuantity);
+          variant.stockReserved = Number(variant.stockReserved) - Number(orderItem.quantity);
+          const newStockAvailable = Number(variant.stockAvailable) + Number(variant.stockReserved);
+          variant.stockCondition = calculateStockCondition(newStockAvailable);
           await variant.save();
         }
 
@@ -476,9 +478,10 @@ export class OrderService {
           const variant = await ProductVariant.findByPk(orderItem.productVariantId, {transaction});
           if (!variant) throw new NotFoundException('Product not found', 404);
 
-          const newStockQuantity = Number(variant.stockQuantity) + Number(orderItem.quantity);
-          variant.stockQuantity = Number(newStockQuantity);
-          variant.stockCondition = calculateStockCondition(newStockQuantity);
+          const newStockAvailable = Number(variant.stockAvailable) + Number(orderItem.quantity);
+          variant.stockAvailable = Number(newStockAvailable);
+          variant.stockReserved = Number(variant.stockReserved) - Number(orderItem.quantity);
+          variant.stockCondition = calculateStockCondition(newStockAvailable);
           await variant.save();
         }
       }
@@ -590,6 +593,6 @@ export class OrderService {
   static async getOrderLimit() {
     const limit = await OrderLimit.findByPk(1);
     if (!limit) return 1;
-    return limit.limit;
+    return Number(limit.limit);
   }
 }

@@ -30,7 +30,7 @@ export class ProductService {
    *  productAttributeId:string,
    *  size:string,
    *  price:number,
-   *  stockQuantity:number
+   *  stockAvailable:number
    * }[]}} newProduct - New Product
    * @returns {Promise<Product>} Product data from the database
    * @throws {NotFoundException} If Department does not exists
@@ -45,12 +45,12 @@ export class ProductService {
     }
 
     const productVariantWithStockCondition = variants.map((variant) => {
-      if (!variant.name || !variant.price || !variant.productAttributeId || !variant.size || !variant.stockQuantity) {
+      if (!variant.name || !variant.price || !variant.productAttributeId || !variant.size || !variant.stockAvailable) {
         throw new Error('Invalid credential');
       }
       return {
         ...variant,
-        stockCondition: calculateStockCondition(variant.stockQuantity)
+        stockCondition: calculateStockCondition(variant.stockAvailable)
       };
     });
     const createdProduct = await sequelize.transaction(async (transaction) => {
@@ -127,6 +127,7 @@ export class ProductService {
     if (query?.name) {
       whereClause.name = {[Op.iLike]: `%${convertFromSlug(query.name)}%`}; // case-insensitive partial match
     }
+
     let raw = query.raw ? true : false;
 
     const {count, rows: productData} = await Product.findAndCountAll({
@@ -135,7 +136,15 @@ export class ProductService {
         {
           model: ProductVariant,
           include: [{model: ProductAttribute, as: 'productAttribute'}],
-          as: 'productVariant'
+          as: 'productVariant',
+          where:
+            query.sex ?
+              {
+                name: {
+                  [Op.notILike]: `${query.sex === 'female' ? 'Male' : 'Female'}` // Hide items for other sex
+                }
+              }
+            : {}
         },
         {
           model: Department,
@@ -210,6 +219,10 @@ export class ProductService {
         name: 'Proware'
       }
     });
+    let sex = 'Male';
+    if (user.student.sex === 'male') {
+      sex = 'Female';
+    }
 
     if (!departmentId || !proware) throw new NotFoundException('Department not found', 404);
     const products = await Product.findAll({
@@ -222,6 +235,12 @@ export class ProductService {
         {
           model: ProductVariant,
           as: 'productVariant',
+          required: true,
+          where: {
+            name: {
+              [Op.notILike]: sex // 👈 Case-insensitive exclusion
+            }
+          },
           include: [
             {
               model: ProductAttribute,
@@ -384,11 +403,11 @@ export class ProductService {
     const variant = product.productVariant?.[0];
     if (!variant) throw new NotFoundException('Product Variant not found', 404);
 
-    if (newStock === variant.stockQuantity) {
+    if (newStock === variant.stockAvailable) {
       return product;
     }
 
-    variant.stockQuantity = newStock;
+    variant.stockAvailable = newStock;
     variant.stockCondition = calculateStockCondition(newStock);
 
     await variant.save();

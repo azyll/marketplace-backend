@@ -25,7 +25,7 @@ import {convertFromSlug} from '../utils/slug-helper.js';
 export const addProduct = async (req, res) => {
   try {
     /**
-     * @type {{ name:string,productAttributeId:string,size:string,price:number,stockQuantity:number}[]}
+     * @type {{ name:string,productAttributeId:string,size:string,price:number,stockAvailable:number}[]}
      */
     const variants = JSON.parse(req.body.variants);
     await ProductService.createProduct({
@@ -136,9 +136,9 @@ export const getProduct = async (req, res) => {
  */
 export const updateProductStock = async (req, res) => {
   const {productId} = req.params;
-  const {productVariantId, newStockQuantity} = req.body;
+  const {productVariantId, newStockAvailable} = req.body;
   try {
-    await ProductService.updateProductStock(productId, productVariantId, newStockQuantity);
+    await ProductService.updateProductStock(productId, productVariantId, newStockAvailable);
     return res.status(200).json({message: 'Product stock update successfully'});
   } catch (error) {
     const message = 'Failed to update product stock';
