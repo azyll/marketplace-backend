@@ -5,6 +5,7 @@ import {
   productVariantWithGender,
   productVariantWithGenderButNoSize,
   productVariantWithMaleAndFemale,
+  productVariantWithoutGenderButHaveSize,
   productWithNoVariant
 } from '../../utils/product-seeder.helper.js';
 
@@ -31,6 +32,7 @@ export async function up(queryInterface, Sequelize) {
       image: 'ict.jpg',
       type: 'upper-wear',
       category: 'uniform',
+      level: 'tertiary',
       departmentId: departments[0].id,
       productVariant: productVariantWithGender('Male', productAttributes[1].id)
     },
@@ -50,6 +52,7 @@ export async function up(queryInterface, Sequelize) {
       description: 'Information and Communication Technology Daily Blouse Uniform. For Tertiary (BSIT,BSCS,and BSCpE)',
       image: 'ict.jpg',
       type: 'upper-wear',
+      level: 'tertiary',
       category: 'uniform',
       departmentId: departments[0].id,
       productVariant: productVariantWithGender('Female', productAttributes[1].id)
@@ -69,6 +72,7 @@ export async function up(queryInterface, Sequelize) {
       description: 'Information and Communication Technology Daily Pants Uniform. For Tertiary (BSIT,BSCS,and BSCpE)',
       image: 'ict.jpg',
       type: 'lower-wear',
+      level: 'tertiary',
       category: 'uniform',
       departmentId: departments[0].id,
       productVariant: productVariantWithMaleAndFemale(productAttributes[1].id)
@@ -87,6 +91,7 @@ export async function up(queryInterface, Sequelize) {
       name: 'ICT Skirt',
       description: 'Information and Communication Technology Daily Skirt Uniform. For Tertiary (BSIT,BSCS,and BSCpE)',
       image: 'ict.jpg',
+      level: 'tertiary',
       type: 'lower-wear',
       category: 'uniform',
       departmentId: departments[0].id,
@@ -108,6 +113,7 @@ export async function up(queryInterface, Sequelize) {
       name: 'Senior High Polo',
       description: 'Senior High School Daily White Polo with Gray Vest Uniform. For Senior High Students',
       image: 'sh.jpg',
+      level: 'shs',
       type: 'upper-wear',
       category: 'uniform',
       departmentId: departments[5].id,
@@ -129,6 +135,7 @@ export async function up(queryInterface, Sequelize) {
       description: 'Senior High School Daily Dark Blue Slacks. For Senior High Students',
       image: 'sh.jpg',
       type: 'lower-wear',
+      level: 'shs',
       category: 'uniform',
       departmentId: departments[5].id,
       productVariant: productVariantWithGender('Male', productAttributes[1].id)
@@ -150,6 +157,7 @@ export async function up(queryInterface, Sequelize) {
       name: 'Senior Blouse',
       description: 'Senior High School White Blouse with Gray Vest. For Senior High Students',
       image: 'sh.jpg',
+      level: 'shs',
       type: 'upper-wear',
       category: 'uniform',
       departmentId: departments[5].id,
@@ -169,6 +177,7 @@ export async function up(queryInterface, Sequelize) {
       name: 'Senior Skirt',
       description: 'Senior High School Dark Blue Pencil-Cut Skirt. For Senior High Students',
       image: 'sh.jpg',
+      level: 'shs',
       type: 'lower-wear',
       category: 'uniform',
       departmentId: departments[5].id,
@@ -190,6 +199,7 @@ export async function up(queryInterface, Sequelize) {
       description: 'Senior High School Neck Tie. For Senior High Students',
       image: 'sh.jpg',
       type: 'upper-wear',
+      level: 'shs',
       category: 'uniform',
       departmentId: departments[5].id,
       productVariant: productVariantWithGenderButNoSize('Male', productAttributes[0].id)
@@ -208,6 +218,7 @@ export async function up(queryInterface, Sequelize) {
       name: 'Senior School ID Lace',
       description: 'Senior High School School ID Lace. For Senior High Students',
       image: 'sh.jpg',
+      level: 'shs',
       type: 'upper-wear',
       category: 'uniform',
       departmentId: departments[5].id,
@@ -227,6 +238,7 @@ export async function up(queryInterface, Sequelize) {
       name: 'Tertiary School ID Lace',
       description: 'Tertiary School ID Lace. For Tertiary Students',
       image: 'ict.jpg',
+      level: 'tertiary',
       type: 'upper-wear',
       category: 'uniform',
       departmentId: departments[6].id,
@@ -250,6 +262,7 @@ export async function up(queryInterface, Sequelize) {
       description: 'Business & Management Daily Pants Uniform. For Tertiary (BSBA)',
       image: 'bm.jpg',
       type: 'lower-wear',
+      level: 'tertiary',
       category: 'uniform',
       departmentId: departments[1].id,
       productVariant: productVariantWithMaleAndFemale(productAttributes[1].id)
@@ -269,6 +282,7 @@ export async function up(queryInterface, Sequelize) {
       name: 'BM Female Skirt',
       description: 'Business & Management Daily Skirt Uniform. For Tertiary (BSBA)',
       image: 'bm.jpg',
+      level: 'tertiary',
       type: 'lower-wear',
       category: 'uniform',
       departmentId: departments[1].id,
@@ -290,6 +304,7 @@ export async function up(queryInterface, Sequelize) {
       description: 'Business & Management Daily Long Sleeve Polo Uniform Male. For Tertiary (BSBA)',
       image: 'bm.jpg',
       type: 'upper-wear',
+      level: 'tertiary',
       category: 'uniform',
       departmentId: departments[1].id,
       productVariant: productVariantWithGender('Male', productAttributes[1].id)
@@ -308,6 +323,7 @@ export async function up(queryInterface, Sequelize) {
       name: 'BM Long Sleeve Blouse Female',
       description: 'Business & Management Daily Long Sleeve Blouse Uniform Female. For Tertiary (BSBA)',
       image: 'bm.jpg',
+      level: 'tertiary',
       type: 'upper-wear',
       category: 'uniform',
       departmentId: departments[1].id,
@@ -328,6 +344,7 @@ export async function up(queryInterface, Sequelize) {
       name: 'BM Blazer',
       description: 'Business & Management Daily Blazer Uniform. For Tertiary (BSBA)',
       image: 'bm.jpg',
+      level: 'tertiary',
       type: 'upper-wear',
       category: 'uniform',
       departmentId: departments[1].id,
@@ -348,6 +365,7 @@ export async function up(queryInterface, Sequelize) {
       name: 'BM Red Scarf',
       description: 'Business & Management Daily Red Scarf Uniform. For Tertiary (BSBA)',
       image: 'bm.jpg',
+      level: 'tertiary',
       type: 'upper-wear',
       category: 'uniform',
       departmentId: departments[1].id,
@@ -369,6 +387,7 @@ export async function up(queryInterface, Sequelize) {
       description: 'Business & Management Daily Red Necktie Uniform. For Tertiary (BSBA)',
       image: 'bm.jpg',
       type: 'upper-wear',
+      level: 'tertiary',
       category: 'uniform',
       departmentId: departments[1].id,
       productVariant: productVariantWithGenderButNoSize('Male', productAttributes[1].id)
@@ -389,6 +408,7 @@ export async function up(queryInterface, Sequelize) {
       name: 'TM Long Sleeve White Polo',
       description: 'Tourism Management Daily Long Sleeve White Polo Uniform. For Tertiary (BSTM)',
       image: 'tm.jpg',
+      level: 'tertiary',
       type: 'upper-wear',
       category: 'uniform',
       departmentId: departments[3].id,
@@ -408,6 +428,7 @@ export async function up(queryInterface, Sequelize) {
       name: 'TM Pin',
       description: 'Tourism Management Daily Uniform Pin. For Tertiary (BSTM)',
       image: 'tm.jpg',
+      level: 'tertiary',
       type: 'upper-wear',
       category: 'uniform',
       departmentId: departments[3].id,
@@ -427,6 +448,7 @@ export async function up(queryInterface, Sequelize) {
       name: 'TM Necktie',
       description: 'Tourism Management Daily Uniform NeckTie. For Tertiary (BSTM)',
       image: 'tm.jpg',
+      level: 'tertiary',
       type: 'upper-wear',
       category: 'uniform',
       departmentId: departments[3].id,
@@ -446,6 +468,7 @@ export async function up(queryInterface, Sequelize) {
       name: 'TM Gray Pants',
       description: 'Tourism Management Daily Gray Pants Uniform. For Tertiary (BSTM)',
       image: 'tm.jpg',
+      level: 'tertiary',
       type: 'lower-wear',
       category: 'uniform',
       departmentId: departments[3].id,
@@ -465,6 +488,7 @@ export async function up(queryInterface, Sequelize) {
       name: 'TM Blazer',
       description: 'Tourism Management Daily Blazer Uniform. For Tertiary (BSTM)',
       image: 'tm.jpg',
+      level: 'tertiary',
       type: 'upper-wear',
       category: 'uniform',
       departmentId: departments[3].id,
@@ -484,6 +508,7 @@ export async function up(queryInterface, Sequelize) {
       name: 'TM Beret',
       description: 'Tourism Management Daily Uniform Beret. For Tertiary (BSTM)',
       image: 'tm.jpg',
+      level: 'tertiary',
       type: 'upper-wear',
       category: 'uniform',
       departmentId: departments[3].id,
@@ -503,6 +528,7 @@ export async function up(queryInterface, Sequelize) {
       name: 'TM Yellow Scarf',
       description: 'Tourism Management Daily Uniform Yellow Scarf. For Tertiary (BSTM)',
       image: 'tm.jpg',
+      level: 'tertiary',
       type: 'upper-wear',
       category: 'uniform',
       departmentId: departments[3].id,
@@ -523,6 +549,7 @@ export async function up(queryInterface, Sequelize) {
       description: 'Tourism Management Daily White Blouse Uniform. For Tertiary (BSTM)',
       image: 'tm.jpg',
       type: 'upper-wear',
+      level: 'tertiary',
       category: 'uniform',
       departmentId: departments[3].id,
       productVariant: productVariantWithGender('Female', productAttributes[1].id)
@@ -542,6 +569,7 @@ export async function up(queryInterface, Sequelize) {
       description: 'Tourism Management Daily Gray Skirt Uniform. For Tertiary (BSTM)',
       image: 'tm.jpg',
       type: 'lower-wear',
+      level: 'tertiary',
       category: 'uniform',
       departmentId: departments[3].id,
       productVariant: productVariantWithGender('Female', productAttributes[1].id)
@@ -563,6 +591,7 @@ export async function up(queryInterface, Sequelize) {
       description: 'Arts and Sciences Daily Long Sleeve Blue Polo Uniform. For Tertiary (BACOMM)',
       image: 'arts-and-sciences.jpg',
       type: 'upper-wear',
+      level: 'tertiary',
       category: 'uniform',
       departmentId: departments[4].id,
       productVariant: productVariantWithGender('Male', productAttributes[1].id)
@@ -583,6 +612,7 @@ export async function up(queryInterface, Sequelize) {
       description: 'Arts and Sciences Daily Uniform Blue Necktie. For Tertiary (BACOMM)',
       image: 'arts-and-sciences.jpg',
       type: 'upper-wear',
+      level: 'tertiary',
       category: 'uniform',
       departmentId: departments[4].id,
       productVariant: productVariantWithGenderButNoSize('Male', productAttributes[1].id)
@@ -602,6 +632,7 @@ export async function up(queryInterface, Sequelize) {
       description: 'Arts and Sciences Daily Pants Uniform. For Tertiary (BACOMM)',
       image: 'arts-and-sciences.jpg',
       type: 'lower-wear',
+      level: 'tertiary',
       category: 'uniform',
       departmentId: departments[4].id,
       productVariant: productVariantWithMaleAndFemale(productAttributes[1].id)
@@ -621,6 +652,7 @@ export async function up(queryInterface, Sequelize) {
       description: 'Arts and Sciences Daily Blazer Uniform. For Tertiary (BACOMM)',
       image: 'arts-and-sciences.jpg',
       type: 'upper-wear',
+      level: 'tertiary',
       category: 'uniform',
       departmentId: departments[4].id,
       productVariant: productVariantWithMaleAndFemale(productAttributes[1].id)
@@ -641,6 +673,7 @@ export async function up(queryInterface, Sequelize) {
       description: 'Arts and Sciences Daily Uniform Blue Scarf. For Tertiary (BACOMM)',
       image: 'arts-and-sciences.jpg',
       type: 'upper-wear',
+      level: 'tertiary',
       category: 'uniform',
       departmentId: departments[4].id,
       productVariant: productVariantWithGender('Female', productAttributes[1].id)
@@ -660,6 +693,7 @@ export async function up(queryInterface, Sequelize) {
       description: 'Arts and Sciences Daily Blue Long Sleeve Blouse Uniform. For Tertiary (BACOMM)',
       image: 'arts-and-sciences.jpg',
       type: 'upper-wear',
+      level: 'tertiary',
       category: 'uniform',
       departmentId: departments[4].id,
       productVariant: productVariantWithGender('Female', productAttributes[1].id)
@@ -679,6 +713,7 @@ export async function up(queryInterface, Sequelize) {
       description: 'Arts and Sciences Daily Skirt Uniform. For Tertiary (BACOMM)',
       image: 'arts-and-sciences.jpg',
       type: 'lower-wear',
+      level: 'tertiary',
       category: 'uniform',
       departmentId: departments[4].id,
       productVariant: productVariantWithGender('Female', productAttributes[1].id)
@@ -691,7 +726,69 @@ export async function up(queryInterface, Sequelize) {
         }
       ]
     }
-  )s;
+  );
+
+  await DB.Product.create(
+    {
+      name: 'Tertiary PE Uniform TShirt',
+      description: 'Physical Education T-Shirt Uniform  For Tertiary',
+      image: 'tertiary-pe.jpg',
+      type: 'upper-wear',
+      level: 'tertiary',
+      category: 'uniform',
+      departmentId: departments[5].id,
+      productVariant: productVariantWithoutGenderButHaveSize(productAttributes[0].id)
+    },
+    {
+      include: [
+        {
+          model: DB.ProductVariant,
+          as: 'productVariant'
+        }
+      ]
+    }
+  );
+  await DB.Product.create(
+    {
+      name: 'Tertiary PE Uniform Pants',
+      description: 'Physical Education Pants Uniform For Tertiary',
+      image: 'tertiary-pe.jpg',
+      type: 'upper-wear',
+      level: 'tertiary',
+      category: 'uniform',
+      departmentId: departments[6].id,
+      productVariant: productVariantWithoutGenderButHaveSize(productAttributes[0].id)
+    },
+    {
+      include: [
+        {
+          model: DB.ProductVariant,
+          as: 'productVariant'
+        }
+      ]
+    }
+  );
+
+  await DB.Product.create(
+    {
+      name: '2024 STI Anniversary TShirt',
+      description: '2024 STI Anniversary T-Shirt',
+      image: 'anniv-shirt-2024.jpg',
+      type: 'upper-wear',
+      level: 'all',
+      category: 'proware',
+      departmentId: departments[6].id,
+      productVariant: productVariantWithoutGenderButHaveSize(productAttributes[0].id)
+    },
+    {
+      include: [
+        {
+          model: DB.ProductVariant,
+          as: 'productVariant'
+        }
+      ]
+    }
+  );
 }
 export async function down(queryInterface, Sequelize) {
   await queryInterface.bulkDelete('Products', null, {});

@@ -42,7 +42,7 @@ export default (sequelize) => {
         schema: Joi.string().trim().required()
       },
       level: {
-        type: DataTypes.String,
+        type: DataTypes.TEXT,
         allowNull: false,
         validate: {
           isIn: [['shs', 'tertiary', 'all']]

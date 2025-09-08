@@ -127,11 +127,49 @@ export class ProductService {
     if (query?.name) {
       whereClause.name = {[Op.iLike]: `%${convertFromSlug(query.name)}%`}; // case-insensitive partial match
     }
+    if (query.department) {
+      const isProware = query.department === 'Proware';
+      const departments = await DB.Department.findAll({
+        where: {
+          name: {
+            [Op.or]: [query.department, 'Proware']
+          }
+        }
+      });
+      if (departments.length === 0) throw new Error('Department not found');
+      // Map department names to their IDs
+      const departmentMap = {};
+      departments.forEach((dep) => {
+        departmentMap[dep.name] = {
+          id: dep.id,
+          level: dep.level
+        };
+      });
+
+      if (isProware) {
+        const prowareId = departmentMap['Proware'].id;
+        if (!prowareId) throw new Error('Proware department not found');
+        whereClause.departmentId = {
+          [Op.eq]: prowareId
+        };
+      } else {
+        const requestedId = departmentMap[query.department].id;
+        const prowareId = departmentMap['Proware'].id;
+        if (!requestedId) throw new Error(`Department '${query.department}' not found`);
+        if (!prowareId) throw new Error('Proware department not found');
+        whereClause.departmentId = {
+          [Op.or]: [requestedId, prowareId]
+        };
+        whereClause.level = {
+          [Op.or]: [departmentMap[query.department].level, 'all']
+        };
+      }
+    }
 
     let raw = query.raw ? true : false;
 
     const {count, rows: productData} = await Product.findAndCountAll({
-      where: whereClause,
+      where: whereClause, //Is there a difference if i put where here
       include: [
         {
           model: ProductVariant,
@@ -148,16 +186,17 @@ export class ProductService {
         },
         {
           model: Department,
-          as: 'department',
-          where:
-            query.department ?
-              {
-                name: {
-                  [Op.iLike]: `%${query?.department}%`,
-                  
-                }
-              }
-            : {}
+          as: 'department'
+          // where:
+          //   (
+          //     query.department //or here?
+          //   ) ?
+          //     {
+          //       name: {
+          //         [Op.or]: query.department === 'Proware' ? ['Proware'] : [query?.department, 'Proware']
+          //       }
+          //     }
+          //   : {}
         }
       ],
       distinct: true,

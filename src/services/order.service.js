@@ -121,7 +121,7 @@ export class OrderService {
     const status = 'ongoing';
     const genderAttribute = await ProductAttribute.findOne({
       where: {
-        name: 'Gender'
+        name: 'Sex'
       }
     });
     if (!genderAttribute) throw new Error('Attribute not found');

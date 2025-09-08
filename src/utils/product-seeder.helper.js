@@ -207,6 +207,72 @@ export const productVariantWithGenderButNoSize = (gender, productAttributeId, si
 };
 /**
  *
+ * @param {'Female'|'Male'} gender
+ * @param {string} productAttributeId
+ * @returns
+ */
+export const productVariantWithoutGenderButHaveSize = (productAttributeId) => {
+  return [
+    {
+      name: 'N/A',
+      size: 'Small',
+      price: 350,
+      stockAvailable: 50,
+      stockCondition: calculateStockCondition(50),
+      productAttributeId
+    },
+    {
+      name: 'N/A',
+      size: 'Medium',
+      price: 350,
+      stockAvailable: 50,
+      stockCondition: calculateStockCondition(50),
+      productAttributeId
+    },
+    {
+      name: 'N/A',
+      size: 'Large',
+      price: 350,
+      stockAvailable: 50,
+      stockCondition: calculateStockCondition(50),
+      productAttributeId
+    },
+    {
+      name: 'N/A',
+      size: 'Extra Large',
+      price: 350,
+      stockAvailable: 50,
+      stockCondition: calculateStockCondition(50),
+      productAttributeId
+    },
+    {
+      name: 'N/A',
+      size: '2 Extra Large',
+      price: 350,
+      stockAvailable: 50,
+      stockCondition: calculateStockCondition(50),
+      productAttributeId
+    },
+    {
+      name: 'N/A',
+      size: '3 Extra Large',
+      price: 350,
+      stockAvailable: 50,
+      stockCondition: calculateStockCondition(50),
+      productAttributeId
+    },
+    {
+      name: 'N/A',
+      size: '4 Extra Large',
+      price: 500,
+      stockAvailable: 50,
+      stockCondition: calculateStockCondition(50),
+      productAttributeId
+    }
+  ];
+};
+/**
+ *
  * @param {string} productAttributeId
  */
 export const productWithNoVariant = (productAttributeId) => {

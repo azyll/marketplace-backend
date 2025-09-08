@@ -57,6 +57,14 @@ export default (sequelize) => {
         values: ['uniform', 'proware', 'stationery', 'accessory'],
         schema: Joi.string().required().valid('uniform', 'proware', 'stationery', 'accessory')
       },
+      level: {
+        type: DataTypes.TEXT,
+        allowNull: false,
+        validate: {
+          isIn: [['shs', 'tertiary', 'all']]
+        },
+        defaultValue: 'tertiary'
+      },
       productSlug: {
         type: DataTypes.VIRTUAL,
         get() {

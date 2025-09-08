@@ -78,11 +78,7 @@ export async function up(queryInterface, Sequelize) {
   await ModulePermissionService.createModulePermission(users[2].id, 'orders', 'edit');
   await ModulePermissionService.createModulePermission(users[2].id, 'sales', 'edit');
 
-  const program = await DB.Program.findOne({
-    where: {
-      name: {[Op.eq]: 'Bachelor of Science in Information Technology'}
-    }
-  });
+  const programs = await DB.Program.findAll();
   await queryInterface.bulkInsert(
     'Students',
     [
@@ -93,7 +89,7 @@ export async function up(queryInterface, Sequelize) {
         sex: 'male',
         createdAt: new Date(),
         updatedAt: new Date(),
-        programId: program.id
+        programId: programs[0].id
       },
       {
         id: 2000309921,
@@ -102,11 +98,69 @@ export async function up(queryInterface, Sequelize) {
         sex: 'female',
         createdAt: new Date(),
         updatedAt: new Date(),
-        programId: program.id
+        programId: programs[0].id
       }
     ],
     {}
   );
+  const studentUsers = [];
+
+  for (let i = 0; i < 10; i++) {
+    const maleUser = {
+      id: uuid(),
+      firstName: `MaleStudent${i + 1}`,
+      lastName: 'User',
+      email: `malestudent${i + 1}@test.com`,
+      password,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      roleId: studentRole.id
+    };
+
+    const femaleUser = {
+      id: uuid(),
+      firstName: `FemaleStudent${i + 1}`,
+      lastName: 'User',
+      email: `femalestudent${i + 1}@test.com`,
+      password,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      roleId: studentRole.id
+    };
+
+    studentUsers.push(maleUser, femaleUser);
+  }
+
+  const otherStudentUsers = await DB.User.bulkCreate(studentUsers);
+
+  // Create 20 corresponding student records
+  const studentRecords = [];
+
+  for (let i = 0; i < 10; i++) {
+    const programId = programs[i].id;
+
+    studentRecords.push(
+      {
+        id: 2000309900 + i * 2 + 0,
+        userId: otherStudentUsers[i * 2].id, // Male
+        level: i <= 6 ? 'tertiary' : 'shs',
+        sex: 'male',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        programId
+      },
+      {
+        id: 2000309900 + i * 2 + 1,
+        userId: otherStudentUsers[i * 2 + 1].id, // Female
+        level: i <= 6 ? 'tertiary' : 'shs',
+        sex: 'female',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        programId
+      }
+    );
+  }
+  await queryInterface.bulkInsert('Students', studentRecords, {});
 }
 export async function down(queryInterface, Sequelize) {
   /**
