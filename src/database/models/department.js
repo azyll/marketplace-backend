@@ -40,6 +40,14 @@ export default (sequelize) => {
         type: DataTypes.STRING,
         allowNull: false,
         schema: Joi.string().trim().required()
+      },
+      level: {
+        type: DataTypes.String,
+        allowNull: false,
+        validate: {
+          isIn: [['shs', 'tertiary', 'all']]
+        },
+        defaultValue: 'tertiary'
       }
     },
     {
@@ -50,3 +58,4 @@ export default (sequelize) => {
   );
   return Department;
 };
+

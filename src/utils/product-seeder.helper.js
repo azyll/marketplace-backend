@@ -189,6 +189,24 @@ export const productVariantWithGender = (gender, productAttributeId) => {
 };
 /**
  *
+ * @param {'Female'|'Male'} gender
+ * @param {string} productAttributeId
+ * @returns
+ */
+export const productVariantWithGenderButNoSize = (gender, productAttributeId, size = 'N/A') => {
+  return [
+    {
+      name: gender,
+      price: 350,
+      size,
+      stockAvailable: 50,
+      stockCondition: calculateStockCondition(50),
+      productAttributeId
+    }
+  ];
+};
+/**
+ *
  * @param {string} productAttributeId
  */
 export const productWithNoVariant = (productAttributeId) => {

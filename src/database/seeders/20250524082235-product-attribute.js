@@ -23,13 +23,19 @@ export async function up(queryInterface, Sequelize) {
       },
       {
         id: uuid(),
-        name: 'Gender',
+        name: 'Sex',
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
         id: uuid(),
         name: 'Color',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        id: uuid(),
+        name: 'Type',
         createdAt: new Date(),
         updatedAt: new Date()
       }

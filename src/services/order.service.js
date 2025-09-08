@@ -575,20 +575,34 @@ export class OrderService {
 
   static async markOnGoingOrdersAsCancelled() {
     const thresholdDate = new Date(Date.now() - 24 * 60 * 60 * 1000); // 24 hours ago
-
-    return await Order.update(
-      {
-        status: 'cancelled'
-      },
-      {
+    const transaction = sequelize.transaction(async (transaction) => {
+      const order = await Order.findAll({
+        include: [{model: OrderItems, as: 'orderItems'}],
         where: {
           status: 'ongoing',
           createdAt: {
             [Op.lt]: thresholdDate
           }
-        }
-      }
-    );
+        },
+        transaction
+      });
+
+      if (!order) return;
+
+      // for (const orderItem of order.orderItems) {
+      //   const variant = await ProductVariant.findByPk(orderItem.productVariantId, {transaction});
+      //   if (!variant) throw new NotFoundException('Product not found', 404);
+
+      //   const newStockAvailable = Number(variant.stockAvailable) + Number(orderItem.quantity);
+      //   variant.stockAvailable = Number(newStockAvailable);
+      //   variant.stockReserved = Number(variant.stockReserved) - Number(orderItem.quantity);
+      //   variant.stockCondition = calculateStockCondition(newStockAvailable);
+      //   await variant.save({
+      //     transaction
+      //   });
+      // }
+    });
+    return transaction;
   }
   static async getOrderLimit() {
     const limit = await OrderLimit.findByPk(1);

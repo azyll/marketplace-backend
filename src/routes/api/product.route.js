@@ -44,7 +44,7 @@ router.post(
   validate({
     name: Joi.string().trim().required(),
     description: Joi.string().trim().required(),
-    image: Joi.string().trim().required(),
+    image: Joi.string().trim().optional(),
     type: Joi.string().trim().required(),
     category: Joi.string().trim().required(),
     variants: Joi.string().required(),

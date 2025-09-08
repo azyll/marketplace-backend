@@ -153,7 +153,8 @@ export class ProductService {
             query.department ?
               {
                 name: {
-                  [Op.iLike]: `%${query?.department}%`
+                  [Op.iLike]: `%${query?.department}%`,
+                  
                 }
               }
             : {}
@@ -182,81 +183,7 @@ export class ProductService {
       }
     };
   }
-  /**
-   * Get All Products by filtered by Department
-   * @param {string} userId
- 
-   * @throws {NotFoundException}  Department not found
-   * @returns {Promise<{data:Product[]}>} All products filtered by department
-   */
-  static async getProductsFilteredByStudentDepartment(userId) {
-    const user = await User.findByPk(userId, {
-      include: [
-        {
-          model: Student,
-          as: 'student',
-          include: [
-            {
-              model: Program,
-              as: 'program',
-              include: [
-                {
-                  model: Department,
-                  as: 'department'
-                }
-              ]
-            }
-          ]
-        }
-      ]
-    });
 
-    if (!user) throw new NotFoundException('Student not found', 404);
-
-    const departmentId = user?.student?.program?.department?.id;
-    const proware = await Department.findOne({
-      where: {
-        name: 'Proware'
-      }
-    });
-    let sex = 'Male';
-    if (user.student.sex === 'male') {
-      sex = 'Female';
-    }
-
-    if (!departmentId || !proware) throw new NotFoundException('Department not found', 404);
-    const products = await Product.findAll({
-      where: {
-        departmentId: {
-          [Op.in]: [departmentId, proware.id]
-        }
-      },
-      include: [
-        {
-          model: ProductVariant,
-          as: 'productVariant',
-          required: true,
-          where: {
-            name: {
-              [Op.notILike]: sex // 👈 Case-insensitive exclusion
-            }
-          },
-          include: [
-            {
-              model: ProductAttribute,
-              as: 'productAttribute'
-            }
-          ]
-        },
-        {
-          model: Department,
-          as: 'department'
-        }
-      ]
-    });
-
-    return products;
-  }
   /**
    * Get All Products by Department
    * @param {string} userId

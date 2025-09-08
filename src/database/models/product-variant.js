@@ -35,10 +35,11 @@ export default (sequelize) => {
         primaryKey: true,
         defaultValue: DataTypes.UUIDV4
       },
-      name: {type: DataTypes.STRING, schema: Joi.string().trim().required()},
+      name: {type: DataTypes.STRING, schema: Joi.string().trim().required(), defaultValue: 'N/A'},
       size: {
         type: DataTypes.STRING,
-        schema: Joi.string().required()
+        schema: Joi.string().required(),
+        defaultValue: 'N/A'
       },
       price: {
         type: DataTypes.DOUBLE,
