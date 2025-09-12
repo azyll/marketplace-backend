@@ -38,7 +38,7 @@ export async function up(queryInterface, Sequelize) {
       lastName: 'User',
       email: 'alissa@test.com',
       password,
-      createdAt: new Date(),
+      createdAt: new Date(2025, 5, 5),
       updatedAt: new Date(),
       roleId: studentRole.id
     },
@@ -48,17 +48,17 @@ export async function up(queryInterface, Sequelize) {
       lastName: 'User',
       email: 'admin@test.com',
       password,
-      createdAt: new Date(),
+      createdAt: new Date(2025, 5, 5),
       updatedAt: new Date(),
       roleId: adminRole.id
     },
     {
       id: uuid(),
-      firstName: 'Employee',
-      lastName: 'User',
+      firstName: 'Kimberly',
+      lastName: 'Mangulabnan',
       email: 'employeeg@test.com',
       password,
-      createdAt: new Date(),
+      createdAt: new Date(2025, 5, 5),
       updatedAt: new Date(),
       roleId: employeeRole.id
     },
@@ -68,7 +68,7 @@ export async function up(queryInterface, Sequelize) {
       lastName: 'User Student',
       email: 'kenandrew@test.com',
       password,
-      createdAt: new Date(),
+      createdAt: new Date(2025, 5, 5),
       updatedAt: new Date(),
       roleId: studentRole.id
     }
@@ -87,7 +87,7 @@ export async function up(queryInterface, Sequelize) {
         userId: users[3].id,
         level: 'tertiary',
         sex: 'male',
-        createdAt: new Date(),
+        createdAt: new Date(2025, 5, 5),
         updatedAt: new Date(),
         programId: programs[0].id
       },
@@ -96,7 +96,7 @@ export async function up(queryInterface, Sequelize) {
         userId: users[0].id,
         level: 'tertiary',
         sex: 'female',
-        createdAt: new Date(),
+        createdAt: new Date(2025, 5, 5),
         updatedAt: new Date(),
         programId: programs[0].id
       }
@@ -112,7 +112,7 @@ export async function up(queryInterface, Sequelize) {
       lastName: 'User',
       email: `malestudent${i + 1}@test.com`,
       password,
-      createdAt: new Date(),
+      createdAt: new Date(2025, 5, 5),
       updatedAt: new Date(),
       roleId: studentRole.id
     };
@@ -123,7 +123,7 @@ export async function up(queryInterface, Sequelize) {
       lastName: 'User',
       email: `femalestudent${i + 1}@test.com`,
       password,
-      createdAt: new Date(),
+      createdAt: new Date(2025, 5, 5),
       updatedAt: new Date(),
       roleId: studentRole.id
     };
@@ -145,7 +145,7 @@ export async function up(queryInterface, Sequelize) {
         userId: otherStudentUsers[i * 2].id, // Male
         level: i <= 6 ? 'tertiary' : 'shs',
         sex: 'male',
-        createdAt: new Date(),
+        createdAt: new Date(2025, 5, 5),
         updatedAt: new Date(),
         programId
       },
@@ -154,7 +154,7 @@ export async function up(queryInterface, Sequelize) {
         userId: otherStudentUsers[i * 2 + 1].id, // Female
         level: i <= 6 ? 'tertiary' : 'shs',
         sex: 'female',
-        createdAt: new Date(),
+        createdAt: new Date(2025, 5, 5),
         updatedAt: new Date(),
         programId
       }

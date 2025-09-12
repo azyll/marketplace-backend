@@ -41,6 +41,12 @@ export default (sequelize) => {
         schema: Joi.string().trim().required(),
         allowNull: false,
         unique: true
+      },
+      acronym: {
+        type: DataTypes.STRING,
+        schema: Joi.string().trim().required(),
+        allowNull: false,
+        unique: true
       }
     },
     {

@@ -16,35 +16,38 @@ export async function up(queryInterface, Sequelize) {
   const departments = await DB.Department.bulkCreate([
     {
       name: 'Information and Communication Technology',
-      level: 'tertiary'
+      level: 'tertiary',
+      acronym: 'ict'
     },
     {
       name: 'Business & Management',
-      level: 'tertiary'
+      level: 'tertiary',
+      acronym: 'bm'
     },
     {
       name: 'Hospitality Management',
-      level: 'tertiary'
+      level: 'tertiary',
+      acronym: 'hm'
     },
     {
       name: 'Tourism Management',
-      level: 'tertiary'
+      level: 'tertiary',
+      acronym: 'tm'
     },
     {
       name: 'Arts & Sciences',
-      level: 'tertiary'
+      level: 'tertiary',
+      acronym: 'a&s'
     },
     {
       name: 'Senior High School',
-      level: 'shs'
+      level: 'shs',
+      acronym: 'shs'
     },
     {
       name: 'Proware',
-      level: 'all'
-    },
-    {
-      name: 'Tertiary',
-      level: 'tertiary'
+      level: 'all',
+      acronym: 'proware'
     }
   ]);
 
@@ -54,70 +57,80 @@ export async function up(queryInterface, Sequelize) {
       {
         id: uuid(),
         name: 'Bachelor of Science in Information Technology',
-        createdAt: new Date(),
+        acronym: 'bsit',
+        createdAt: new Date(2025, 5, 5),
         updatedAt: new Date(),
         departmentId: departments[0].id
       },
       {
         id: uuid(),
         name: 'Bachelor of Science in Computer Science',
-        createdAt: new Date(),
+        acronym: 'bscs',
+        createdAt: new Date(2025, 5, 5),
         updatedAt: new Date(),
         departmentId: departments[0].id
       },
       {
         id: uuid(),
         name: 'Bachelor of Science in Computer Engineering',
-        createdAt: new Date(),
+        acronym: 'bscpe',
+        createdAt: new Date(2025, 5, 5),
         updatedAt: new Date(),
         departmentId: departments[0].id
       },
       {
         id: uuid(),
         name: 'Bachelor of Science in Business Administration',
-        createdAt: new Date(),
+        acronym: 'bsba',
+        createdAt: new Date(2025, 5, 5),
         updatedAt: new Date(),
         departmentId: departments[1].id
       },
       {
         id: uuid(),
         name: 'Bachelor of Science in Hospitality Management',
-        createdAt: new Date(),
+        acronym: 'bshm',
+        createdAt: new Date(2025, 5, 5),
         updatedAt: new Date(),
         departmentId: departments[2].id
       },
       {
         id: uuid(),
         name: 'Bachelor of Science in Tourism Management',
-        createdAt: new Date(),
+        acronym: 'bstm',
+        createdAt: new Date(2025, 5, 5),
         updatedAt: new Date(),
         departmentId: departments[3].id
       },
       {
         id: uuid(),
         name: 'Bachelor of Arts in Communication',
-        createdAt: new Date(),
+        acronym: 'bacomm',
+        createdAt: new Date(2025, 5, 5),
         updatedAt: new Date(),
         departmentId: departments[4].id
       },
       {
         id: uuid(),
         name: 'IT In Mobile app and Web Development',
-        createdAt: new Date(),
+        acronym: 'ict',
+        createdAt: new Date(2025, 5, 5),
         updatedAt: new Date(),
         departmentId: departments[5].id
       },
       {
         id: uuid(),
         name: 'Science, Technology, Engineering, and Mathematics',
-        createdAt: new Date(),
+        acronym: 'stem',
+        createdAt: new Date(2025, 5, 5),
         updatedAt: new Date(),
         departmentId: departments[5].id
       },
       {
         id: uuid(),
         name: 'Accountancy, Business, and Management',
-        createdAt: new Date(),
+        acronym: 'abm',
+        createdAt: new Date(2025, 5, 5),
         updatedAt: new Date(),
         departmentId: departments[5].id
       }

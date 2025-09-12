@@ -65,3 +65,16 @@ export const getDepartments = async (req, res) => {
     return res.status(400).json({message, error: error.message || defaultErrorMessage});
   }
 };
+export const getDepartment = async (req, res) => {
+  const {departmentId} = req.params;
+  try {
+    const department = await DepartmentService.getDepartment(departmentId);
+    return res.status(200).json({message: 'Department retrieve successful', data: department});
+  } catch (error) {
+    const message = 'Failed to get departments';
+    if (error instanceof NotFoundException || error instanceof UnauthorizedException) {
+      return res.status(error.statusCode).json({message, error: error.message});
+    }
+    return res.status(400).json({message, error: error.message || defaultErrorMessage});
+  }
+};

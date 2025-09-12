@@ -35,7 +35,7 @@ export class OrderService {
 
     // if (isWeekendWindow) {
     //   throw new Error(
-    //     'The Proware office is closed on weekends. Orders can only be processed from Sunday to Friday at 4 PM.'
+    //     'The Proware office is closed on weekends. Orders can only be processed from Sunday 1 PM to Friday at 3 PM.'
     //   );
     // }
 
@@ -53,7 +53,7 @@ export class OrderService {
       }
     });
 
-    if (productVariants.length !== variantIds.length || !productVariants) {
+    if (productVariants.length !== variantIds.length) {
       throw new NotFoundException('Invalid credential, The product not found', 404);
     }
     const orderLimit = await this.getOrderLimit();
@@ -76,17 +76,19 @@ export class OrderService {
             {
               model: Order,
               as: 'order',
-              // required:true,
-              // where:{
-              // status:'completed'
-              // }
+              required: true,
+              where: {
+                status: {
+                  [Op.or]: ['completed', 'ongoing']
+                }
+              },
               include: [
                 {
                   model: OrderItems,
                   as: 'orderItems',
                   required: true,
                   where: {
-                    //Orders for the past 3 months
+                    // Orders for the past 3 months
                     createdAt: {
                       [Op.gt]: threeMonthsAgo,
                       [Op.lt]: new Date()
@@ -100,12 +102,12 @@ export class OrderService {
                       model: ProductVariant,
                       as: 'productVariant',
                       required: true, // Ensure productVariant matches
-                      include: [{model: Product, as: 'product'}],
-                      where: {
-                        stockAvailable: {
-                          [Op.lt]: 20
-                        }
-                      }
+                      include: [{model: Product, as: 'product'}]
+                      // where: {
+                      //   stockAvailable: {
+                      //     [Op.lt]: 20
+                      //   }
+                      // }
                     }
                   ]
                 }
@@ -117,11 +119,12 @@ export class OrderService {
     });
 
     if (!user) throw new NotFoundException('Student not found', 404);
+    return user;
 
     const status = 'ongoing';
     const genderAttribute = await ProductAttribute.findOne({
       where: {
-        name: 'Sex'
+        name: 'Gender'
       }
     });
     if (!genderAttribute) throw new Error('Attribute not found');

@@ -16,7 +16,7 @@ export async function up(queryInterface, Sequelize) {
       id: 1
     },
     defaults: {
-      limit: 1
+      limit: 3
     }
   });
 }

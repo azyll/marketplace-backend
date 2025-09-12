@@ -39,6 +39,13 @@ export default (sequelize) => {
       name: {
         type: DataTypes.STRING,
         allowNull: false,
+        unique: true,
+        schema: Joi.string().trim().required()
+      },
+      acronym: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true,
         schema: Joi.string().trim().required()
       },
       level: {

@@ -18,25 +18,25 @@ export async function up(queryInterface, Sequelize) {
       {
         id: uuid(),
         name: 'N/A',
-        createdAt: new Date(),
+        createdAt: new Date(2025, 5, 5),
         updatedAt: new Date()
       },
       {
         id: uuid(),
-        name: 'Sex',
-        createdAt: new Date(),
+        name: 'Gender',
+        createdAt: new Date(2025, 5, 5),
         updatedAt: new Date()
       },
       {
         id: uuid(),
         name: 'Color',
-        createdAt: new Date(),
+        createdAt: new Date(2025, 5, 5),
         updatedAt: new Date()
       },
       {
         id: uuid(),
         name: 'Type',
-        createdAt: new Date(),
+        createdAt: new Date(2025, 5, 5),
         updatedAt: new Date()
       }
     ],

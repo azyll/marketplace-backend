@@ -40,7 +40,14 @@ export class DepartmentService {
 
    */
   static async getDepartments() {
-    const Departments = await Department.findAll();
+    const Departments = await Department.findAll({
+      include: [
+        {
+          model: DB.Program,
+          as: 'program'
+        }
+      ]
+    });
     return Departments;
   }
 
@@ -58,5 +65,15 @@ export class DepartmentService {
    * @param {string} DepartmentId
    * @throws {NotFoundException}
    */
-  static async getDepartment(DepartmentId) {}
+  static async getDepartment(DepartmentId) {
+    const department = await Department.findByPk(DepartmentId, {
+      include: [
+        {
+          model: DB.Program,
+          as: 'program'
+        }
+      ]
+    });
+    return department;
+  }
 }

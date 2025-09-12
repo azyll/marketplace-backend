@@ -106,6 +106,7 @@ export class ProductService {
    *     name?: string,
    *     department?: string,
    *     latest?: boolean,
+   *     program?:string
    *      raw?: boolean
    *   }} query Query
    *
@@ -127,14 +128,42 @@ export class ProductService {
     if (query?.name) {
       whereClause.name = {[Op.iLike]: `%${convertFromSlug(query.name)}%`}; // case-insensitive partial match
     }
-    if (query.department) {
+    if (query.program) {
       const isProware = query.department === 'Proware';
-      const departments = await DB.Department.findAll({
-        where: {
-          name: {
-            [Op.or]: [query.department, 'Proware']
-          }
+
+      const where = {};
+      where[Op.or] = [
+        {
+          acronym: {[Op.iLike]: `%${query.program}%`}
+        },
+        {
+          name: {[Op.iLike]: `%${query.program}%`}
         }
+      ];
+      const program = await DB.Program.findOne({
+        where,
+        include: [
+          {
+            model: DB.Department,
+            as: 'department'
+          }
+        ]
+      });
+
+      if (!program) throw new Error('Program not found');
+
+      where[Op.or] = [
+        // Equal to the column name
+        {
+          name: ['Proware']
+        },
+        // or acronym
+        {
+          id: program.departmentId
+        }
+      ];
+      const departments = await DB.Department.findAll({
+        where
       });
       if (departments.length === 0) throw new Error('Department not found');
       // Map department names to their IDs
@@ -153,8 +182,52 @@ export class ProductService {
           [Op.eq]: prowareId
         };
       } else {
-        const requestedId = departmentMap[query.department].id;
+        const requestedId = departmentMap[program.department.name].id;
         const prowareId = departmentMap['Proware'].id;
+        if (!requestedId) throw new Error(`Department '${program.department.name}' not found`);
+        if (!prowareId) throw new Error('Proware department not found');
+        whereClause.departmentId = {
+          [Op.or]: [requestedId, prowareId]
+        };
+        whereClause.level = {
+          [Op.or]: [departmentMap[program.department.name].level, 'all']
+        };
+      }
+    }
+    if (query.department) {
+      const isProware = query.department === 'Proware';
+      const where = {};
+      where[Op.or] = [
+        {name: {[Op.eq]: query.department}},
+        {acronym: {[Op.eq]: query.department}},
+        {name: {[Op.eq]: 'Proware'}},
+        {acronym: {[Op.eq]: 'Proware'}}
+      ];
+      const departments = await DB.Department.findAll({
+        where
+      });
+
+      if (departments.length === 0) throw new Error('Department not found');
+      // Map department names to their IDs
+      const departmentMap = {};
+      departments.forEach((dep) => {
+        departmentMap[query.department?.length > 8 ? dep.name : dep.acronym] = {
+          id: dep.id,
+          level: dep.level,
+          acronym: dep.acronym
+        };
+      });
+
+      if (isProware) {
+        const prowareId = departmentMap['Proware'].id;
+        if (!prowareId) throw new Error('Proware department not found');
+        whereClause.departmentId = {
+          [Op.eq]: prowareId
+        };
+      } else {
+        const requestedId = departmentMap[query.department].id;
+        console.log(departmentMap, departmentMap[query.department], requestedId, departmentMap['Proware']);
+        const prowareId = departmentMap['Proware'] ? departmentMap['Proware'].id : departmentMap['proware'].id;
         if (!requestedId) throw new Error(`Department '${query.department}' not found`);
         if (!prowareId) throw new Error('Proware department not found');
         whereClause.departmentId = {

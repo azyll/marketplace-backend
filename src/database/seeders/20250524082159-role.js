@@ -10,21 +10,21 @@ export async function up(queryInterface, Sequelize) {
         id: uuid(),
         name: 'Student',
         systemTag: 'student',
-        createdAt: new Date(),
+        createdAt: new Date(2025, 5, 5),
         updatedAt: new Date()
       },
       {
         id: uuid(),
         name: 'Admin',
         systemTag: 'admin',
-        createdAt: new Date(),
+        createdAt: new Date(2025, 5, 5),
         updatedAt: new Date()
       },
       {
         id: uuid(),
         name: 'Employee',
         systemTag: 'employee',
-        createdAt: new Date(),
+        createdAt: new Date(2025, 5, 5),
         updatedAt: new Date()
       }
     ],
@@ -41,7 +41,7 @@ export async function up(queryInterface, Sequelize) {
   //     userId: studentUser.id,
   //     program: "IT",
   //     level: "shs",
-  //     createdAt: new Date(),
+  //     createdAt: new Date(2025,5,5),
   //     updatedAt: new Date(),
   //   },
   // ]);

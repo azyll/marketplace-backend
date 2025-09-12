@@ -4,15 +4,18 @@ import {
   createDepartment,
   archiveDepartment,
   getDepartments,
-  updateDepartment
+  updateDepartment,
+  getDepartment
 } from '../../controllers/department.controller.js';
 
 const router = Router();
 
 // Create Department
 router.post('/', createDepartment);
-// Get Departments
+// Get All Departments
 router.get('/', getDepartments);
+// Get Department
+router.get('/:departmentId', getDepartment);
 // Update Department
 router.put('/:departmentId', updateDepartment);
 // Archive Department

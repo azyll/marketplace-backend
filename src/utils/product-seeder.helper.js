@@ -12,7 +12,9 @@ export const productVariantWithMaleAndFemale = (productAttributeId) => {
       price: 350,
       stockAvailable: 50,
       stockCondition: calculateStockCondition(50),
-      productAttributeId
+      productAttributeId,
+      createdAt: new Date(2025, 5, 5),
+      updatedAt: new Date()
     },
     {
       name: 'Male',
@@ -20,7 +22,9 @@ export const productVariantWithMaleAndFemale = (productAttributeId) => {
       price: 350,
       stockAvailable: 50,
       stockCondition: calculateStockCondition(50),
-      productAttributeId
+      productAttributeId,
+      createdAt: new Date(2025, 5, 5),
+      updatedAt: new Date()
     },
     {
       name: 'Male',
@@ -28,7 +32,9 @@ export const productVariantWithMaleAndFemale = (productAttributeId) => {
       price: 350,
       stockAvailable: 50,
       stockCondition: calculateStockCondition(50),
-      productAttributeId
+      productAttributeId,
+      createdAt: new Date(2025, 5, 5),
+      updatedAt: new Date()
     },
     {
       name: 'Male',
@@ -36,7 +42,9 @@ export const productVariantWithMaleAndFemale = (productAttributeId) => {
       price: 350,
       stockAvailable: 50,
       stockCondition: calculateStockCondition(50),
-      productAttributeId
+      productAttributeId,
+      createdAt: new Date(2025, 5, 5),
+      updatedAt: new Date()
     },
     {
       name: 'Male',
@@ -44,7 +52,9 @@ export const productVariantWithMaleAndFemale = (productAttributeId) => {
       price: 350,
       stockAvailable: 50,
       stockCondition: calculateStockCondition(50),
-      productAttributeId
+      productAttributeId,
+      createdAt: new Date(2025, 5, 5),
+      updatedAt: new Date()
     },
     {
       name: 'Male',
@@ -52,7 +62,9 @@ export const productVariantWithMaleAndFemale = (productAttributeId) => {
       price: 350,
       stockAvailable: 50,
       stockCondition: calculateStockCondition(50),
-      productAttributeId
+      productAttributeId,
+      createdAt: new Date(2025, 5, 5),
+      updatedAt: new Date()
     },
     {
       name: 'Male',
@@ -60,7 +72,9 @@ export const productVariantWithMaleAndFemale = (productAttributeId) => {
       price: 500,
       stockAvailable: 50,
       stockCondition: calculateStockCondition(50),
-      productAttributeId
+      productAttributeId,
+      createdAt: new Date(2025, 5, 5),
+      updatedAt: new Date()
     },
     {
       name: 'Female',
@@ -68,7 +82,9 @@ export const productVariantWithMaleAndFemale = (productAttributeId) => {
       price: 350,
       stockAvailable: 50,
       stockCondition: calculateStockCondition(50),
-      productAttributeId
+      productAttributeId,
+      createdAt: new Date(2025, 5, 5),
+      updatedAt: new Date()
     },
     {
       name: 'Female',
@@ -76,7 +92,9 @@ export const productVariantWithMaleAndFemale = (productAttributeId) => {
       price: 350,
       stockAvailable: 50,
       stockCondition: calculateStockCondition(50),
-      productAttributeId
+      productAttributeId,
+      createdAt: new Date(2025, 5, 5),
+      updatedAt: new Date()
     },
     {
       name: 'Female',
@@ -84,7 +102,9 @@ export const productVariantWithMaleAndFemale = (productAttributeId) => {
       price: 350,
       stockAvailable: 50,
       stockCondition: calculateStockCondition(50),
-      productAttributeId
+      productAttributeId,
+      createdAt: new Date(2025, 5, 5),
+      updatedAt: new Date()
     },
     {
       name: 'Female',
@@ -92,7 +112,9 @@ export const productVariantWithMaleAndFemale = (productAttributeId) => {
       price: 350,
       stockAvailable: 50,
       stockCondition: calculateStockCondition(50),
-      productAttributeId
+      productAttributeId,
+      createdAt: new Date(2025, 5, 5),
+      updatedAt: new Date()
     },
     {
       name: 'Female',
@@ -100,7 +122,9 @@ export const productVariantWithMaleAndFemale = (productAttributeId) => {
       price: 350,
       stockAvailable: 50,
       stockCondition: calculateStockCondition(50),
-      productAttributeId
+      productAttributeId,
+      createdAt: new Date(2025, 5, 5),
+      updatedAt: new Date()
     },
     {
       name: 'Female',
@@ -108,7 +132,9 @@ export const productVariantWithMaleAndFemale = (productAttributeId) => {
       price: 350,
       stockAvailable: 50,
       stockCondition: calculateStockCondition(50),
-      productAttributeId
+      productAttributeId,
+      createdAt: new Date(2025, 5, 5),
+      updatedAt: new Date()
     },
     {
       name: 'Female',
@@ -116,7 +142,9 @@ export const productVariantWithMaleAndFemale = (productAttributeId) => {
       price: 500,
       stockAvailable: 50,
       stockCondition: calculateStockCondition(50),
-      productAttributeId
+      productAttributeId,
+      createdAt: new Date(2025, 5, 5),
+      updatedAt: new Date()
     }
   ];
 };
@@ -135,7 +163,9 @@ export const productVariantWithGender = (gender, productAttributeId) => {
       price: 350,
       stockAvailable: 50,
       stockCondition: calculateStockCondition(50),
-      productAttributeId
+      productAttributeId,
+      createdAt: new Date(2025, 5, 5),
+      updatedAt: new Date()
     },
     {
       name: gender,
@@ -143,7 +173,9 @@ export const productVariantWithGender = (gender, productAttributeId) => {
       price: 350,
       stockAvailable: 50,
       stockCondition: calculateStockCondition(50),
-      productAttributeId
+      productAttributeId,
+      createdAt: new Date(2025, 5, 5),
+      updatedAt: new Date()
     },
     {
       name: gender,
@@ -151,7 +183,9 @@ export const productVariantWithGender = (gender, productAttributeId) => {
       price: 350,
       stockAvailable: 50,
       stockCondition: calculateStockCondition(50),
-      productAttributeId
+      productAttributeId,
+      createdAt: new Date(2025, 5, 5),
+      updatedAt: new Date()
     },
     {
       name: gender,
@@ -159,7 +193,9 @@ export const productVariantWithGender = (gender, productAttributeId) => {
       price: 350,
       stockAvailable: 50,
       stockCondition: calculateStockCondition(50),
-      productAttributeId
+      productAttributeId,
+      createdAt: new Date(2025, 5, 5),
+      updatedAt: new Date()
     },
     {
       name: gender,
@@ -167,7 +203,9 @@ export const productVariantWithGender = (gender, productAttributeId) => {
       price: 350,
       stockAvailable: 50,
       stockCondition: calculateStockCondition(50),
-      productAttributeId
+      productAttributeId,
+      createdAt: new Date(2025, 5, 5),
+      updatedAt: new Date()
     },
     {
       name: gender,
@@ -175,7 +213,9 @@ export const productVariantWithGender = (gender, productAttributeId) => {
       price: 350,
       stockAvailable: 50,
       stockCondition: calculateStockCondition(50),
-      productAttributeId
+      productAttributeId,
+      createdAt: new Date(2025, 5, 5),
+      updatedAt: new Date()
     },
     {
       name: gender,
@@ -183,7 +223,9 @@ export const productVariantWithGender = (gender, productAttributeId) => {
       price: 500,
       stockAvailable: 50,
       stockCondition: calculateStockCondition(50),
-      productAttributeId
+      productAttributeId,
+      createdAt: new Date(2025, 5, 5),
+      updatedAt: new Date()
     }
   ];
 };
@@ -201,7 +243,9 @@ export const productVariantWithGenderButNoSize = (gender, productAttributeId, si
       size,
       stockAvailable: 50,
       stockCondition: calculateStockCondition(50),
-      productAttributeId
+      productAttributeId,
+      createdAt: new Date(2025, 5, 5),
+      updatedAt: new Date()
     }
   ];
 };
@@ -227,7 +271,9 @@ export const productVariantWithoutGenderButHaveSize = (productAttributeId) => {
       price: 350,
       stockAvailable: 50,
       stockCondition: calculateStockCondition(50),
-      productAttributeId
+      productAttributeId,
+      createdAt: new Date(2025, 5, 5),
+      updatedAt: new Date()
     },
     {
       name: 'N/A',
@@ -235,7 +281,9 @@ export const productVariantWithoutGenderButHaveSize = (productAttributeId) => {
       price: 350,
       stockAvailable: 50,
       stockCondition: calculateStockCondition(50),
-      productAttributeId
+      productAttributeId,
+      createdAt: new Date(2025, 5, 5),
+      updatedAt: new Date()
     },
     {
       name: 'N/A',
@@ -243,7 +291,9 @@ export const productVariantWithoutGenderButHaveSize = (productAttributeId) => {
       price: 350,
       stockAvailable: 50,
       stockCondition: calculateStockCondition(50),
-      productAttributeId
+      productAttributeId,
+      createdAt: new Date(2025, 5, 5),
+      updatedAt: new Date()
     },
     {
       name: 'N/A',
@@ -251,7 +301,9 @@ export const productVariantWithoutGenderButHaveSize = (productAttributeId) => {
       price: 350,
       stockAvailable: 50,
       stockCondition: calculateStockCondition(50),
-      productAttributeId
+      productAttributeId,
+      createdAt: new Date(2025, 5, 5),
+      updatedAt: new Date()
     },
     {
       name: 'N/A',
@@ -259,7 +311,9 @@ export const productVariantWithoutGenderButHaveSize = (productAttributeId) => {
       price: 350,
       stockAvailable: 50,
       stockCondition: calculateStockCondition(50),
-      productAttributeId
+      productAttributeId,
+      createdAt: new Date(2025, 5, 5),
+      updatedAt: new Date()
     },
     {
       name: 'N/A',
@@ -267,7 +321,9 @@ export const productVariantWithoutGenderButHaveSize = (productAttributeId) => {
       price: 500,
       stockAvailable: 50,
       stockCondition: calculateStockCondition(50),
-      productAttributeId
+      productAttributeId,
+      createdAt: new Date(2025, 5, 5),
+      updatedAt: new Date()
     }
   ];
 };
@@ -283,7 +339,9 @@ export const productWithNoVariant = (productAttributeId) => {
       price: 100,
       stockAvailable: 50,
       stockCondition: calculateStockCondition(50),
-      productAttributeId
+      productAttributeId,
+      createdAt: new Date(2025, 5, 5),
+      updatedAt: new Date()
     }
   ];
 };
