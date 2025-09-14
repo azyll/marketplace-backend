@@ -1,38 +1,44 @@
-/**
- *
- * @param {'products' | 'avatars'} uploadPath - Image Path ./upload/images/
- */
 import formidable from 'formidable';
+import fs from 'fs';
+import supabase from '../lib/supabase.js';
 
-export const uploadFormData = (uploadPath) => {
+/**
+ * @param {'products' | 'avatars'} bucketName
+ */
+export const uploadFormData = (bucketName) => {
   return async (req, res, next) => {
-    const form = formidable({
-      keepExtensions: true,
-      uploadDir: `./uploads/images/${uploadPath}`,
-      maxFiles: 1,
-      maxFieldsSize: 5 * 1024 * 1024,
-      filter: function ({name, originalFilename, mimetype}) {
-        // Accept only images
-        return mimetype && mimetype.includes('image');
-      },
-      filename: function (name, ext, part, form) {
-        return `${Date.now()}-${form.fields.name[0]}.${part.originalFilename.split('.')[1]}`;
-      }
-    });
+    const form = formidable({maxFiles: 1, keepExtensions: true});
 
-    await form.parse(req, async (err, fields, files) => {
-      if (err) {
-        next(err);
-      }
-      const transformedFields = Object.keys(fields).reduce((acc, key) => {
-        acc[key] = fields[key][0]; // Take the first value from the array
-        return acc;
-      }, {});
-      if (files.image && files.image[0]) {
-        transformedFields.image = files.image[0].newFilename;
+    form.parse(req, async (err, fields, files) => {
+      if (err) return next(err);
+
+      const transformedFields = Object.fromEntries(Object.entries(fields).map(([k, v]) => [k, v[0]]));
+
+      const image = files.image?.[0];
+      if (!image) {
+        req.body = transformedFields;
+        return next(); // No image uploaded
       }
 
-      req.body = transformedFields;
+      const fileBuffer = fs.readFileSync(image.filepath);
+      const fileExt = image.originalFilename.split('.').pop();
+      const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${fileExt}`;
+      const filePath = `${bucketName}/${fileName}`;
+
+      const {error: uploadError} = await supabase.storage
+        .from('product-images')
+        .upload(`products/${fileName}`, fileBuffer, {
+          contentType: image.mimetype,
+          upsert: false
+        });
+
+      if (uploadError) return next(uploadError);
+
+      req.body = {
+        ...transformedFields,
+        image: `products/${fileName}`
+      };
+
       next();
     });
   };
