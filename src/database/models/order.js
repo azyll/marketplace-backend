@@ -72,7 +72,7 @@ export default (sequelize) => {
       exists = !!existing;
     }
 
-    order.id = `OR-${getDateAndTimeStamp()}-${id}`;
+    order.id = `ORD-${getDateAndTimeStamp()}-${id}`;
   });
   return Order;
 };

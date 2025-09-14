@@ -7,6 +7,7 @@ import {DepartmentService} from '../services/department.service.js';
 import {UnauthorizedException} from '../exceptions/unauthorized.js';
 import {defaultErrorMessage} from '../utils/error-message.js';
 import {convertFromSlug} from '../utils/slug-helper.js';
+import supabase from '../lib/supabase.js';
 
 /**
  * @typedef {import("../types/index.js").TOrderItem} TOrderItem
@@ -35,6 +36,7 @@ export const addProduct = async (req, res) => {
 
     return res.status(200).json({message: 'Product create successfully'});
   } catch (error) {
+    await supabase.storage.from('product-images').remove([`products/${req.body.image}`]);
     const message = 'Failed to create product';
     if (
       error instanceof NotFoundException ||

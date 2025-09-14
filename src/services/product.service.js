@@ -78,9 +78,6 @@ export class ProductService {
       if (!isJustCreated) {
         throw new AlreadyExistException('Product is already exists');
       }
-      const fileBuffer = await fs.readFile(`./uploads/images/products/${image}`);
-      await SupabaseService.uploadFile(fileBuffer, image);
-
       await NotificationService.createNotification(
         'New Product Added',
         `New Product added for ${department.name}`,

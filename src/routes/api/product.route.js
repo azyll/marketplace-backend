@@ -13,7 +13,6 @@ import {
 import {validate} from '../../middleware/validation.js';
 import {Joi} from 'sequelize-joi';
 import formidable from 'formidable';
-import {SupabaseService} from '../../services/supabase.service.js';
 import {uploadFormData} from '../../middleware/upload-formdata.js';
 
 const router = Router();
