@@ -49,19 +49,18 @@ export const addProduct = async (req, res) => {
 
 /**
  * Get All Products
- * /**
- * @param {import('express').Request<
+ * @param {import('express').Request
  *   {},
  *   {},
  *   {},
  *   QueryParams &{
  *     category: string,
  *     name: string,
+ *     search: string,    // Add this line
  *     department: string,
  *     latest: boolean,
  *   }
  * >} req
- 
  * @param {import('express').Response} res
  * @returns {Promise<import('express').Response>}
  */
@@ -81,6 +80,7 @@ export const getProducts = async (req, res) => {
     return res.status(400).json({message, error: error.message || defaultErrorMessage});
   }
 };
+
 /**
  * @param {import('express').Response} res
  * @param {import('express').Request} req
