@@ -58,7 +58,7 @@ export const addProduct = async (req, res) => {
  *   QueryParams &{
  *     category: string,
  *     name: string,
- *     search: string,    // Add this line
+ *     search: string,
  *     department: string,
  *     latest: boolean,
  *   }
