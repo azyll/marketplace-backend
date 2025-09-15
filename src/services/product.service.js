@@ -1,12 +1,10 @@
-//@ts-check
+// @ts-check
 
 import {cast, col, fn, Op, where} from 'sequelize';
 import {DB} from '../database/index.js';
 import {NotFoundException} from '../exceptions/notFound.js';
 import {AlreadyExistException} from '../exceptions/alreadyExist.js';
 import {calculateStockCondition} from '../utils/stock-helper.js';
-import fs from 'node:fs/promises';
-import {SupabaseService} from './supabase.service.js';
 import {NotificationService} from './notification.service.js';
 import {validate} from 'uuid';
 import {convertFromSlug} from '../utils/slug-helper.js';
@@ -141,13 +139,123 @@ export class ProductService {
       ];
     }
 
-    // Rest of your existing code remains the same...
     if (query.program) {
-      // ... existing program logic
-    }
+      const isProware = query.department === 'Proware';
 
+      const where = {};
+      where[Op.or] = [
+        {
+          acronym: {[Op.iLike]: `%${query.program}%`}
+        },
+        {
+          name: {[Op.iLike]: `%${query.program}%`}
+        }
+      ];
+      const program = await DB.Program.findOne({
+        where,
+        include: [
+          {
+            model: DB.Department,
+            as: 'department'
+          }
+        ]
+      });
+
+      if (!program) throw new Error('Program not found');
+
+      where[Op.or] = [
+        // Equal to the column name
+        {
+          name: ['Proware']
+        },
+        // or acronym
+        {
+          id: program.departmentId
+        }
+      ];
+      const departments = await DB.Department.findAll({
+        where
+      });
+      if (departments.length === 0) throw new Error('Department not found');
+      // Map department names to their IDs
+      const departmentMap = {};
+      departments.forEach((dep) => {
+        departmentMap[dep.name] = {
+          id: dep.id,
+          level: dep.level
+        };
+      });
+
+      if (isProware) {
+        const prowareId = departmentMap['Proware'].id;
+        if (!prowareId) throw new Error('Proware department not found');
+        whereClause.departmentId = {
+          [Op.eq]: prowareId
+        };
+      } else {
+        const requestedId = departmentMap[program.department.name].id;
+        const prowareId = departmentMap['Proware'].id;
+
+        if (!requestedId) throw new Error(`Department '${program.department.name}' not found`);
+
+        if (!prowareId) throw new Error('Proware department not found');
+        whereClause.departmentId = {
+          [Op.or]: [requestedId, prowareId]
+        };
+        whereClause.level = {
+          [Op.or]: [departmentMap[program.department.name].level, 'all']
+        };
+      }
+    }
     if (query.department) {
-      // ... existing department logic
+      const isProware = query.department === 'Proware';
+      const where = {};
+
+      where[Op.or] = [
+        {name: {[Op.eq]: query.department}},
+        {acronym: {[Op.eq]: query.department}},
+        {name: {[Op.eq]: 'Proware'}},
+        {acronym: {[Op.eq]: 'Proware'}}
+      ];
+
+      const departments = await DB.Department.findAll({
+        where
+      });
+
+      if (departments.length === 0) throw new Error('Department not found');
+
+      // Map department names to their IDs
+      const departmentMap = {};
+      departments.forEach((dep) => {
+        departmentMap[query.department?.length > 8 ? dep.name : dep.acronym] = {
+          id: dep.id,
+          level: dep.level,
+          acronym: dep.acronym
+        };
+      });
+
+      if (isProware) {
+        const prowareId = departmentMap['Proware'].id;
+        if (!prowareId) throw new Error('Proware department not found');
+        whereClause.departmentId = {
+          [Op.eq]: prowareId
+        };
+      } else {
+        const requestedId = departmentMap[query.department].id;
+
+        console.log(departmentMap, departmentMap[query.department], requestedId, departmentMap['Proware']);
+
+        const prowareId = departmentMap['Proware'] ? departmentMap['Proware'].id : departmentMap['proware'].id;
+
+        if (!requestedId) throw new Error(`Department '${query.department}' not found`);
+        if (!prowareId) throw new Error('Proware department not found');
+        whereClause.departmentId = {
+          [Op.or]: [requestedId, prowareId]
+        };
+        whereClause.level = {
+          [Op.or]: [departmentMap[query.department].level, 'all']
+        };
+      }
     }
 
     let raw = query.raw ? true : false;
