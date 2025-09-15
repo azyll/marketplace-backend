@@ -56,7 +56,7 @@ export async function up(queryInterface, Sequelize) {
       id: uuid(),
       firstName: 'Kimberly',
       lastName: 'Mangulabnan',
-      email: 'employeeg@test.com',
+      email: 'employee@test.com',
       password,
       createdAt: new Date(2025, 5, 5),
       updatedAt: new Date(),
@@ -65,7 +65,7 @@ export async function up(queryInterface, Sequelize) {
     {
       id: uuid(),
       firstName: 'Ken Andrew',
-      lastName: 'User Student',
+      lastName: 'Carlon',
       email: 'kenandrew@test.com',
       password,
       createdAt: new Date(2025, 5, 5),
@@ -103,64 +103,185 @@ export async function up(queryInterface, Sequelize) {
     ],
     {}
   );
-  const studentUsers = [];
-
-  for (let i = 0; i < 10; i++) {
-    const maleUser = {
-      id: uuid(),
-      firstName: `MaleStudent${i + 1}`,
-      lastName: 'User',
-      email: `malestudent${i + 1}@test.com`,
-      password,
-      createdAt: new Date(2025, 5, 5),
-      updatedAt: new Date(),
-      roleId: studentRole.id
-    };
-
-    const femaleUser = {
-      id: uuid(),
-      firstName: `FemaleStudent${i + 1}`,
-      lastName: 'User',
-      email: `femalestudent${i + 1}@test.com`,
-      password,
-      createdAt: new Date(2025, 5, 5),
-      updatedAt: new Date(),
-      roleId: studentRole.id
-    };
-
-    studentUsers.push(maleUser, femaleUser);
-  }
-
-  const otherStudentUsers = await DB.User.bulkCreate(studentUsers);
-
-  // Create 20 corresponding student records
-  const studentRecords = [];
-
-  for (let i = 0; i < 10; i++) {
-    const programId = programs[i].id;
-
-    studentRecords.push(
+  await DB.User.bulkCreate(
+    [
       {
-        id: 2000309900 + i * 2 + 0,
-        userId: otherStudentUsers[i * 2].id, // Male
-        level: i <= 6 ? 'tertiary' : 'shs',
-        sex: 'male',
+        id: uuid(),
+        firstName: 'Kyan Ray',
+        lastName: 'Villarin',
+        email: 'villarin@test.com',
+        password,
         createdAt: new Date(2025, 5, 5),
         updatedAt: new Date(),
-        programId
+        roleId: studentRole.id,
+        student: {
+          id: 200030923,
+
+          level: 'tertiary',
+          sex: 'female',
+          createdAt: new Date(2025, 5, 5),
+          updatedAt: new Date(),
+          programId: programs[1].id
+        }
       },
       {
-        id: 2000309900 + i * 2 + 1,
-        userId: otherStudentUsers[i * 2 + 1].id, // Female
-        level: i <= 6 ? 'tertiary' : 'shs',
-        sex: 'female',
+        id: uuid(),
+        firstName: 'Enzo',
+        lastName: 'Daniela',
+        email: 'daniela@test.com',
+        password,
         createdAt: new Date(2025, 5, 5),
         updatedAt: new Date(),
-        programId
+        roleId: studentRole.id,
+        student: {
+          id: 2000309232,
+
+          level: 'tertiary',
+          sex: 'male',
+          createdAt: new Date(2025, 5, 5),
+          updatedAt: new Date(),
+          programId: programs[2].id
+        }
+      },
+      {
+        id: uuid(),
+        firstName: 'Clarence',
+        lastName: 'Lastimoso',
+        email: 'lastimoso@test.com',
+        password,
+        createdAt: new Date(2025, 5, 5),
+        updatedAt: new Date(),
+        roleId: studentRole.id,
+        student: {
+          id: 2000309231,
+
+          level: 'tertiary',
+          sex: 'male',
+          createdAt: new Date(2025, 5, 5),
+          updatedAt: new Date(),
+          programId: programs[3].id
+        }
+      },
+      {
+        id: uuid(),
+        firstName: 'Jan Latrell',
+        lastName: 'Arquillo',
+        email: 'arquillo@test.com',
+        password,
+        createdAt: new Date(2025, 5, 5),
+        updatedAt: new Date(),
+        roleId: studentRole.id,
+        student: {
+          id: 2000309233,
+
+          level: 'tertiary',
+          sex: 'male',
+          createdAt: new Date(2025, 5, 5),
+          updatedAt: new Date(),
+          programId: programs[4].id
+        }
+      },
+      {
+        id: uuid(),
+        firstName: 'King Gio',
+        lastName: 'Visoria',
+        email: 'visoria@test.com',
+        password,
+        createdAt: new Date(2025, 5, 5),
+        updatedAt: new Date(),
+        roleId: studentRole.id,
+        student: {
+          id: 2000309234,
+
+          level: 'tertiary',
+          sex: 'male',
+          createdAt: new Date(2025, 5, 5),
+          updatedAt: new Date(),
+          programId: programs[1].id
+        }
+      },
+      {
+        id: uuid(),
+        firstName: 'Asher Joseph',
+        lastName: 'Balatucan',
+        email: 'balatucan@test.com',
+        password,
+        createdAt: new Date(2025, 5, 5),
+        updatedAt: new Date(),
+        roleId: studentRole.id,
+        student: {
+          id: 2000309235,
+          level: 'tertiary',
+          sex: 'male',
+          createdAt: new Date(2025, 5, 5),
+          updatedAt: new Date(),
+          programId: programs[5].id
+        }
+      },
+      {
+        id: uuid(),
+        firstName: 'Jun Gin Joseph',
+        lastName: 'De Jose',
+        email: 'dejose@test.com',
+        password,
+        createdAt: new Date(2025, 5, 5),
+        updatedAt: new Date(),
+        roleId: studentRole.id,
+        student: {
+          id: 2000309236,
+          level: 'tertiary',
+          sex: 'male',
+          createdAt: new Date(2025, 5, 5),
+          updatedAt: new Date(),
+          programId: programs[6].id
+        }
+      },
+      {
+        id: uuid(),
+        firstName: 'Sean Russel',
+        lastName: 'Villaranda',
+        email: 'villaranda@test.com',
+        password,
+        createdAt: new Date(2025, 5, 5),
+        updatedAt: new Date(),
+        roleId: studentRole.id,
+        student: {
+          id: 2000309237,
+          level: 'shs',
+          sex: 'male',
+          createdAt: new Date(2025, 5, 5),
+          updatedAt: new Date(),
+          programId: programs[7].id
+        }
+      },
+      {
+        id: uuid(),
+        firstName: 'Juna Mae',
+        lastName: 'Emillio',
+        email: 'emillo@test.com',
+        password,
+        createdAt: new Date(2025, 5, 5),
+        updatedAt: new Date(),
+        roleId: studentRole.id,
+        student: {
+          id: 2000309238,
+          level: 'tertiary',
+          sex: 'female',
+          createdAt: new Date(2025, 5, 5),
+          updatedAt: new Date(),
+          programId: programs[5].id
+        }
       }
-    );
-  }
-  await queryInterface.bulkInsert('Students', studentRecords, {});
+    ],
+    {
+      include: [
+        {
+          model: DB.Student,
+          as: 'student'
+        }
+      ]
+    }
+  );
 }
 export async function down(queryInterface, Sequelize) {
   /**

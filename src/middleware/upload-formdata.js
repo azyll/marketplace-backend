@@ -5,7 +5,8 @@ import supabase from '../lib/supabase.js';
 /**
  * @param {'products' | 'avatars'} bucketName
  */
-export const uploadFormData = (bucketName) => {
+export const uploadFormData = (bucketName, options = {}) => {
+  const {upsert = false} = options;
   return async (req, res, next) => {
     const form = formidable({maxFiles: 1, keepExtensions: true});
 
@@ -29,7 +30,7 @@ export const uploadFormData = (bucketName) => {
         .from('product-images')
         .upload(`products/${fileName}`, fileBuffer, {
           contentType: image.mimetype,
-          upsert: false
+          upsert
         });
 
       if (uploadError) return next(uploadError);

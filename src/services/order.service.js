@@ -76,12 +76,12 @@ export class OrderService {
             {
               model: Order,
               as: 'order',
-              required: true,
-              where: {
-                status: {
-                  [Op.or]: ['completed', 'ongoing']
-                }
-              },
+              // required: true,
+              // where: {
+              //   status: {
+              //     [Op.or]: ['completed', 'ongoing']
+              //   }
+              // },
               include: [
                 {
                   model: OrderItems,
@@ -119,7 +119,7 @@ export class OrderService {
     });
 
     if (!user) throw new NotFoundException('Student not found', 404);
-    return user;
+    // return user;
 
     const status = 'ongoing';
     const genderAttribute = await ProductAttribute.findOne({
@@ -253,11 +253,13 @@ export class OrderService {
         {
           model: OrderItems,
           as: 'orderItems',
+          paranoid: false,
           include: [
             {
               model: ProductVariant,
               as: 'productVariant',
-              include: [{model: Product, as: 'product'}]
+              paranoid: false,
+              include: [{model: Product, as: 'product', paranoid: false}]
             }
           ]
         },
@@ -327,11 +329,13 @@ export class OrderService {
         {
           model: OrderItems,
           as: 'orderItems',
+          paranoid: false,
           include: [
             {
               model: ProductVariant,
               as: 'productVariant',
-              include: [{model: Product, as: 'product'}]
+              paranoid: false,
+              include: [{model: Product, as: 'product', paranoid: false}]
             }
           ]
         },
@@ -370,14 +374,17 @@ export class OrderService {
         {
           model: OrderItems,
           as: 'orderItems',
+          paranoid: false,
           include: [
             {
               model: ProductVariant,
               as: 'productVariant',
+              paranoid: false,
               include: [
                 {
                   model: Product,
-                  as: 'product'
+                  as: 'product',
+                  paranoid: false
                 }
               ]
             }

@@ -337,8 +337,28 @@ export class ProductService {
    * Archive Product
    * @param {string} productId
    */
-  static async archiveProduct(productId) {}
+  static async archiveProduct(productId) {
+    const product = await Product.findByPk(productId, {
+      paranoid: false
+    });
+    if (!product) throw new NotFoundException('Product not found');
 
+    if (product.deletedAt !== null) throw new NotFoundException('Product is already archived');
+    return await product.destroy();
+  }
+  /**
+   * Restore Product
+   * @param {string} productId
+   */
+  static async restoreProduct(productId) {
+    const product = await Product.findByPk(productId, {
+      paranoid: false
+    });
+    if (!product) throw new NotFoundException('Product not found');
+
+    if (product.deletedAt === null) throw new NotFoundException('Product is not archived');
+    return await product.restore();
+  }
   /**
    *
    * @param {string} productId
@@ -348,7 +368,105 @@ export class ProductService {
    * @throws {AlreadyExistException} For Duplication of product
    */
   static async updateProduct(productId, newProduct) {
-    return;
+    const {category, description, image, name, departmentId, type, variants} = newProduct;
+
+    const product = await Product.findByPk(productId, {
+      include: [
+        {
+          model: ProductVariant,
+          as: 'productVariant'
+        }
+      ]
+    });
+
+    if (!product) throw new NotFoundException('Product not found');
+
+    const department = await Department.findByPk(departmentId);
+    if (!department) {
+      throw new NotFoundException('Department not found');
+    }
+    // Check for duplicate name (excluding current product)
+    const existingProduct = await Product.findOne({
+      where: {
+        name,
+        id: {
+          [Op.ne]: productId
+        }
+      }
+    });
+
+    if (existingProduct) {
+      throw new AlreadyExistException('Product with this name already exists');
+    }
+    const productVariantWithStockCondition = variants.map((variant) => {
+      if (!variant.name || !variant.price || !variant.productAttributeId || !variant.size || !variant.stockAvailable) {
+        throw new Error('Invalid variant credentials');
+      }
+      return {
+        ...variant,
+        stockCondition: calculateStockCondition(variant.stockAvailable)
+      };
+    });
+    const updatedProduct = await sequelize.transaction(async (transaction) => {
+      // Update product fields
+      await product.update(
+        {
+          name,
+          description,
+          image,
+          type,
+          category,
+          departmentId
+        },
+        {transaction}
+      );
+
+      // Optionally delete old variants and recreate them (if your logic requires replacement)
+      await ProductVariant.destroy({
+        where: {productId},
+        transaction
+      });
+
+      const newVariants = await Promise.all(
+        productVariantWithStockCondition.map((variant) =>
+          ProductVariant.create(
+            {
+              ...variant,
+              productId
+            },
+            {transaction}
+          )
+        )
+      );
+
+      // Optionally send a notification
+      await NotificationService.createNotification(
+        'Product Updated',
+        `Product "${product.name}" was updated in ${department.name}`,
+        'announcement',
+        department.name === 'Proware' ? 'students' : 'department students',
+        {
+          departmentId,
+          userId: null
+        }
+      );
+
+      // Reload updated product with relations
+      await product.reload({
+        include: [
+          {
+            model: ProductVariant,
+            as: 'productVariant',
+            include: [{model: ProductAttribute, as: 'productAttribute'}]
+          }
+        ],
+        transaction
+      });
+
+      return product;
+    });
+
+    return updatedProduct;
   }
 
   /**

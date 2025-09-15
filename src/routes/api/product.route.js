@@ -8,7 +8,10 @@ import {
   getProduct,
   getProducts,
   updateProductStock,
-  getProductsFilteredByStudentDepartment
+  getProductsFilteredByStudentDepartment,
+  restoreProduct,
+  deleteProduct,
+  updateProduct
 } from '../../controllers/product.controller.js';
 import {validate} from '../../middleware/validation.js';
 import {Joi} from 'sequelize-joi';
@@ -17,6 +20,8 @@ import {uploadFormData} from '../../middleware/upload-formdata.js';
 
 const router = Router();
 
+//Archive Product
+router.put('/:productId/restore', restoreProduct);
 // Create Product Attribute
 router.post('/attribute', createProductAttribute);
 
@@ -53,10 +58,10 @@ router.post(
 );
 
 // Update Product
-router.put('/');
+router.put('/:productId', uploadFormData('products', {upsert: true}), updateProduct);
 
 //Archive Product
-router.delete('/');
+router.delete('/:productId', deleteProduct);
 
 // Get Product
 router.get('/:productSlug', getProduct);

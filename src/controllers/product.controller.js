@@ -51,7 +51,7 @@ export const addProduct = async (req, res) => {
 
 /**
  * Get All Products
- * @param {import('express').Request
+ * @param {import('express').Request<
  *   {},
  *   {},
  *   {},
@@ -186,12 +186,14 @@ export const getProductsByStudentDepartment = async (req, res) => {
  * @returns {Promise<import('express').Response>}
  */
 export const deleteProduct = async (req, res) => {
-  const {id} = req.params;
+  const {productId} = req.params;
   try {
-    await ProductService.archiveProduct(id);
+    await ProductService.archiveProduct(productId);
     return res.status(200).json({message: 'Product delete successfully'});
   } catch (error) {
-    return res.status(404).json({message: 'error', error});
+    return res
+      .status(404)
+      .json({message: 'Failed to archived the product', error: error.message || defaultErrorMessage});
   }
 };
 
@@ -202,13 +204,15 @@ export const deleteProduct = async (req, res) => {
  * @returns {Promise<import('express').Response>}
  */
 export const updateProduct = async (req, res) => {
-  const {id} = req.params;
-  const newProduct = req.body;
+  const {productId} = req.params;
+
+  const variants = JSON.parse(req.body.variants);
+
   try {
-    await ProductService.updateProduct(id, newProduct);
+    await ProductService.updateProduct(productId, {...req.body, variants});
     return res.status(200).json({message: 'Product update successfully'});
   } catch (error) {
-    return res.status(404).json({message: 'error', error});
+    return res.status(404).json({message: 'Failed to update product', error: error.message || defaultErrorMessage});
   }
 };
 
@@ -250,5 +254,22 @@ export const getCreateProductData = async (req, res) => {
     });
   } catch (error) {
     return res.status(404).json({message: 'error', error: error.message});
+  }
+};
+
+/**
+ *  Restore product
+ * @param {import('express').Request} req
+ * @param {import('express').Response} res
+ * @returns {Promise<import('express').Response>}
+ */
+export const restoreProduct = async (req, res) => {
+  const {productId} = req.params;
+
+  try {
+    await ProductService.restoreProduct(productId);
+    return res.status(200).json({message: 'Product update successfully'});
+  } catch (error) {
+    return res.status(404).json({message: 'Failed to restore product', error: error.message || defaultErrorMessage});
   }
 };
