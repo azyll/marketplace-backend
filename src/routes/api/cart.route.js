@@ -3,7 +3,9 @@ import {
   createStudentCart,
   getStudentCart,
   updateStudentCart,
-  deleteStudentCart
+  deleteStudentCart,
+  addCartItemQuantity,
+  deductCartItemQuantity
 } from '../../controllers/cart.controller.js';
 const router = Router();
 
@@ -11,8 +13,12 @@ const router = Router();
 router.post('/:userId', createStudentCart);
 // Get Student`s Cart
 router.get('/:userId', getStudentCart);
+
+router.put('/:userId/add', addCartItemQuantity);
+router.put('/:userId/deduct', deductCartItemQuantity);
 // Update item in Student Cart
 router.put('/:userId', updateStudentCart);
+
 // Archive cart item
 router.delete('/:userId', deleteStudentCart);
 

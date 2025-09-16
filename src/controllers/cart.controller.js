@@ -7,10 +7,10 @@ import {defaultErrorMessage} from '../utils/error-message.js';
 export const createStudentCart = async (req, res) => {
   const {userId} = req.params;
 
-  const {product} = req.body;
+  const {product, quantity} = req.body;
 
   try {
-    await CartService.addItemToCart(userId, product);
+    await CartService.addItemToCart(userId, product, quantity);
     return res.status(200).json({message: 'Cart adding successful'});
   } catch (error) {
     const message = 'Failed to add cart';
@@ -57,12 +57,48 @@ export const deleteStudentCart = async (req, res) => {
   }
 };
 
-// TODO: BELOW -> Need to confirm!
 export const updateStudentCart = async (req, res) => {
   const {userId} = req.params;
   const {cartId} = req.body;
   try {
     await CartService.updateCartItems(userId, cartId);
+    return res.status(200).json({message: 'Cart updating successful'});
+  } catch (error) {
+    const message = 'Failed to update student cart';
+    if (
+      error instanceof NotFoundException ||
+      error instanceof AlreadyExistException ||
+      error instanceof UnauthorizedException
+    ) {
+      return res.status(error.statusCode).json({message, error: error.message});
+    }
+    return res.status(400).json({message, error: error.message || defaultErrorMessage});
+  }
+};
+
+export const addCartItemQuantity = async (req, res) => {
+  const {userId} = req.params;
+  const {cartId} = req.body;
+  try {
+    await CartService.addCartItemQuantity(userId, cartId);
+    return res.status(200).json({message: 'Cart updating successful'});
+  } catch (error) {
+    const message = 'Failed to update student cart';
+    if (
+      error instanceof NotFoundException ||
+      error instanceof AlreadyExistException ||
+      error instanceof UnauthorizedException
+    ) {
+      return res.status(error.statusCode).json({message, error: error.message});
+    }
+    return res.status(400).json({message, error: error.message || defaultErrorMessage});
+  }
+};
+export const deductCartItemQuantity = async (req, res) => {
+  const {userId} = req.params;
+  const {cartId} = req.body;
+  try {
+    await CartService.deductCartItemQuantity(userId, cartId);
     return res.status(200).json({message: 'Cart updating successful'});
   } catch (error) {
     const message = 'Failed to update student cart';

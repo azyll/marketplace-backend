@@ -36,6 +36,10 @@ export class CartService {
     if (!user) {
       throw new NotFoundException('Student not found', 404);
     }
+    const orderLimit = await OrderService.getOrderLimit();
+    if (quantity > orderLimit) {
+      throw new Error('Failed to add to cart: exceeds order limit');
+    }
 
     const product = await ProductVariant.findByPk(productVariantId);
     if (!product) {
@@ -58,7 +62,6 @@ export class CartService {
       }
 
       const newQuantity = cartItem.quantity + quantity;
-      const orderLimit = await OrderService.getOrderLimit(); // if async
 
       if (newQuantity > orderLimit) {
         throw new Error('Failed to add to cart: exceeds order limit');
@@ -101,8 +104,9 @@ export class CartService {
       include: [
         {
           model: ProductVariant,
+          required: true,
           include: [
-            {model: Product, as: 'product'},
+            {model: Product, as: 'product', required: true},
             {model: ProductAttribute, as: 'productAttribute'}
           ],
           as: 'productVariant'
@@ -123,6 +127,56 @@ export class CartService {
 
   //Student ID: Number, CarId:Number
   static async updateCartItems(studentId, cartId) {}
+
+  static async addCartItemQuantity(studentId, cartItemId) {
+    const student = await User.findByPk(studentId, {
+      include: [
+        {
+          model: Student,
+          as: 'student'
+        }
+      ]
+    });
+    if (!student) throw new NotFoundException('Student not found', 404);
+
+    const orderLimit = await OrderService.getOrderLimit();
+    const cartItem = await Cart.findByPk(cartItemId);
+
+    if (!cartItem) throw new NotFoundException('Cart item not found', 404);
+
+    const newQuantity = cartItem.quantity + 1;
+
+    if (newQuantity > orderLimit) {
+      throw new Error('Failed to add to cart quantity: exceeds order limit');
+    }
+    cartItem.quantity = newQuantity;
+
+    return await cartItem.save();
+  }
+
+  static async deductCartItemQuantity(studentId, cartItemId) {
+    const student = await User.findByPk(studentId, {
+      include: [
+        {
+          model: Student,
+          as: 'student'
+        }
+      ]
+    });
+    if (!student) throw new NotFoundException('Student not found', 404);
+
+    const cartItem = await Cart.findByPk(cartItemId);
+
+    if (!cartItem) throw new NotFoundException('Cart item not found', 404);
+
+    const newQuantity = cartItem.quantity - 1;
+    if (newQuantity < 1) {
+      throw new Error('Failed to deduct to cart quantity: quantity too low, you can remove the cart item ');
+    }
+    cartItem.quantity = newQuantity;
+
+    return await cartItem.save();
+  }
   //Student ID: Number, CarIds:Number
   /**
    *
