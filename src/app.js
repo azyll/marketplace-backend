@@ -8,8 +8,8 @@ app.use(
   cors({
     origin: ['http://localhost:5173', 'https://sti-marketplace.netlify.app', 'https://sti-fairview-proware.vercel.app'],
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-    credentials: true
+    allowedHeaders: ['Content-Type', 'Authorization']
+    // credentials: true
   })
 );
 app.use(express.urlencoded({extended: true}));
