@@ -1,8 +1,9 @@
-// @ts-check
 import {Op} from 'sequelize';
 import {DB} from '../database/index.js';
 import {AlreadyExistException} from '../exceptions/alreadyExist.js';
 import {NotFoundException} from '../exceptions/notFound.js';
+import sequelize from '../database/config/sequelize.js';
+import {OrderService} from './order.service.js';
 
 const {Cart, Student, User, ProductVariant, Product, ProductAttribute} = DB;
 
@@ -16,12 +17,13 @@ export class CartService {
    * Add Item To Student Cart
    * @param {string} studentId - Student id   
    * @param {string} productVariantId  - ID of product variant
+   * @param {number} quantity
    * @throws {NotFoundException} Product or student not found
    * @throws {AlreadyExistException} Since one order for student, 
     throws error if the item is already exist in the student cart
    * @returns {Promise<ProductVariant>}  Inserted Product to the database
    **/
-  static async addItemToCart(studentId, productVariantId) {
+  static async addItemToCart(studentId, productVariantId, quantity = 1) {
     const user = await User.findByPk(studentId, {
       include: [
         {
@@ -34,27 +36,39 @@ export class CartService {
     if (!user) {
       throw new NotFoundException('Student not found', 404);
     }
+
     const product = await ProductVariant.findByPk(productVariantId);
-    // if product null
     if (!product) {
       throw new NotFoundException('Product not found', 404);
     }
 
-    const [productVariant, isNewItem] = await Cart.findOrCreate({
-      where: {studentId: user.student.id, productVariantId},
-      defaults: {
-        quantity: 1,
-        studentId: user.student.id,
-        productVariantId
+    return await sequelize.transaction(async (transaction) => {
+      const [cartItem, isNewItem] = await Cart.findOrCreate({
+        where: {studentId: user.student.id, productVariantId},
+        defaults: {
+          quantity: quantity,
+          studentId: user.student.id,
+          productVariantId
+        },
+        transaction
+      });
+
+      if (isNewItem) {
+        return cartItem;
       }
+
+      const newQuantity = cartItem.quantity + quantity;
+      const orderLimit = await OrderService.getOrderLimit(); // if async
+
+      if (newQuantity > orderLimit) {
+        throw new Error('Failed to add to cart: exceeds order limit');
+      }
+
+      cartItem.quantity = newQuantity;
+      await cartItem.save({transaction});
+
+      return cartItem;
     });
-
-    // If already exists, and not just created
-    if (!isNewItem) {
-      throw new AlreadyExistException('The selected product is already in your cart', 409);
-    }
-
-    return productVariant;
   }
 
   /**
