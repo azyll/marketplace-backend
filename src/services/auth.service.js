@@ -9,13 +9,13 @@ const JWT_EXPIRED = process.env.JWT_EXPIRED ?? '1d';
 export class AuthService {
   /**
    * User login
-   * @param {string} email - user email
+   * @param {string} username - user username
    * @param {string} password - user password
    * @returns {Promise<string>} jwt token with user data as payload
    */
-  static async login(email, password) {
+  static async login(username, password) {
     const user = await DB.User.scope('withPassword').findOne({
-      where: {email},
+      where: {username},
       include: [{model: DB.Role, as: 'role'}]
     });
 
@@ -25,7 +25,7 @@ export class AuthService {
 
     if (!isValid) throw new UnauthorizedException('Invalid Credentials');
 
-    return jwt.sign({id: user.id, email: user.email, roleSystemTag: user.role.systemTag}, JWT_SECRET, {
+    return jwt.sign({id: user.id, username: user.username, roleSystemTag: user.role.systemTag}, JWT_SECRET, {
       expiresIn: JWT_EXPIRED
     });
   }

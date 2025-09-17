@@ -93,7 +93,7 @@ export const addUser = async (req, res) => {
 };
 
 /**
- * @param {import('express').Request<{userId:string},{},{firstName:string,lastName:string,email:string,password:string}>} req
+ * @param {import('express').Request<{userId:string},{},{firstName:string,lastName:string,username:string,password:string}>} req
  * @param {import('express').Response} res
  * @returns {Promise<import('express').Response>}
  */

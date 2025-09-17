@@ -4,9 +4,9 @@ import {defaultErrorMessage} from '../utils/error-message.js';
 
 export const login = async (req, res) => {
   try {
-    const {email, password} = req.body;
+    const {username, password} = req.body;
 
-    const accessToken = await AuthService.login(email, password);
+    const accessToken = await AuthService.login(username, password);
 
     return res.status(200).json({accessToken});
   } catch (err) {

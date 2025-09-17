@@ -11,7 +11,7 @@ const {User, Role} = DB;
  * @typedef {import ('../types/index.js').IUser} IUser
  */
 
-const DEFAULT_FIELDS = ['id', 'firstName', 'lastName', 'email', 'createdAt', 'updatedAt', 'deletedAt'];
+const DEFAULT_FIELDS = ['id', 'firstName', 'lastName', 'username', 'createdAt', 'updatedAt', 'deletedAt'];
 const role = {
   model: DB.Role,
   attributes: ['name', 'systemTag'],
@@ -103,7 +103,7 @@ export class UserService {
    * @typedef IUpdateUserInput
    * @property {string} firstName
    * @property {string} lastName
-   * @property {string} email
+   * @property {string} username
    * @property {string} password
    * @property {string} roleId
    */

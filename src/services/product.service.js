@@ -7,7 +7,7 @@ import {AlreadyExistException} from '../exceptions/alreadyExist.js';
 import {calculateStockCondition} from '../utils/stock-helper.js';
 import {NotificationService} from './notification.service.js';
 import {validate} from 'uuid';
-import {convertFromSlug} from '../utils/slug-helper.js';
+import {convertFromSlug, hasInvalidSlugCharacters} from '../utils/slug-helper.js';
 import sequelize from '../database/config/sequelize.js';
 const {Product, Department, ProductVariant, ProductAttribute, User, Student, Program} = DB;
 
@@ -37,6 +37,9 @@ export class ProductService {
   static async createProduct(newProduct) {
     const {category, description, image, name, departmentId, type, variants} = newProduct;
 
+    if (hasInvalidSlugCharacters(name)) {
+      throw new Error('Name contains invalid characters. Please use only letters, numbers, and spaces.');
+    }
     const department = await Department.findByPk(departmentId);
     if (!department) {
       throw new NotFoundException('Department not found', 404);
@@ -61,6 +64,7 @@ export class ProductService {
           type,
           category,
           departmentId,
+          level: department.level,
           productVariant: productVariantWithStockCondition
         },
         include: [

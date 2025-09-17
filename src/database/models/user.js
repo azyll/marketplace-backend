@@ -66,9 +66,9 @@ export default (sequelize) => {
           return `${this.firstName} ${this.lastName}`;
         }
       },
-      email: {
+      username: {
         type: DataTypes.STRING,
-        schema: Joi.string().trim().email().required(),
+        schema: Joi.string().trim().required(),
         unique: true
       },
       password: {

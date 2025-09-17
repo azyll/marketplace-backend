@@ -53,7 +53,7 @@
 /**
  * @typedef JWTUserData
  * @property {string} id
- * @property {string} email
+ * @property {string} username
  * @property {("student" | "admin" | "employee")} roleSystemTag
  * @property {number} iat
  * @property {number} exp

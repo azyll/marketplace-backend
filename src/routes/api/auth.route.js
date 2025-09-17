@@ -9,7 +9,7 @@ const router = express.Router();
 router.post(
   '/login',
   validate({
-    email: Joi.string().email().required(),
+    username: Joi.string().required(),
     password: Joi.string().required()
   }),
   login

@@ -36,7 +36,7 @@ export async function up(queryInterface, Sequelize) {
       id: uuid(),
       firstName: 'Alissa',
       lastName: 'User',
-      email: 'alissa@test.com',
+      username: 'alissa.309921',
       password,
       createdAt: new Date(2025, 5, 5),
       updatedAt: new Date(),
@@ -46,7 +46,7 @@ export async function up(queryInterface, Sequelize) {
       id: uuid(),
       firstName: 'Admin',
       lastName: 'User',
-      email: 'admin@test.com',
+      username: 'admin',
       password,
       createdAt: new Date(2025, 5, 5),
       updatedAt: new Date(),
@@ -56,7 +56,7 @@ export async function up(queryInterface, Sequelize) {
       id: uuid(),
       firstName: 'Kimberly',
       lastName: 'Mangulabnan',
-      email: 'employee@test.com',
+      username: 'proware',
       password,
       createdAt: new Date(2025, 5, 5),
       updatedAt: new Date(),
@@ -66,7 +66,7 @@ export async function up(queryInterface, Sequelize) {
       id: uuid(),
       firstName: 'Ken Andrew',
       lastName: 'Carlon',
-      email: 'kenandrew@test.com',
+      username: 'carlon.309926',
       password,
       createdAt: new Date(2025, 5, 5),
       updatedAt: new Date(),
@@ -103,185 +103,185 @@ export async function up(queryInterface, Sequelize) {
     ],
     {}
   );
-  await DB.User.bulkCreate(
-    [
-      {
-        id: uuid(),
-        firstName: 'Kyan Ray',
-        lastName: 'Villarin',
-        email: 'villarin@test.com',
-        password,
-        createdAt: new Date(2025, 5, 5),
-        updatedAt: new Date(),
-        roleId: studentRole.id,
-        student: {
-          id: 200030923,
+  // await DB.User.bulkCreate(
+  //   [
+  //     {
+  //       id: uuid(),
+  //       firstName: 'Kyan Ray',
+  //       lastName: 'Villarin',
+  //       username: 'villarin@test.com',
+  //       password,
+  //       createdAt: new Date(2025, 5, 5),
+  //       updatedAt: new Date(),
+  //       roleId: studentRole.id,
+  //       student: {
+  //         id: 200030923,
 
-          level: 'tertiary',
-          sex: 'female',
-          createdAt: new Date(2025, 5, 5),
-          updatedAt: new Date(),
-          programId: programs[1].id
-        }
-      },
-      {
-        id: uuid(),
-        firstName: 'Enzo',
-        lastName: 'Daniela',
-        email: 'daniela@test.com',
-        password,
-        createdAt: new Date(2025, 5, 5),
-        updatedAt: new Date(),
-        roleId: studentRole.id,
-        student: {
-          id: 2000309232,
+  //         level: 'tertiary',
+  //         sex: 'female',
+  //         createdAt: new Date(2025, 5, 5),
+  //         updatedAt: new Date(),
+  //         programId: programs[1].id
+  //       }
+  //     },
+  //     {
+  //       id: uuid(),
+  //       firstName: 'Enzo',
+  //       lastName: 'Daniela',
+  //       username: 'daniela@test.com',
+  //       password,
+  //       createdAt: new Date(2025, 5, 5),
+  //       updatedAt: new Date(),
+  //       roleId: studentRole.id,
+  //       student: {
+  //         id: 2000309232,
 
-          level: 'tertiary',
-          sex: 'male',
-          createdAt: new Date(2025, 5, 5),
-          updatedAt: new Date(),
-          programId: programs[2].id
-        }
-      },
-      {
-        id: uuid(),
-        firstName: 'Clarence',
-        lastName: 'Lastimoso',
-        email: 'lastimoso@test.com',
-        password,
-        createdAt: new Date(2025, 5, 5),
-        updatedAt: new Date(),
-        roleId: studentRole.id,
-        student: {
-          id: 2000309231,
+  //         level: 'tertiary',
+  //         sex: 'male',
+  //         createdAt: new Date(2025, 5, 5),
+  //         updatedAt: new Date(),
+  //         programId: programs[2].id
+  //       }
+  //     },
+  //     {
+  //       id: uuid(),
+  //       firstName: 'Clarence',
+  //       lastName: 'Lastimoso',
+  //       username: 'lastimoso@test.com',
+  //       password,
+  //       createdAt: new Date(2025, 5, 5),
+  //       updatedAt: new Date(),
+  //       roleId: studentRole.id,
+  //       student: {
+  //         id: 2000309231,
 
-          level: 'tertiary',
-          sex: 'male',
-          createdAt: new Date(2025, 5, 5),
-          updatedAt: new Date(),
-          programId: programs[3].id
-        }
-      },
-      {
-        id: uuid(),
-        firstName: 'Jan Latrell',
-        lastName: 'Arquillo',
-        email: 'arquillo@test.com',
-        password,
-        createdAt: new Date(2025, 5, 5),
-        updatedAt: new Date(),
-        roleId: studentRole.id,
-        student: {
-          id: 2000309233,
+  //         level: 'tertiary',
+  //         sex: 'male',
+  //         createdAt: new Date(2025, 5, 5),
+  //         updatedAt: new Date(),
+  //         programId: programs[3].id
+  //       }
+  //     },
+  //     {
+  //       id: uuid(),
+  //       firstName: 'Jan Latrell',
+  //       lastName: 'Arquillo',
+  //       username: 'arquillo@test.com',
+  //       password,
+  //       createdAt: new Date(2025, 5, 5),
+  //       updatedAt: new Date(),
+  //       roleId: studentRole.id,
+  //       student: {
+  //         id: 2000309233,
 
-          level: 'tertiary',
-          sex: 'male',
-          createdAt: new Date(2025, 5, 5),
-          updatedAt: new Date(),
-          programId: programs[4].id
-        }
-      },
-      {
-        id: uuid(),
-        firstName: 'King Gio',
-        lastName: 'Visoria',
-        email: 'visoria@test.com',
-        password,
-        createdAt: new Date(2025, 5, 5),
-        updatedAt: new Date(),
-        roleId: studentRole.id,
-        student: {
-          id: 2000309234,
+  //         level: 'tertiary',
+  //         sex: 'male',
+  //         createdAt: new Date(2025, 5, 5),
+  //         updatedAt: new Date(),
+  //         programId: programs[4].id
+  //       }
+  //     },
+  //     {
+  //       id: uuid(),
+  //       firstName: 'King Gio',
+  //       lastName: 'Visoria',
+  //       username: 'visoria@test.com',
+  //       password,
+  //       createdAt: new Date(2025, 5, 5),
+  //       updatedAt: new Date(),
+  //       roleId: studentRole.id,
+  //       student: {
+  //         id: 2000309234,
 
-          level: 'tertiary',
-          sex: 'male',
-          createdAt: new Date(2025, 5, 5),
-          updatedAt: new Date(),
-          programId: programs[1].id
-        }
-      },
-      {
-        id: uuid(),
-        firstName: 'Asher Joseph',
-        lastName: 'Balatucan',
-        email: 'balatucan@test.com',
-        password,
-        createdAt: new Date(2025, 5, 5),
-        updatedAt: new Date(),
-        roleId: studentRole.id,
-        student: {
-          id: 2000309235,
-          level: 'tertiary',
-          sex: 'male',
-          createdAt: new Date(2025, 5, 5),
-          updatedAt: new Date(),
-          programId: programs[5].id
-        }
-      },
-      {
-        id: uuid(),
-        firstName: 'Jun Gin Joseph',
-        lastName: 'De Jose',
-        email: 'dejose@test.com',
-        password,
-        createdAt: new Date(2025, 5, 5),
-        updatedAt: new Date(),
-        roleId: studentRole.id,
-        student: {
-          id: 2000309236,
-          level: 'tertiary',
-          sex: 'male',
-          createdAt: new Date(2025, 5, 5),
-          updatedAt: new Date(),
-          programId: programs[6].id
-        }
-      },
-      {
-        id: uuid(),
-        firstName: 'Sean Russel',
-        lastName: 'Villaranda',
-        email: 'villaranda@test.com',
-        password,
-        createdAt: new Date(2025, 5, 5),
-        updatedAt: new Date(),
-        roleId: studentRole.id,
-        student: {
-          id: 2000309237,
-          level: 'shs',
-          sex: 'male',
-          createdAt: new Date(2025, 5, 5),
-          updatedAt: new Date(),
-          programId: programs[7].id
-        }
-      },
-      {
-        id: uuid(),
-        firstName: 'Juna Mae',
-        lastName: 'Emillio',
-        email: 'emillo@test.com',
-        password,
-        createdAt: new Date(2025, 5, 5),
-        updatedAt: new Date(),
-        roleId: studentRole.id,
-        student: {
-          id: 2000309238,
-          level: 'tertiary',
-          sex: 'female',
-          createdAt: new Date(2025, 5, 5),
-          updatedAt: new Date(),
-          programId: programs[5].id
-        }
-      }
-    ],
-    {
-      include: [
-        {
-          model: DB.Student,
-          as: 'student'
-        }
-      ]
-    }
-  );
+  //         level: 'tertiary',
+  //         sex: 'male',
+  //         createdAt: new Date(2025, 5, 5),
+  //         updatedAt: new Date(),
+  //         programId: programs[1].id
+  //       }
+  //     },
+  //     {
+  //       id: uuid(),
+  //       firstName: 'Asher Joseph',
+  //       lastName: 'Balatucan',
+  //       username: 'balatucan@test.com',
+  //       password,
+  //       createdAt: new Date(2025, 5, 5),
+  //       updatedAt: new Date(),
+  //       roleId: studentRole.id,
+  //       student: {
+  //         id: 2000309235,
+  //         level: 'tertiary',
+  //         sex: 'male',
+  //         createdAt: new Date(2025, 5, 5),
+  //         updatedAt: new Date(),
+  //         programId: programs[5].id
+  //       }
+  //     },
+  //     {
+  //       id: uuid(),
+  //       firstName: 'Jun Gin Joseph',
+  //       lastName: 'De Jose',
+  //       username: 'dejose@test.com',
+  //       password,
+  //       createdAt: new Date(2025, 5, 5),
+  //       updatedAt: new Date(),
+  //       roleId: studentRole.id,
+  //       student: {
+  //         id: 2000309236,
+  //         level: 'tertiary',
+  //         sex: 'male',
+  //         createdAt: new Date(2025, 5, 5),
+  //         updatedAt: new Date(),
+  //         programId: programs[6].id
+  //       }
+  //     },
+  //     {
+  //       id: uuid(),
+  //       firstName: 'Sean Russel',
+  //       lastName: 'Villaranda',
+  //       username: 'villaranda@test.com',
+  //       password,
+  //       createdAt: new Date(2025, 5, 5),
+  //       updatedAt: new Date(),
+  //       roleId: studentRole.id,
+  //       student: {
+  //         id: 2000309237,
+  //         level: 'shs',
+  //         sex: 'male',
+  //         createdAt: new Date(2025, 5, 5),
+  //         updatedAt: new Date(),
+  //         programId: programs[7].id
+  //       }
+  //     },
+  //     {
+  //       id: uuid(),
+  //       firstName: 'Juna Mae',
+  //       lastName: 'Emillio',
+  //       username: 'emillo@test.com',
+  //       password,
+  //       createdAt: new Date(2025, 5, 5),
+  //       updatedAt: new Date(),
+  //       roleId: studentRole.id,
+  //       student: {
+  //         id: 2000309238,
+  //         level: 'tertiary',
+  //         sex: 'female',
+  //         createdAt: new Date(2025, 5, 5),
+  //         updatedAt: new Date(),
+  //         programId: programs[5].id
+  //       }
+  //     }
+  //   ],
+  //   {
+  //     include: [
+  //       {
+  //         model: DB.Student,
+  //         as: 'student'
+  //       }
+  //     ]
+  //   }
+  // );
 }
 export async function down(queryInterface, Sequelize) {
   /**
