@@ -100,7 +100,7 @@ export class StudentService {
   /**
    *
    * @param {StudentRecord[]} students - user id
-   * @returns {Promise<Student>} student with users data
+   * @returns {Promise<Student[]>} student with users data
    * @throws {NotFoundException}  student does not exists
    */
   static async bulkCreateStudent(students) {
@@ -126,7 +126,7 @@ export class StudentService {
         const gender = (newStudent['Gender'] || '').trim().toLowerCase();
         const programAcronym = (newStudent.Program || '').toLowerCase().trim();
 
-        if (!firstName || !lastName || !programAcronym) {
+        if (!firstName || !lastName || !programAcronym || !gender) {
           // Skip incomplete data
           continue;
         }
@@ -134,19 +134,20 @@ export class StudentService {
         // Find program once per student
         const program = await DB.Program.findOne({
           where: {acronym: programAcronym},
-          transaction
+          transaction,
+          include: [{model: DB.Department, as: 'department'}]
         });
-        if (!program) throw new Error(`Program not found: ${programAcronym}`);
+        if (!program) throw new Error(`Failed to create users one the program is invalid: ${programAcronym}`);
 
         // Try to find student + user by student ID
         let student = await DB.Student.findByPk(studentId, {
           include: [{model: DB.User, as: 'user'}],
           transaction
         });
-
+        const level = program.department.level;
         if (student) {
           // Update existing student and user
-          student.level = 'tertiary';
+          student.level = level;
           student.sex = gender;
           student.programId = program.id;
 
@@ -159,7 +160,6 @@ export class StudentService {
           await student.save({transaction});
           results.push(student);
         } else {
-          // Create new user + student in one go
           const username = (lastName + '.' + String(studentId).slice(4)).toLowerCase();
 
           // Note: NEVER store raw passwords like this in production!
@@ -177,7 +177,8 @@ export class StudentService {
                 id: studentId,
                 level: 'tertiary',
                 sex: gender,
-                programId: program.id
+                programId: program.id,
+                level
               }
             },
             {

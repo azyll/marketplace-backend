@@ -236,7 +236,6 @@ export class ProductService {
 
     const {count, rows: productData} = await Product.findAndCountAll({
       where: whereClause,
-
       paranoid: (query.paranoid || 'true') == 'true' ? true : false,
       include: [
         {
@@ -547,6 +546,7 @@ export class ProductService {
       return product;
     }
 
+    console.log(newStock);
     variant.stockAvailable = newStock;
     variant.stockCondition = calculateStockCondition(newStock);
 

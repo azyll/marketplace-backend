@@ -46,7 +46,7 @@ export const createStudent = async (req, res) => {
 export const bulkCreateStudents = async (req, res) => {
   try {
     const students = await StudentService.bulkCreateStudent(req.body.students);
-    return res.status(200).json({message: 'Students Created'});
+    return res.status(200).json({message: `${students.length} Students Created`});
   } catch (err) {
     const message = 'Failed to create student';
 

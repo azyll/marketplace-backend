@@ -33,11 +33,6 @@ export const uploadExcelFile = () => {
           skip_empty_lines: true,
           from_line: 5
         });
-        // 4. (Optional) Save CSV file
-        const csvFileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.csv`;
-        const csvFilePath = path.join('uploads', csvFileName); // Make sure 'uploads/' exists
-        fs.writeFileSync(csvFilePath, csvData);
-
         // 5. Attach CSV data or path to request
         req.body.students = records;
 
