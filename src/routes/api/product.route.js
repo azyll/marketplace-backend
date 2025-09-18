@@ -16,7 +16,7 @@ import {
 import {validate} from '../../middleware/validation.js';
 import {Joi} from 'sequelize-joi';
 import formidable from 'formidable';
-import {uploadFormData} from '../../middleware/upload-formdata.js';
+import {uploadFormData} from '../../middleware/upload-image-formdata.js';
 
 const router = Router();
 

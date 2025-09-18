@@ -1,11 +1,19 @@
 import express from 'express';
 import {validate} from '../../middleware/validation.js';
 import {Joi} from 'sequelize-joi';
-import {createStudent, getStudentByUserId} from '../../controllers/student.controller.js';
+import {
+  bulkCreateStudents,
+  createStudent,
+  getStudentByUserId,
+  getStudents
+} from '../../controllers/student.controller.js';
 import {auth} from '../../middleware/auth.js';
+import {uploadExcelFile} from '../../middleware/upload-file-formdata.js';
 
 const router = express.Router();
 
+// Bulk Create Student
+router.post('/bulk', uploadExcelFile(), bulkCreateStudents);
 // Create Student
 router.post(
   '/:userId',
@@ -19,6 +27,7 @@ router.post(
 );
 
 // Get Student by UserId
+router.get('/', getStudents);
 router.get('/user/:userId', auth(['student'], {selfOnly: {param: 'userId', roles: ['student']}}), getStudentByUserId);
 
 export default router;

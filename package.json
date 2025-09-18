@@ -20,6 +20,7 @@
     "@supabase/supabase-js": "^2.49.4",
     "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
+    "csv-parse": "^6.1.0",
     "csv-parser": "^3.2.0",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
@@ -27,6 +28,7 @@
     "http": "^0.0.1-security",
     "joi": "^17.13.3",
     "jsonwebtoken": "^9.0.2",
+    "multer": "^2.0.2",
     "nanoid": "^5.1.5",
     "node-cron": "^4.1.1",
     "nodemon": "^3.1.9",
@@ -35,7 +37,8 @@
     "sequelize": "^6.37.5",
     "sequelize-bcrypt": "^1.2.0",
     "sequelize-joi": "^2.0.1",
-    "uuid": "^11.0.5"
+    "uuid": "^11.0.5",
+    "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz"
   },
   "devDependencies": {
     "prettier": "^3.4.2",

@@ -106,7 +106,8 @@ export class ProductService {
    *     search?: string,  // Add this new parameter
    *     department?: string,
    *     latest?: boolean,
-   *     program?:string
+   *     program?:string,
+   *      paranoid:boolean
    *      raw?: boolean
    *   }} query Query
    *
@@ -144,7 +145,16 @@ export class ProductService {
         include: [{model: DB.Department, as: 'department'}]
       });
 
-      if (!program) throw new Error('Program not found');
+      if (!program) {
+        return {
+          data: [],
+          meta: {
+            currentPage: page,
+            itemsPerPage: limit,
+            totalItems: 0
+          }
+        };
+      }
 
       const departments = await DB.Department.findAll({
         where: {
@@ -152,7 +162,16 @@ export class ProductService {
         }
       });
 
-      if (departments.length === 0) throw new Error('Department not found');
+      if (departments.length === 0) {
+        return {
+          data: [],
+          meta: {
+            currentPage: page,
+            itemsPerPage: limit,
+            totalItems: 0
+          }
+        };
+      }
 
       const departmentMap = {};
       departments.forEach((dep) => {
@@ -184,8 +203,16 @@ export class ProductService {
         }
       });
 
-      if (departments.length === 0) throw new Error('Department not found');
-
+      if (departments.length === 0) {
+        return {
+          data: [],
+          meta: {
+            currentPage: page,
+            itemsPerPage: limit,
+            totalItems: 0
+          }
+        };
+      }
       const departmentMap = {};
       departments.forEach((dep) => {
         const key = query.department?.length > 8 ? dep.name : dep.acronym;
@@ -209,6 +236,8 @@ export class ProductService {
 
     const {count, rows: productData} = await Product.findAndCountAll({
       where: whereClause,
+
+      paranoid: (query.paranoid || 'true') == 'true' ? true : false,
       include: [
         {
           model: ProductVariant,

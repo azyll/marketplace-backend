@@ -15,7 +15,7 @@ export async function up(queryInterface, Sequelize) {
 
   const departments = await DB.Department.bulkCreate([
     {
-      name: 'Information and Communication Technology',
+      name: 'Information & Communications Technology',
       level: 'tertiary',
       acronym: 'ict'
     },
