@@ -229,7 +229,7 @@ export const createProductAttribute = async (req, res) => {
     return res.status(200).json({message: 'Product attribute create successfully'});
   } catch (error) {
     if (error instanceof AlreadyExistException) return res.status(404).json({message: 'error', error: error.message});
-    console.log(error);
+
     return res.status(404).json({message: 'error', error: error.message});
   }
 };

@@ -26,7 +26,7 @@ router.get('/student/:userId', getStudentOrder);
 router.put('/status/:userId', updateOrderStatus);
 
 // Update Order Items
-router.put('/:userId', updateStudentOrder);
+router.put('/:orderId', updateStudentOrder);
 
 // Delete Order
 router.delete('/:userId', deleteStudentOrder);

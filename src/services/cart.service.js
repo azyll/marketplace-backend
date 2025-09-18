@@ -125,9 +125,6 @@ export class CartService {
     };
   }
 
-  //Student ID: Number, CarId:Number
-  static async updateCartItems(studentId, cartId) {}
-
   static async addCartItemQuantity(studentId, cartItemId) {
     const student = await User.findByPk(studentId, {
       include: [

@@ -14,7 +14,6 @@ export const createOrder = async (req, res) => {
     const order = await OrderService.createOrder(userId, orderItems, orderType);
     return res.status(200).json({message: 'Order created successfully', data: order});
   } catch (error) {
-    console.log('error', error);
     const message = 'Failed to create an order';
     if (
       error instanceof NotFoundException ||
@@ -104,7 +103,6 @@ export const updateOrderStatus = async (req, res) => {
     await OrderService.updateOrderStatus(userId, orderId, newStatus, oracleInvoice);
     return res.status(200).json({message: 'Order update successfully'});
   } catch (error) {
-    console.log(error);
     const message = 'Failed to update order status';
     if (
       error instanceof NotFoundException ||
@@ -144,11 +142,11 @@ export const deleteStudentOrder = async (req, res) => {
  * @returns {Promise<import('express').Response>} Response object
  */
 export const updateStudentOrder = async (req, res) => {
-  const {userId} = req.params;
-  const {orderId, updateData} = req.body;
+  const {orderId} = req.params;
+  const {orderItems} = req.body;
 
   try {
-    const data = await OrderService.updateStudentOrder(userId, orderId, updateData);
+    const data = await OrderService.updateStudentOrder(orderId, orderItems);
     return res.status(200).json({message: 'Order update successfully', data});
   } catch (error) {
     const message = 'Failed to update student order';

@@ -546,7 +546,6 @@ export class ProductService {
       return product;
     }
 
-    console.log(newStock);
     variant.stockAvailable = newStock;
     variant.stockCondition = calculateStockCondition(newStock);
 

@@ -9,6 +9,7 @@ import {calculateStockCondition} from '../utils/stock-helper.js';
 import {SalesService} from './sales.service.js';
 import {NotificationService} from './notification.service.js';
 import {CartService} from './cart.service.js';
+import {StudentService} from './student.service.js';
 
 const {Order, Student, User, OrderItems, ProductVariant, Product, Program, ProductAttribute, OrderLimit} = DB;
 
@@ -166,7 +167,6 @@ export class OrderService {
     for (const [variantIdStr, count] of Object.entries(productCountMap)) {
       const variant = productVariantDetails[variantIdStr];
       const isLowStock = variant.stockCondition === 'low-stock'; // Or variant.isLowStock === true
-      console.log(variant.stockCondition);
 
       const allowedLimit = isLowStock ? 1 : orderLimit;
 
@@ -419,7 +419,6 @@ export class OrderService {
         {
           model: OrderItems,
           as: 'orderItems',
-          paranoid: false,
           include: [
             {
               model: ProductVariant,
@@ -494,8 +493,7 @@ export class OrderService {
           if (!variant) throw new NotFoundException('Product not found', 404);
 
           variant.stockReserved = Number(variant.stockReserved) - Number(orderItem.quantity);
-          const newStockAvailable = Number(variant.stockAvailable) + Number(variant.stockReserved);
-          variant.stockCondition = calculateStockCondition(newStockAvailable);
+
           await variant.save();
         }
 
@@ -555,23 +553,13 @@ export class OrderService {
   }
   /**
    *
-   * @param {string} studentId
+  
    * @param {string} orderId
    * @param {{productVariantId:string, quantity:number} []} newOrderItems - Order items
    */
-  static async updateStudentOrder(studentId, orderId, newOrderItems) {
-    const user = await User.findByPk(studentId, {
-      include: [
-        {
-          model: Student,
-          as: 'student'
-        }
-      ]
-    });
-    if (!user) throw new NotFoundException('Student not found', 404);
-
+  static async updateStudentOrder(orderId, newOrderItems) {
     const order = await Order.findOne({
-      where: {id: orderId, studentId: user.student.id, status: 'ongoing'},
+      where: {id: orderId, status: 'ongoing'},
       include: [
         {
           model: OrderItems,
@@ -585,9 +573,14 @@ export class OrderService {
               include: [{model: Product, as: 'product', required: true}]
             }
           ]
+        },
+        {
+          model: DB.Student,
+          as: 'student'
         }
       ]
     });
+
     if (!order) throw new NotFoundException('Order not found or is not eligible for update', 404);
     // Get the current product variants in the new order items to check stock
     const variantIds = newOrderItems.map((item) => item.productVariantId);
@@ -707,7 +700,7 @@ export class OrderService {
       // Send notification
       await NotificationService.createNotification(
         'Order Updated',
-        `${user.student.id} updated their order`,
+        `${order.student.id} updated their order`,
         'order',
         'employees',
         {userId: null, departmentId: null}
