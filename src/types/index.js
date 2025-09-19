@@ -4,6 +4,7 @@
  * @property {string} size
  * @property {number} price
  * @property {number} stockAvailable
+ * @property {number} stockQuantity
  */
 /**
  * @typedef {Object} TProduct

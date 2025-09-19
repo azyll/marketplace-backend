@@ -26,7 +26,7 @@ import supabase from '../lib/supabase.js';
 export const addProduct = async (req, res) => {
   try {
     /**
-     * @type {{ name:string,productAttributeId:string,size:string,price:number,stockAvailable:number}[]}
+     * @type {{ name:string,productAttributeId:string,size:string,price:number,stockQuantity:number}[]}
      */
     const variants = JSON.parse(req.body.variants);
     await ProductService.createProduct({
@@ -138,9 +138,9 @@ export const getProduct = async (req, res) => {
  */
 export const updateProductStock = async (req, res) => {
   const {productId} = req.params;
-  const {productVariantId, newStockAvailable} = req.body;
+  const {productVariantId, newStockQuantity} = req.body;
   try {
-    await ProductService.updateProductStock(productId, productVariantId, newStockAvailable);
+    await ProductService.updateProductStock(productId, productVariantId, newStockQuantity);
     return res.status(200).json({message: 'Product stock update successfully'});
   } catch (error) {
     const message = 'Failed to update product stock';

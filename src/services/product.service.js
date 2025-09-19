@@ -28,7 +28,7 @@ export class ProductService {
    *  productAttributeId:string,
    *  size:string,
    *  price:number,
-   *  stockAvailable:number
+   *  stockQuantity:number
    * }[]}} newProduct - New Product
    * @returns {Promise<Product>} Product data from the database
    * @throws {NotFoundException} If Department does not exists
@@ -46,12 +46,12 @@ export class ProductService {
     }
 
     const productVariantWithStockCondition = variants.map((variant) => {
-      if (!variant.name || !variant.price || !variant.productAttributeId || !variant.size || !variant.stockAvailable) {
+      if (!variant.name || !variant.price || !variant.productAttributeId || !variant.size || !variant.stockQuantity) {
         throw new Error('Invalid credential');
       }
       return {
         ...variant,
-        stockCondition: calculateStockCondition(variant.stockAvailable)
+        stockCondition: calculateStockCondition(variant.stockQuantity)
       };
     });
     const createdProduct = await sequelize.transaction(async (transaction) => {
@@ -431,12 +431,12 @@ export class ProductService {
       throw new AlreadyExistException('Product with this name already exists');
     }
     const productVariantWithStockCondition = variants.map((variant) => {
-      if (!variant.name || !variant.price || !variant.productAttributeId || !variant.size || !variant.stockAvailable) {
+      if (!variant.name || !variant.price || !variant.productAttributeId || !variant.size || !variant.stockQuantity) {
         throw new Error('Invalid variant credentials');
       }
       return {
         ...variant,
-        stockCondition: calculateStockCondition(variant.stockAvailable)
+        stockCondition: calculateStockCondition(variant.stockQuantity)
       };
     });
     const updatedProduct = await sequelize.transaction(async (transaction) => {
@@ -542,11 +542,11 @@ export class ProductService {
     const variant = product.productVariant?.[0];
     if (!variant) throw new NotFoundException('Product Variant not found', 404);
 
-    if (newStock === variant.stockAvailable) {
+    if (newStock === variant.stockQuantity) {
       return product;
     }
 
-    variant.stockAvailable = newStock;
+    variant.stockQuantity = newStock;
     variant.stockCondition = calculateStockCondition(newStock);
 
     await variant.save();

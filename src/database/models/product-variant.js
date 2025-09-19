@@ -46,16 +46,9 @@ export default (sequelize) => {
         schema: Joi.number().min(0).precision(2).required()
       },
       // Initial Stock
-      stockAvailable: {
+      stockQuantity: {
         type: DataTypes.INTEGER,
         schema: Joi.number().integer().min(0).required()
-      },
-      // Total stock
-      stockQuantity: {
-        type: DataTypes.VIRTUAL,
-        get() {
-          return this.stockReserved + this.stockAvailable;
-        }
       },
       // Ordered Stock
       stockReserved: {
@@ -63,6 +56,13 @@ export default (sequelize) => {
         schema: Joi.number().integer().min(0),
         allowNull: true,
         defaultValue: 0
+      },
+      // Total stock
+      stockAvailable: {
+        type: DataTypes.VIRTUAL,
+        get() {
+          return this.stockQuantity - this.stockReserved;
+        }
       },
       stockCondition: {
         type: DataTypes.ENUM,

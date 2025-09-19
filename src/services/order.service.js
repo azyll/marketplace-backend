@@ -216,7 +216,6 @@ export class OrderService {
             `You over order the item ${productVariant.product.name} the available stock is ${productVariant?.stockAvailable} and the reserved stock is ${productVariant.stockReserved}`
           );
         }
-        productVariant.stockAvailable = newStockAvailable;
         productVariant.stockReserved = productVariant.stockReserved + Number(orderItem.quantity);
         productVariant.stockCondition = calculateStockCondition(newStockAvailable);
         await productVariant?.save({
@@ -493,7 +492,7 @@ export class OrderService {
           if (!variant) throw new NotFoundException('Product not found', 404);
 
           variant.stockReserved = Number(variant.stockReserved) - Number(orderItem.quantity);
-
+          variant.stockQuantity = Number(variant.stockQuantity) - Number(orderItem.quantity);
           await variant.save();
         }
 
@@ -532,7 +531,6 @@ export class OrderService {
           if (!variant) throw new NotFoundException('Product not found', 404);
 
           const newStockAvailable = Number(variant.stockAvailable) + Number(orderItem.quantity);
-          variant.stockAvailable = Number(newStockAvailable);
           variant.stockReserved = Number(variant.stockReserved) - Number(orderItem.quantity);
           variant.stockCondition = calculateStockCondition(newStockAvailable);
           await variant.save();
@@ -631,11 +629,11 @@ export class OrderService {
         if (!productVariant) throw new NotFoundException('Product not found', 404);
 
         // Add back the old reserved stock quantity
-        productVariant.stockAvailable = Number(productVariant.stockAvailable) + Number(oldOrderItem.quantity);
+        const newStockCondition = Number(productVariant.stockAvailable) + Number(oldOrderItem.quantity);
         productVariant.stockReserved = Number(productVariant.stockReserved) - Number(oldOrderItem.quantity);
 
         // Update stock condition accordingly
-        productVariant.stockCondition = calculateStockCondition(productVariant.stockAvailable);
+        productVariant.stockCondition = calculateStockCondition(newStockCondition);
         await productVariant.save({transaction});
       }
 
@@ -653,8 +651,6 @@ export class OrderService {
           );
         }
 
-        // Update the stock information
-        productVariant.stockAvailable = newStockAvailable;
         productVariant.stockReserved = productVariant.stockReserved + Number(newOrderItem.quantity);
         productVariant.stockCondition = calculateStockCondition(newStockAvailable);
         await productVariant.save({transaction});
@@ -796,10 +792,10 @@ export class OrderService {
           const variant = await ProductVariant.findByPk(orderItem.productVariantId, {transaction});
           if (!variant) throw new NotFoundException('Product not found', 404);
 
-          const newStockAvailable = Number(variant.stockAvailable) + Number(orderItem.quantity);
-          variant.stockAvailable = newStockAvailable;
+          const newStockAVailable = Number(variant.stockAvailable) + Number(orderItem.quantity);
+
           variant.stockReserved = Number(variant.stockReserved) - Number(orderItem.quantity);
-          variant.stockCondition = calculateStockCondition(newStockAvailable);
+          variant.stockCondition = calculateStockCondition(newStockAVailable);
 
           await variant.save({transaction});
         }
