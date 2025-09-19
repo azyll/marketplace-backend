@@ -547,7 +547,8 @@ export class ProductService {
     }
 
     variant.stockQuantity = newStock;
-    variant.stockCondition = calculateStockCondition(newStock);
+    const newStockCondition = variant.stockAvailable + newStock;
+    variant.stockCondition = calculateStockCondition(newStockCondition);
 
     await variant.save();
     await NotificationService.createNotificationForInventoryStockUpdate(
