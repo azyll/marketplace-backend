@@ -29,22 +29,10 @@ export function convertFromSlug(slug) {
  * @returns {boolean} - true if any change will occur, false otherwise
  */
 export function hasInvalidSlugCharacters(text) {
-  const slug = convertToSlug(text);
-  const reconstructed = convertFromSlug(slug);
+  // Characters that will be removed or replaced by convertToSlug
+  const invalidCharsRegex = /[^\w\s-]/g; // Matches characters that are not letters, numbers, spaces, or hyphens
 
-  // Normalize inputs for comparison
-  const normalizedOriginal = text
-    .normalize('NFKD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, ' ')
-    .replace(/^\s+|\s+$/g, '')
-    .replace(/\s+/g, ' ');
-
-  const normalizedReconstructed = reconstructed
-    .toLowerCase()
-    .replace(/^\s+|\s+$/g, '')
-    .replace(/\s+/g, ' ');
-
-  return normalizedOriginal !== normalizedReconstructed;
+  // Check if the string contains invalid characters that will be removed
+  return invalidCharsRegex.test(text);
 }
+
