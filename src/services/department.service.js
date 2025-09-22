@@ -41,7 +41,7 @@ export class DepartmentService {
    */
   static async getDepartments(all = false) {
     const where = {};
-    if (all) {
+    if (!all) {
       where.name = {
         [Op.not]: 'Proware'
       };
