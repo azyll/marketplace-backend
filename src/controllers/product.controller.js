@@ -243,7 +243,7 @@ export const createProductAttribute = async (req, res) => {
 export const getCreateProductData = async (req, res) => {
   try {
     const productAttribute = await ProductService.getAttributes();
-    const departments = await DepartmentService.getDepartments();
+    const departments = await DepartmentService.getDepartments(true);
 
     return res.status(200).json({
       message: 'Product creation retrieve successfully',

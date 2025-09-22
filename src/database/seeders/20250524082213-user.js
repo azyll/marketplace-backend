@@ -35,8 +35,8 @@ export async function up(queryInterface, Sequelize) {
     {
       id: uuid(),
       firstName: 'Alissa',
-      lastName: 'User',
-      username: 'alissa.309921',
+      lastName: 'Peralta',
+      username: 'alissa.232375',
       password,
       createdAt: new Date(2025, 5, 5),
       updatedAt: new Date(),
@@ -92,7 +92,7 @@ export async function up(queryInterface, Sequelize) {
         programId: programs[0].id
       },
       {
-        id: 2000309921,
+        id: 2000232375,
         userId: users[0].id,
         level: 'tertiary',
         sex: 'female',

@@ -35,7 +35,7 @@ export class ProductService {
    * @throws {AlreadyExistException} if Product is already existing
    */
   static async createProduct(newProduct) {
-    const {category, description, image, name, departmentId, type, variants} = newProduct;
+    const {category, description, image, name, departmentId, type, variants, level} = newProduct;
 
     if (hasInvalidSlugCharacters(name)) {
       throw new Error('Name contains invalid characters. Please use only letters, numbers, and spaces.');
@@ -64,7 +64,7 @@ export class ProductService {
           type,
           category,
           departmentId,
-          level: department.level,
+          level: level ? level : department.level,
           productVariant: productVariantWithStockCondition
         },
         include: [

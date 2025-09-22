@@ -55,7 +55,7 @@ export const updateDepartment = async (req, res) => {
 export const getDepartments = async (req, res) => {
   const query = req.query;
   try {
-    const department = await DepartmentService.getDepartments();
+    const department = await DepartmentService.getDepartments(query.all);
     return res.status(200).json({message: 'Department retrieve successful', data: department});
   } catch (error) {
     const message = 'Failed to get departments';

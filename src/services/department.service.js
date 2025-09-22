@@ -1,4 +1,5 @@
 // @ts-check
+import {Op} from 'sequelize';
 import {DB} from '../database/index.js';
 import {AlreadyExistException} from '../exceptions/alreadyExist.js';
 import {NotFoundException} from '../exceptions/notFound.js';
@@ -37,16 +38,22 @@ export class DepartmentService {
 
   /**
    * Get all Department
-
    */
-  static async getDepartments() {
+  static async getDepartments(all = false) {
+    const where = {};
+    if (all) {
+      where.name = {
+        [Op.not]: 'Proware'
+      };
+    }
     const Departments = await Department.findAll({
       include: [
         {
           model: DB.Program,
           as: 'program'
         }
-      ]
+      ],
+      where
     });
     return Departments;
   }
