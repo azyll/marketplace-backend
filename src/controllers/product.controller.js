@@ -18,7 +18,7 @@ import supabase from '../lib/supabase.js';
  *  Create Product
  * @param {import('express').Request<{},{},
  * {name:string, description:string, image:string,
- * type:'Upper Wear'| 'Lower Wear'| 'Non-wearable', category:'Uniform'|'Proware'|'Stationery'|'Accessory', departmentId:string,
+ * type:'Upper Wear'| 'Lower Wear'| 'Non-wearable', level?:string, category:'Uniform'|'Proware'|'Stationery'|'Accessory', departmentId:string,
  * variants:string}>} req
  * @param {import('express').Response} res
  * @returns {Promise<import('express').Response>}

@@ -23,7 +23,7 @@ export class ProductService {
 
   /**
    * @param {{name:string, description:string, image:string,
-   *  type:'Upper Wear'| 'Lower Wear'| 'Non-wearable', category:'Uniform'|'Proware'|'Stationery'|'Accessory', departmentId:string, variants:{
+   *  type:'Upper Wear'| 'Lower Wear'| 'Non-wearable', level?:string, category:'Uniform'|'Proware'|'Stationery'|'Accessory', departmentId:string, variants:{
    *  name:string,
    *  productAttributeId:string,
    *  size:string,
