@@ -134,7 +134,7 @@ export class OrderService {
       where: {
         studentId: user.student.id,
         status: {
-          [Op.in]: ['completed', 'ongoing']
+          [Op.in]: ['completed', 'ongoing','completed']
         },
         createdAt: {
           [Op.gt]: threeMonthsAgo,
@@ -267,7 +267,7 @@ export class OrderService {
 
   /**
    * Get all Orders
-   * @param {QueryParams & {from:string, to:string, status:'ongoing'|'completed'|'cancelled'}} query
+   * @param {QueryParams & {from:string, to:string, status:'ongoing'|'completed'|'cancelled'|'confirmed'}} query
    * @returns {Promise<PaginatedOrders>} All of the orders
    */
   static async getOrders(query) {
@@ -334,7 +334,7 @@ export class OrderService {
    * Get All Orders of Student
    * @param {string} studentId
    * @param {QueryParams & {
-   * status:"completed" | "ongoing" | "cancelled"
+   * status:"completed" | "ongoing" | "cancelled"|"confirmed"
    * }} query
    * @returns {Promise<PaginatedOrders>} All of the student orders
    * @throws {NotFoundException} Student not found
@@ -462,7 +462,7 @@ export class OrderService {
    * Update Order Status
    * @param {string} orderId - Order ID
    * @param {string} studentId - Student Id
-   * @param {'completed'|'ongoing'|'cancelled'} newStatus - new Status
+   * @param {'completed'|'ongoing'|'cancelled'|'confirmed'} newStatus - new Status
    * @param {string} oracleInvoice
    * @throws {NotFoundException} Student or Order not found
    */
