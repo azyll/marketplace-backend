@@ -26,9 +26,9 @@ export default (sequelize) => {
       // The value of count should not exceed to the value of order limit
       count: {
         type: DataTypes.INTEGER,
-        schema: Joi.number().integer().min(1),
+        schema: Joi.number().min(0),
         allowNull: true,
-        defaultValue: 1
+        defaultValue: 0
       }
     },
     {
