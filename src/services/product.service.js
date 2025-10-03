@@ -506,10 +506,11 @@ export class ProductService {
    * @param {string} productId
    * @param {string} productVariantId
    * @param {number} newStock
+   * @param {'add'|'minus'} action
    * @returns {Promise<Product>}
    * @throws {NotFoundException} Product not found
    */
-  static async updateProductStock(productId, productVariantId, newStock) {
+  static async updateProductStock(productId, productVariantId, newStock, action) {
     if (!validate(productId) || !validate(productVariantId)) {
       throw new NotFoundException('Product not found', 404);
     }
@@ -538,24 +539,46 @@ export class ProductService {
 
     if (!product) throw new NotFoundException('Product not found', 404);
 
-    // Adjusted to match alias if needed (see note below)
-    const variant = product.productVariant?.[0];
-    if (!variant) throw new NotFoundException('Product Variant not found', 404);
+    await sequelize.transaction(async (transaction) => {
+      const variant = product.productVariant?.[0];
+      if (!variant) throw new NotFoundException('Product Variant not found', 404);
 
-    if (newStock === variant.stockQuantity) {
-      return product;
-    }
+      let stockQuantity = variant.stockQuantity;
 
-    variant.stockQuantity = newStock;
-    const newStockCondition = variant.stockAvailable + newStock;
-    variant.stockCondition = calculateStockCondition(newStockCondition);
+      if (action == 'minus') {
+        stockQuantity -= newStock;
+      } else {
+        stockQuantity += newStock;
+      }
+      if (stockQuantity < 0) {
+        throw new Error('Insufficient stock: the resulting quantity cannot be negative. Please enter a valid value.');
+      }
+      const resetStockValue = 50;
+      if (action == 'add' && newStock >= resetStockValue) {
+        await DB.StudentProductCount.update(
+          {
+            count: 0
+          },
+          {
+            where: {
+              productVariantId: variant.id
+            },
+            transaction
+          }
+        );
+      }
+      variant.stockQuantity = stockQuantity;
+      const newStockCondition = variant.stockAvailable + stockQuantity;
+      variant.stockCondition = calculateStockCondition(newStockCondition);
 
-    await variant.save();
-    await NotificationService.createNotificationForInventoryStockUpdate(
-      'Product Stock Update',
-      `New Product Stock for ${product.name} new stock is ${newStock}, buy it now before it ran out-of-stock`,
-      variant.id
-    );
+      await variant.save({transaction});
+
+      await NotificationService.createNotificationForInventoryStockUpdate(
+        'Product Stock Update',
+        `New Product Stock for ${product.name} new stock is ${newStock}, buy it now before it ran out-of-stock`,
+        variant.id
+      );
+    });
 
     return product;
   }

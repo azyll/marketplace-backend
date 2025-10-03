@@ -25,6 +25,20 @@ export default (sequelize) => {
         },
         as: 'productAttribute'
       });
+      ProductVariant.hasMany(models.StudentProductCount, {
+        foreignKey: {
+          name: 'productVariantId',
+          allowNull: false
+        },
+        as: 'studentProductCount'
+      });
+      ProductVariant.hasOne(models.OrderItems, {
+        foreignKey: {
+          name: 'productVariantId',
+          allowNull: false
+        },
+        as: 'productVariantItem'
+      });
     }
   }
   sequelizeJoi(sequelize);
@@ -45,7 +59,7 @@ export default (sequelize) => {
         type: DataTypes.DOUBLE,
         schema: Joi.number().min(0).precision(2).required()
       },
-      // Initial Stock
+      // Total Stock
       stockQuantity: {
         type: DataTypes.INTEGER,
         schema: Joi.number().integer().min(0).required()
@@ -57,7 +71,8 @@ export default (sequelize) => {
         allowNull: true,
         defaultValue: 0
       },
-      // Total stock
+      // Stocks ready to order
+      // Sa stock available pa pala, hinahati pa sya sa dalawa, new stocks and old stocks
       stockAvailable: {
         type: DataTypes.VIRTUAL,
         get() {

@@ -35,6 +35,11 @@ export default (sequelize) => {
         type: DataTypes.INTEGER,
         allowNull: false,
         schema: Joi.number().integer().min(0).required()
+      },
+      price: {
+        type: DataTypes.DOUBLE,
+        allowNull: false,
+        schema: Joi.number().min(0).precision(2).required()
       }
     },
     {

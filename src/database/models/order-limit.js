@@ -21,7 +21,7 @@ export default (sequelize) => {
         type: DataTypes.INTEGER,
         allowNull: false,
         schema: Joi.number().integer().min(0).required(),
-        defaultValue: 1
+        defaultValue: 3
       }
     },
     {

@@ -139,8 +139,13 @@ export const getProduct = async (req, res) => {
 export const updateProductStock = async (req, res) => {
   const {productId} = req.params;
   const {productVariantId, newStockQuantity} = req.body;
+  const {action = 'add'} = req.query;
+
   try {
-    await ProductService.updateProductStock(productId, productVariantId, newStockQuantity);
+    if (action !== 'add' && action !== 'minus') {
+      throw new Error('Invalid Credentials');
+    }
+    await ProductService.updateProductStock(productId, productVariantId, newStockQuantity, action);
     return res.status(200).json({message: 'Product stock update successfully'});
   } catch (error) {
     const message = 'Failed to update product stock';

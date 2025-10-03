@@ -31,6 +31,13 @@ export default (sequelize) => {
         },
         as: 'cart'
       });
+      Student.hasMany(models.StudentProductCount, {
+        foreignKey: {
+          name: 'studentId',
+          allowNull: false
+        },
+        as: 'studentProductCount'
+      });
       Student.hasMany(models.Order, {
         foreignKey: {
           name: 'studentId',

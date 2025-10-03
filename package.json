@@ -9,7 +9,9 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon src/server.js",
     "migrate": "npx sequelize-cli db:migrate",
-    "seeders": "npx sequelize-cli db:seed:all"
+    "seeders": "npx sequelize-cli db:seed:all",
+    "seeders:undo": "npx sequelize-cli db:seed:undo:all",
+    "model:create": "npx sequelize-cli model:generate"
   },
   "author": "",
   "license": "ISC",

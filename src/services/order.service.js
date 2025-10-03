@@ -1,6 +1,6 @@
 // @ts-check
 
-import {col, fn, literal, Op, or} from 'sequelize';
+import {col, fn, literal, Op, or, Transaction} from 'sequelize';
 import {DB} from '../database/index.js';
 import {NotFoundException} from '../exceptions/notFound.js';
 import {ActivityLogService} from './activity-log.service.js';
@@ -58,32 +58,6 @@ export class OrderService {
       throw new NotFoundException('Invalid credential, The product not found', 404);
     }
 
-    //Get Order Limit
-    const orderLimit = await this.getOrderLimit();
-
-    //Check if the orders are all valid
-    for (const orderItem of orderItems) {
-      //Check if the quantity is exceed to the allowed limit
-      if (orderItem.quantity > orderLimit)
-        throw new Error(
-          `One or more order items have a quantity that exceeds the maximum allowed limit of ${orderLimit}.`
-        );
-
-      //Check if valid product variant
-      const productVariant = productVariants.find((variant) => variant.id === orderItem.productVariantId);
-      if (!productVariant) throw new NotFoundException('Product not found', 404);
-
-      //Cannot process order for items that is out of stock
-      if (productVariant.stockCondition === 'out-of-stock')
-        throw new Error('You cannot order this item, due to its currently low in stock');
-      if (productVariant.stockCondition === 'low-stock' && orderItem.quantity > 1) {
-        throw new Error('Only 1 quantity per order for products that is currently low stock');
-      }
-    }
-
-    const threeMonthsAgo = new Date();
-    threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
-
     //Get Student Data
     const user = await User.findByPk(studentId, {
       include: [
@@ -110,94 +84,45 @@ export class OrderService {
         throw new Error('You cannot order an item that is not for your sex');
       }
     }
-    const studentOrders = await Order.findAll({
-      include: [
-        {
-          model: OrderItems,
-          as: 'orderItems',
-          required: true,
-          where: {
-            productVariantId: {
-              [Op.in]: variantIds
-            }
-          },
-          include: [
-            {
-              model: ProductVariant,
-              as: 'productVariant',
-              required: true,
-              include: [{model: Product, as: 'product', required: true}]
-            }
-          ]
-        }
-      ],
-      where: {
-        studentId: user.student.id,
-        status: {
-          [Op.in]: ['completed', 'ongoing','completed']
-        },
-        createdAt: {
-          [Op.gt]: threeMonthsAgo,
-          [Op.lt]: new Date()
-        }
-      }
-    });
-    const productCountMap = {};
-    const productVariantDetails = {};
 
-    // Step 1: Count orders and store variant details
-    for (const order of studentOrders) {
-      for (const item of order.orderItems) {
-        const variantId = item.productVariantId;
+    //Get Order Limit
+    const orderLimit = await this.getOrderLimit();
 
-        if (!productCountMap[variantId]) {
-          productCountMap[variantId] = item.quantity;
-          productVariantDetails[variantId] = item.productVariant;
-        } else {
-          const orderItemId = orderItems.find((item) => item.productVariantId === variantId);
-          if (!orderItemId) throw new NotFoundException('Product not found');
-          productCountMap[variantId] = productCountMap[variantId] + item.quantity;
-        }
+    //Check if the orders are all valid
+    for (const orderItem of orderItems) {
+      //Check if the quantity is exceed to the allowed limit
+      if (orderItem.quantity > orderLimit)
+        throw new Error(
+          `One or more order items have a quantity that exceeds the maximum allowed limit of ${orderLimit}.`
+        );
+
+      //Check if valid product variant
+      const productVariant = productVariants.find((variant) => variant.id === orderItem.productVariantId);
+      if (!productVariant) throw new NotFoundException('Product not found', 404);
+
+      //Cannot process order for items that is out of stock
+      if (productVariant.stockCondition === 'out-of-stock')
+        throw new Error('You cannot order this item, due to its currently low in stock');
+      if (productVariant.stockCondition === 'low-stock' && orderItem.quantity > 1) {
+        throw new Error('Only 1 quantity per order for products that is currently low stock');
       }
     }
-
-    // Step 2: Check which variants exceed limits
-    const disallowedOrders = [];
-
-    for (const [variantIdStr, count] of Object.entries(productCountMap)) {
-      const variant = productVariantDetails[variantIdStr];
-      const isLowStock = variant.stockCondition === 'low-stock'; // Or variant.isLowStock === true
-
-      const allowedLimit = isLowStock ? 1 : orderLimit;
-
-      if (count >= allowedLimit) {
-        disallowedOrders.push({
-          variantIdStr,
-          count,
-          allowedLimit,
-          productName: variant.product?.name || 'Unknown Product'
-        });
-      }
-    }
-    if (disallowedOrders.length >= 1)
-      throw new Error(
-        `You are not allowed to order ${disallowedOrders.map((d) => d.productName).join(', ')}. Order item quantity Limit exceeded.`
-      );
 
     const status = 'ongoing';
-
-    const plainProductVariants = productVariants.map((variant) => variant.get({plain: true}));
-
+    const orderItemsWithPrice = [];
     //Used transaction so when have a over order product all the stock update will be roll back
     let totalOrder = await sequelize.transaction(async (transaction) => {
       //For total order
       let total = 0;
-
-      for (const plainProductVariant of plainProductVariants) {
+      const nowAllowedProductNames = [];
+      for (const plainProductVariant of productVariants) {
         const orderItem = orderItems.find((order) => order.productVariantId === plainProductVariant.id);
         if (!orderItem) {
           throw new NotFoundException('A product not found', 404);
         }
+        /**
+         * @type {{id:string,size:string,name:string,price:number,stockAvailable:string,stockReserved:number,stockCondition:string,product:{name:string},save:({transaction:Transaction}=>Promise<void>)}|null}
+         */
         const productVariant = await ProductVariant.findByPk(orderItem.productVariantId, {
           include: [
             {
@@ -207,7 +132,6 @@ export class OrderService {
           ],
           transaction
         });
-
         if (!productVariant) throw new NotFoundException('Invalid credential, The product not found', 404);
 
         let newStockAvailable = Number(productVariant?.stockAvailable) - Number(orderItem.quantity);
@@ -218,11 +142,42 @@ export class OrderService {
         }
         productVariant.stockReserved = productVariant.stockReserved + Number(orderItem.quantity);
         productVariant.stockCondition = calculateStockCondition(newStockAvailable);
-        await productVariant?.save({
+
+        const [studentProductCount, isJustCreated] = await DB.StudentProductCount.findOrCreate({
+          where: {
+            studentId: user.student.id,
+            productVariantId: productVariant.id
+          },
+          defaults: {
+            studentId: user.student.id,
+            productVariantId: productVariant.id,
+            count: orderItem.quantity
+          },
           transaction
         });
 
-        total += Number(productVariant.price) * orderItem.quantity;
+        const productOrderCount =
+          isJustCreated ? studentProductCount.count : studentProductCount.count + orderItem.quantity;
+        studentProductCount.count = productOrderCount;
+        if (productOrderCount > orderLimit) {
+          nowAllowedProductNames.push(
+            `${productVariant.product.name}${productVariant.name === 'N/A' ? ' ' : `-${productVariant.name}-`}${productVariant.size === 'N/A' ? '' : `${productVariant.size}`}`
+          );
+        }
+        await productVariant?.save({
+          transaction
+        });
+        await studentProductCount?.save({
+          transaction
+        });
+        const price = Number(productVariant.price);
+        orderItemsWithPrice.push({...orderItem, price});
+        total += price * orderItem.quantity;
+      }
+      if (nowAllowedProductNames.length > 0) {
+        throw new Error(
+          `The ${nowAllowedProductNames.join(' & ')} exceed to the required order limit of ${orderLimit}, wait the Proware to restock this item to process another order.`
+        );
       }
 
       return total;
@@ -233,7 +188,7 @@ export class OrderService {
           total: totalOrder || 0,
           status,
           studentId: user.student.id,
-          orderItems
+          orderItems: orderItemsWithPrice
         },
         {
           transaction,
@@ -378,8 +333,28 @@ export class OrderService {
             {
               model: ProductVariant,
               as: 'productVariant',
+              attributes: {
+                exclude: ['createdAt', 'updatedAt', 'deletedAt']
+              },
               paranoid: false,
-              include: [{model: Product, as: 'product', paranoid: false}]
+              include: [
+                {
+                  model: Product,
+                  as: 'product',
+                  paranoid: false,
+                  attributes: {
+                    exclude: ['createdAt', 'updatedAt', 'deletedAt']
+                  }
+                },
+                {
+                  model: OrderItems,
+                  as: 'productVariantItem',
+                  paranoid: false,
+                  attributes: {
+                    exclude: ['createdAt', 'updatedAt', 'deletedAt']
+                  }
+                }
+              ]
             }
           ]
         },
@@ -493,7 +468,7 @@ export class OrderService {
 
           variant.stockReserved = Number(variant.stockReserved) - Number(orderItem.quantity);
           variant.stockQuantity = Number(variant.stockQuantity) - Number(orderItem.quantity);
-          await variant.save();
+          await variant.save({transaction});
         }
 
         await SalesService.createSales({
@@ -533,7 +508,18 @@ export class OrderService {
           const newStockAvailable = Number(variant.stockAvailable) + Number(orderItem.quantity);
           variant.stockReserved = Number(variant.stockReserved) - Number(orderItem.quantity);
           variant.stockCondition = calculateStockCondition(newStockAvailable);
-          await variant.save();
+          await variant.save({transaction});
+
+          const studentProductCount = await DB.StudentProductCount.findOne({
+            where: {
+              studentId: student.id,
+              productVariantId: variant.id
+            }
+          });
+
+          const newCount = studentProductCount.count - orderItem.quantity;
+          studentProductCount.count = newCount < 0 ? 0 : newCount;
+          await studentProductCount?.save({transaction});
         }
       }
       await ActivityLogService.createLog(
@@ -543,7 +529,7 @@ export class OrderService {
       );
 
       order.status = newStatus;
-      await order.save();
+      await order.save({transaction});
 
       return order;
     });
@@ -798,6 +784,16 @@ export class OrderService {
           variant.stockCondition = calculateStockCondition(newStockAVailable);
 
           await variant.save({transaction});
+          const studentProductCount = await DB.StudentProductCount.findOne({
+            where: {
+              studentId: order.studentId,
+              productVariantId: variant.id
+            }
+          });
+
+          const newCount = studentProductCount.count - orderItem.quantity;
+          studentProductCount.count = newCount < 0 ? 0 : newCount;
+          await studentProductCount?.save({transaction});
         }
 
         // Optionally update order status to cancelled
