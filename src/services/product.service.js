@@ -331,6 +331,11 @@ export class ProductService {
           model: Department,
           as: 'department'
         }
+      ],
+      order: [
+        ['name', 'ASC'],
+        ['productVariant', 'name', 'ASC'],
+        ['productVariant', 'size', 'ASC']
       ]
     });
 

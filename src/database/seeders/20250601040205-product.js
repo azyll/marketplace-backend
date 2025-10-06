@@ -11,16 +11,8 @@ import {
 
 /** @type {import('sequelize-cli').Migration} */
 export async function up(queryInterface, Sequelize) {
-  /**
-   * Add seed commands here.
-   *
-   * Example:
-   * await queryInterface.bulkInsert('People', [{
-   *   name: 'John Doe',
-   *   isBetaMember: false
-   * }], {});
-   */
-
+  const createdAt = new Date(2025, 5, 5);
+  const updatedAt = new Date(2025, 5, 5);
   const departments = await DB.Department.findAll();
   const productAttributes = await DB.ProductAttribute.findAll();
 
@@ -28,15 +20,15 @@ export async function up(queryInterface, Sequelize) {
   await DB.Product.create(
     {
       name: 'ICT Polo',
-      description: 'Information and Communication Technology Daily Polo Uniform. For Tertiary (BSIT,BSCS,and BSCpE)',
+      description: 'Information and Communication Technology Daily Polo Uniform. For Tertiary (BSIT,BSCS, and BSCpE)',
       image: 'ict.jpg',
       type: 'upper-wear',
       category: 'uniform',
       level: 'tertiary',
       departmentId: departments[0].id,
       productVariant: productVariantWithGender('Male', productAttributes[1].id),
-      createdAt: new Date(2025, 5, 5),
-      updatedAt: new Date()
+      createdAt,
+      updatedAt
     },
     {
       include: [
@@ -51,15 +43,15 @@ export async function up(queryInterface, Sequelize) {
   await DB.Product.create(
     {
       name: 'ICT Blouse',
-      description: 'Information and Communication Technology Daily Blouse Uniform. For Tertiary (BSIT,BSCS,and BSCpE)',
+      description: 'Information and Communication Technology Daily Blouse Uniform. For Tertiary (BSIT,BSCS, and BSCpE)',
       image: 'ict.jpg',
       type: 'upper-wear',
       level: 'tertiary',
       category: 'uniform',
       departmentId: departments[0].id,
       productVariant: productVariantWithGender('Female', productAttributes[1].id),
-      createdAt: new Date(2025, 5, 5),
-      updatedAt: new Date()
+      createdAt,
+      updatedAt
     },
     {
       include: [
@@ -73,15 +65,15 @@ export async function up(queryInterface, Sequelize) {
   await DB.Product.create(
     {
       name: 'ICT Pants',
-      description: 'Information and Communication Technology Daily Pants Uniform. For Tertiary (BSIT,BSCS,and BSCpE)',
+      description: 'Information and Communication Technology Daily Pants Uniform. For Tertiary (BSIT,BSCS, and BSCpE)',
       image: 'ict.jpg',
       type: 'lower-wear',
       level: 'tertiary',
       category: 'uniform',
       departmentId: departments[0].id,
       productVariant: productVariantWithMaleAndFemale(productAttributes[1].id),
-      createdAt: new Date(2025, 5, 5),
-      updatedAt: new Date()
+      createdAt,
+      updatedAt
     },
     {
       include: [
@@ -102,8 +94,31 @@ export async function up(queryInterface, Sequelize) {
       category: 'uniform',
       departmentId: departments[0].id,
       productVariant: productVariantWithGender('Female', productAttributes[1].id),
-      createdAt: new Date(2025, 5, 5),
-      updatedAt: new Date()
+      createdAt,
+      updatedAt
+    },
+    {
+      include: [
+        {
+          model: DB.ProductVariant,
+          as: 'productVariant'
+        }
+      ]
+    }
+  );
+
+  await DB.Product.create(
+    {
+      name: 'ICT Pin',
+      description: 'ICT Pin. For Tertiary (BSIT,BSCS, and BSCpE)',
+      image: 'ict-pin.jpg',
+      level: 'tertiary',
+      type: 'accessory',
+      category: 'proware-item',
+      departmentId: departments[0].id,
+      productVariant: productWithNoVariant(productAttributes[0].id),
+      createdAt,
+      updatedAt
     },
     {
       include: [
@@ -126,8 +141,8 @@ export async function up(queryInterface, Sequelize) {
       category: 'uniform',
       departmentId: departments[5].id,
       productVariant: productVariantWithGender('Male', productAttributes[1].id),
-      createdAt: new Date(2025, 5, 5),
-      updatedAt: new Date()
+      createdAt,
+      updatedAt
     },
     {
       include: [
@@ -149,8 +164,8 @@ export async function up(queryInterface, Sequelize) {
       category: 'uniform',
       departmentId: departments[5].id,
       productVariant: productVariantWithGender('Male', productAttributes[1].id),
-      createdAt: new Date(2025, 5, 5),
-      updatedAt: new Date()
+      createdAt,
+      updatedAt
     },
     {
       include: [
@@ -174,8 +189,8 @@ export async function up(queryInterface, Sequelize) {
       category: 'uniform',
       departmentId: departments[5].id,
       productVariant: productVariantWithGender('Female', productAttributes[1].id),
-      createdAt: new Date(2025, 5, 5),
-      updatedAt: new Date()
+      createdAt,
+      updatedAt
     },
     {
       include: [
@@ -196,8 +211,8 @@ export async function up(queryInterface, Sequelize) {
       category: 'uniform',
       departmentId: departments[5].id,
       productVariant: productVariantWithGender('Female', productAttributes[1].id),
-      createdAt: new Date(2025, 5, 5),
-      updatedAt: new Date()
+      createdAt,
+      updatedAt
     },
     {
       include: [
@@ -219,8 +234,8 @@ export async function up(queryInterface, Sequelize) {
       category: 'uniform',
       departmentId: departments[5].id,
       productVariant: productVariantWithGenderButNoSize('Male', productAttributes[0].id),
-      createdAt: new Date(2025, 5, 5),
-      updatedAt: new Date()
+      createdAt,
+      updatedAt
     },
     {
       include: [
@@ -241,8 +256,8 @@ export async function up(queryInterface, Sequelize) {
       category: 'uniform',
       departmentId: departments[5].id,
       productVariant: productWithNoVariant(productAttributes[0].id),
-      createdAt: new Date(2025, 5, 5),
-      updatedAt: new Date()
+      createdAt,
+      updatedAt
     },
     {
       include: [
@@ -263,8 +278,8 @@ export async function up(queryInterface, Sequelize) {
       category: 'uniform',
       departmentId: departments[6].id,
       productVariant: productWithNoVariant(productAttributes[0].id),
-      createdAt: new Date(2025, 5, 5),
-      updatedAt: new Date()
+      createdAt,
+      updatedAt
     },
     {
       include: [
@@ -288,8 +303,8 @@ export async function up(queryInterface, Sequelize) {
       category: 'uniform',
       departmentId: departments[1].id,
       productVariant: productVariantWithMaleAndFemale(productAttributes[1].id),
-      createdAt: new Date(2025, 5, 5),
-      updatedAt: new Date()
+      createdAt,
+      updatedAt
     },
     {
       include: [
@@ -311,8 +326,8 @@ export async function up(queryInterface, Sequelize) {
       category: 'uniform',
       departmentId: departments[1].id,
       productVariant: productVariantWithGender('Female', productAttributes[1].id),
-      createdAt: new Date(2025, 5, 5),
-      updatedAt: new Date()
+      createdAt,
+      updatedAt
     },
     {
       include: [
@@ -334,8 +349,8 @@ export async function up(queryInterface, Sequelize) {
       category: 'uniform',
       departmentId: departments[1].id,
       productVariant: productVariantWithGender('Male', productAttributes[1].id),
-      createdAt: new Date(2025, 5, 5),
-      updatedAt: new Date()
+      createdAt,
+      updatedAt
     },
     {
       include: [
@@ -356,8 +371,8 @@ export async function up(queryInterface, Sequelize) {
       category: 'uniform',
       departmentId: departments[1].id,
       productVariant: productVariantWithGender('Female', productAttributes[1].id),
-      createdAt: new Date(2025, 5, 5),
-      updatedAt: new Date()
+      createdAt,
+      updatedAt
     },
     {
       include: [
@@ -379,8 +394,8 @@ export async function up(queryInterface, Sequelize) {
       category: 'uniform',
       departmentId: departments[1].id,
       productVariant: productVariantWithMaleAndFemale(productAttributes[1].id),
-      createdAt: new Date(2025, 5, 5),
-      updatedAt: new Date()
+      createdAt,
+      updatedAt
     },
     {
       include: [
@@ -402,8 +417,8 @@ export async function up(queryInterface, Sequelize) {
       category: 'uniform',
       departmentId: departments[1].id,
       productVariant: productVariantWithGenderButNoSize('Female', productAttributes[1].id),
-      createdAt: new Date(2025, 5, 5),
-      updatedAt: new Date()
+      createdAt,
+      updatedAt
     },
     {
       include: [
@@ -425,8 +440,31 @@ export async function up(queryInterface, Sequelize) {
       category: 'uniform',
       departmentId: departments[1].id,
       productVariant: productVariantWithGenderButNoSize('Male', productAttributes[1].id),
-      createdAt: new Date(2025, 5, 5),
-      updatedAt: new Date()
+      createdAt,
+      updatedAt
+    },
+    {
+      include: [
+        {
+          model: DB.ProductVariant,
+          as: 'productVariant'
+        }
+      ]
+    }
+  );
+
+  await DB.Product.create(
+    {
+      name: 'BM Pin',
+      description: 'Business & Management Pin. For Tertiary (BSBM)',
+      image: 'bm-pin.jpg',
+      level: 'tertiary',
+      type: 'accessory',
+      category: 'proware-item',
+      departmentId: departments[1].id,
+      productVariant: productWithNoVariant(productAttributes[0].id),
+      createdAt,
+      updatedAt
     },
     {
       include: [
@@ -449,8 +487,8 @@ export async function up(queryInterface, Sequelize) {
       category: 'uniform',
       departmentId: departments[3].id,
       productVariant: productVariantWithGender('Male', productAttributes[1].id),
-      createdAt: new Date(2025, 5, 5),
-      updatedAt: new Date()
+      createdAt,
+      updatedAt
     },
     {
       include: [
@@ -464,15 +502,15 @@ export async function up(queryInterface, Sequelize) {
   await DB.Product.create(
     {
       name: 'TM Pin',
-      description: 'Tourism Management Daily Uniform Pin. For Tertiary (BSTM)',
+      description: 'Tourism Management Pin. For Tertiary (BSTM)',
       image: 'tm.jpg',
       level: 'tertiary',
-      type: 'upper-wear',
-      category: 'uniform',
+      type: 'accessory',
+      category: 'proware-item',
       departmentId: departments[3].id,
       productVariant: productWithNoVariant(productAttributes[0].id),
-      createdAt: new Date(2025, 5, 5),
-      updatedAt: new Date()
+      createdAt,
+      updatedAt
     },
     {
       include: [
@@ -493,8 +531,8 @@ export async function up(queryInterface, Sequelize) {
       category: 'uniform',
       departmentId: departments[3].id,
       productVariant: productVariantWithGenderButNoSize('Male', productAttributes[1].id),
-      createdAt: new Date(2025, 5, 5),
-      updatedAt: new Date()
+      createdAt,
+      updatedAt
     },
     {
       include: [
@@ -515,8 +553,8 @@ export async function up(queryInterface, Sequelize) {
       category: 'uniform',
       departmentId: departments[3].id,
       productVariant: productVariantWithGender('Male', productAttributes[1].id),
-      createdAt: new Date(2025, 5, 5),
-      updatedAt: new Date()
+      createdAt,
+      updatedAt
     },
     {
       include: [
@@ -537,8 +575,8 @@ export async function up(queryInterface, Sequelize) {
       category: 'uniform',
       departmentId: departments[3].id,
       productVariant: productVariantWithMaleAndFemale(productAttributes[1].id),
-      createdAt: new Date(2025, 5, 5),
-      updatedAt: new Date()
+      createdAt,
+      updatedAt
     },
     {
       include: [
@@ -559,8 +597,8 @@ export async function up(queryInterface, Sequelize) {
       category: 'uniform',
       departmentId: departments[3].id,
       productVariant: productVariantWithGenderButNoSize('Female', productAttributes[1].id),
-      createdAt: new Date(2025, 5, 5),
-      updatedAt: new Date()
+      createdAt,
+      updatedAt
     },
     {
       include: [
@@ -581,8 +619,8 @@ export async function up(queryInterface, Sequelize) {
       category: 'uniform',
       departmentId: departments[3].id,
       productVariant: productVariantWithGenderButNoSize('Female', productAttributes[1].id),
-      createdAt: new Date(2025, 5, 5),
-      updatedAt: new Date()
+      createdAt,
+      updatedAt
     },
     {
       include: [
@@ -603,8 +641,8 @@ export async function up(queryInterface, Sequelize) {
       category: 'uniform',
       departmentId: departments[3].id,
       productVariant: productVariantWithGender('Female', productAttributes[1].id),
-      createdAt: new Date(2025, 5, 5),
-      updatedAt: new Date()
+      createdAt,
+      updatedAt
     },
     {
       include: [
@@ -625,8 +663,8 @@ export async function up(queryInterface, Sequelize) {
       category: 'uniform',
       departmentId: departments[3].id,
       productVariant: productVariantWithGender('Female', productAttributes[1].id),
-      createdAt: new Date(2025, 5, 5),
-      updatedAt: new Date()
+      createdAt,
+      updatedAt
     },
     {
       include: [
@@ -649,8 +687,8 @@ export async function up(queryInterface, Sequelize) {
       category: 'uniform',
       departmentId: departments[4].id,
       productVariant: productVariantWithGender('Male', productAttributes[1].id),
-      createdAt: new Date(2025, 5, 5),
-      updatedAt: new Date()
+      createdAt,
+      updatedAt
     },
     {
       include: [
@@ -672,8 +710,8 @@ export async function up(queryInterface, Sequelize) {
       category: 'uniform',
       departmentId: departments[4].id,
       productVariant: productVariantWithGenderButNoSize('Male', productAttributes[1].id),
-      createdAt: new Date(2025, 5, 5),
-      updatedAt: new Date()
+      createdAt,
+      updatedAt
     },
     {
       include: [
@@ -694,8 +732,8 @@ export async function up(queryInterface, Sequelize) {
       category: 'uniform',
       departmentId: departments[4].id,
       productVariant: productVariantWithMaleAndFemale(productAttributes[1].id),
-      createdAt: new Date(2025, 5, 5),
-      updatedAt: new Date()
+      createdAt,
+      updatedAt
     },
     {
       include: [
@@ -716,8 +754,8 @@ export async function up(queryInterface, Sequelize) {
       category: 'uniform',
       departmentId: departments[4].id,
       productVariant: productVariantWithMaleAndFemale(productAttributes[1].id),
-      createdAt: new Date(2025, 5, 5),
-      updatedAt: new Date()
+      createdAt,
+      updatedAt
     },
     {
       include: [
@@ -739,8 +777,8 @@ export async function up(queryInterface, Sequelize) {
       category: 'uniform',
       departmentId: departments[4].id,
       productVariant: productVariantWithGender('Female', productAttributes[1].id),
-      createdAt: new Date(2025, 5, 5),
-      updatedAt: new Date()
+      createdAt,
+      updatedAt
     },
     {
       include: [
@@ -761,8 +799,8 @@ export async function up(queryInterface, Sequelize) {
       category: 'uniform',
       departmentId: departments[4].id,
       productVariant: productVariantWithGender('Female', productAttributes[1].id),
-      createdAt: new Date(2025, 5, 5),
-      updatedAt: new Date()
+      createdAt,
+      updatedAt
     },
     {
       include: [
@@ -783,8 +821,8 @@ export async function up(queryInterface, Sequelize) {
       category: 'uniform',
       departmentId: departments[4].id,
       productVariant: productVariantWithGender('Female', productAttributes[1].id),
-      createdAt: new Date(2025, 5, 5),
-      updatedAt: new Date()
+      createdAt,
+      updatedAt
     },
     {
       include: [
@@ -798,6 +836,29 @@ export async function up(queryInterface, Sequelize) {
 
   await DB.Product.create(
     {
+      name: 'Arts and Sciences Pin',
+      description: 'Arts and Sciences Pin. For Tertiary (BACOMM)',
+      image: 'arts-and-sciences-pin.jpg',
+      level: 'tertiary',
+      type: 'accessory',
+      category: 'proware-item',
+      departmentId: departments[4].id,
+      productVariant: productWithNoVariant(productAttributes[0].id),
+      createdAt,
+      updatedAt
+    },
+    {
+      include: [
+        {
+          model: DB.ProductVariant,
+          as: 'productVariant'
+        }
+      ]
+    }
+  );
+  
+  await DB.Product.create(
+    {
       name: 'Tertiary PE Uniform TShirt',
       description: 'Physical Education T-Shirt Uniform  For Tertiary',
       image: 'tertiary-pe.jpg',
@@ -806,8 +867,8 @@ export async function up(queryInterface, Sequelize) {
       category: 'uniform',
       departmentId: departments[5].id,
       productVariant: productVariantWithoutGenderButHaveSize(productAttributes[0].id),
-      createdAt: new Date(2025, 5, 5),
-      updatedAt: new Date()
+      createdAt,
+      updatedAt
     },
     {
       include: [
@@ -823,13 +884,13 @@ export async function up(queryInterface, Sequelize) {
       name: 'Tertiary PE Uniform Pants',
       description: 'Physical Education Pants Uniform For Tertiary',
       image: 'tertiary-pe.jpg',
-      type: 'upper-wear',
+      type: 'lower-wear',
       level: 'tertiary',
       category: 'uniform',
       departmentId: departments[6].id,
       productVariant: productVariantWithoutGenderButHaveSize(productAttributes[0].id),
-      createdAt: new Date(2025, 5, 5),
-      updatedAt: new Date()
+      createdAt,
+      updatedAt
     },
     {
       include: [
@@ -848,11 +909,11 @@ export async function up(queryInterface, Sequelize) {
       image: 'anniv-shirt-2024.jpg',
       type: 'upper-wear',
       level: 'all',
-      category: 'proware',
+      category: 'proware-item',
       departmentId: departments[6].id,
       productVariant: productVariantWithoutGenderButHaveSize(productAttributes[0].id),
-      createdAt: new Date(2025, 5, 5),
-      updatedAt: new Date()
+      createdAt,
+      updatedAt
     },
     {
       include: [
@@ -870,11 +931,11 @@ export async function up(queryInterface, Sequelize) {
       image: 'nstp.jpg',
       type: 'upper-wear',
       level: 'tertiary',
-      category: 'proware',
+      category: 'proware-item',
       departmentId: departments[6].id,
       productVariant: productVariantWithoutGenderButHaveSize(productAttributes[0].id),
-      createdAt: new Date(2025, 5, 5),
-      updatedAt: new Date()
+      createdAt,
+      updatedAt
     },
     {
       include: [
@@ -892,11 +953,11 @@ export async function up(queryInterface, Sequelize) {
       image: 'washday.png',
       type: 'upper-wear',
       level: 'tertiary',
-      category: 'proware',
+      category: 'proware-item',
       departmentId: departments[6].id,
       productVariant: productVariantWithMaleAndFemale(productAttributes[1].id),
-      createdAt: new Date(2025, 5, 5),
-      updatedAt: new Date()
+      createdAt,
+      updatedAt
     },
     {
       include: [
