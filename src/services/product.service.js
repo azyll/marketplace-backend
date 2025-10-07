@@ -739,7 +739,8 @@ export class ProductService {
         throw new Error('Insufficient stock: the resulting quantity cannot be negative. Please enter a valid value.');
       }
       const resetStockValue = 50;
-      if (action == 'add' && newStock >= resetStockValue) {
+      const newStockAvailable = newStock + variant.stockAvailable;
+      if (action == 'add' && newStockAvailable >= resetStockValue) {
         await DB.StudentProductCount.update(
           {
             count: 0
