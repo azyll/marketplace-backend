@@ -160,7 +160,7 @@ export class ProductService {
         }
       });
 
-      if (departments.length >= 1) {
+      if (departments.length <= 1) {
         return {
           data: [],
           meta: {
@@ -816,3 +816,4 @@ export class ProductService {
     return products;
   }
 }
+
