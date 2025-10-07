@@ -160,7 +160,7 @@ export class ProductService {
         }
       });
 
-      if (departments.length === 0) {
+      if (departments.length >= 1) {
         return {
           data: [],
           meta: {
@@ -201,7 +201,7 @@ export class ProductService {
         }
       });
 
-      if (departments.length === 0) {
+      if (departments.length >= 1) {
         return {
           data: [],
           meta: {
@@ -253,7 +253,8 @@ export class ProductService {
         }
       ],
       distinct: true,
-
+      raw: false,
+      nest: false,
       order: [
         query?.latest ? ['createdAt', 'DESC'] : ['name', 'ASC'],
         ['productVariant', 'name', 'ASC'],
@@ -368,37 +369,36 @@ export class ProductService {
       whereClause.level = departments.level;
     }
 
-    const {count, rows: inventoryData} = await ProductVariant.findAndCountAll({
-      where:
-        query.sex ?
-          {
-            name: {[Op.notILike]: `${query.sex === 'female' ? 'Male' : 'Female'}`}
-          }
-        : {},
-
-      order: [
-        query?.latest ? ['product', 'createdAt', 'DESC'] : ['name', 'ASC'],
-        ['product', 'name', 'ASC'],
-        ['name', 'ASC'],
-        ['size', 'ASC']
-      ],
-
-      offset: (page - 1) * limit,
-      limit,
+    const {count, rows: inventoryData} = await Product.findAndCountAll({
+      where: whereClause,
+      paranoid: (query.paranoid || 'true') == 'true' ? true : false,
       include: [
-        {model: ProductAttribute, as: 'productAttribute'},
         {
-          model: Product,
-          as: 'product',
-          where: whereClause,
-          include: [
-            {
-              model: Department,
-              as: 'department'
-            }
-          ]
+          model: ProductVariant,
+          include: [{model: ProductAttribute, as: 'productAttribute'}],
+          as: 'productVariant',
+          where:
+            query.sex ?
+              {
+                name: {[Op.notILike]: `${query.sex === 'female' ? 'Male' : 'Female'}`}
+              }
+            : {}
+        },
+        {
+          model: Department,
+          as: 'department'
         }
-      ]
+      ],
+      distinct: true,
+      raw: false,
+      nest: false,
+      order: [
+        query?.latest ? ['createdAt', 'DESC'] : ['name', 'ASC'],
+        ['productVariant', 'name', 'ASC'],
+        ['productVariant', 'size', 'ASC']
+      ],
+      offset: (page - 1) * limit,
+      limit
     });
 
     return {
