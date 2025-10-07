@@ -1,6 +1,6 @@
 //@ts-check
 
-import {cast, col, fn, Op, where} from 'sequelize';
+import {cast, col, fn, Op, Transaction, where} from 'sequelize';
 import {DB} from '../database/index.js';
 import {NotFoundException} from '../exceptions/notFound.js';
 import {AlreadyExistException} from '../exceptions/alreadyExist.js';
@@ -533,13 +533,21 @@ export class ProductService {
   /**
    *
    * @param {string} productId
-   * @param {object} newProduct
-   * @returns {Promise<Product>}
+   * @param {{name:string, description:string, image:string,
+   *  type:'Upper Wear'| 'Lower Wear'| 'Non-wearable', level?:string, category:'Uniform'|'Proware'|'Stationery'|'Accessory', departmentId:string, variants:{
+   *  id:string,
+   *  name:string,
+   *  productAttributeId:string,
+   *  size:string,
+   *  price:number,
+   *  stockQuantity:number
+   * }[]}} newProduct - New Product
+   * @returns {Promise<Transaction>}
    * @throws {NotFoundException}
    * @throws {AlreadyExistException} For Duplication of product
    */
   static async updateProduct(productId, newProduct) {
-    const {category, description, image, name, departmentId, type, variants} = newProduct;
+    const {category, description, image, name, departmentId, type, level, variants} = newProduct;
 
     const product = await Product.findByPk(productId, {
       include: [
@@ -569,16 +577,36 @@ export class ProductService {
     if (existingProduct) {
       throw new AlreadyExistException('Product with this name already exists');
     }
+    const newVariantIds = [];
     const productVariantWithStockCondition = variants.map((variant) => {
-      if (!variant.name || !variant.price || !variant.productAttributeId || !variant.size || !variant.stockQuantity) {
-        throw new Error('Invalid variant credentials');
+      if (!variant.id) {
+        throw new Error(`Variant is missing 'id'`);
       }
+      if (!variant.name) {
+        throw new Error(`Variant "${variant.id}" is missing 'name'`);
+      }
+      if (variant.price == null || isNaN(variant.price)) {
+        throw new Error(`Variant "${variant.id}" has an invalid or missing 'price'`);
+      }
+      if (!variant.productAttributeId) {
+        throw new Error(`Variant "${variant.id}" is missing 'productAttributeId'`);
+      }
+      if (!variant.size) {
+        throw new Error(`Variant "${variant.id}" is missing 'size'`);
+      }
+      if (variant.stockQuantity == null || isNaN(variant.stockQuantity)) {
+        throw new Error(`Variant "${variant.id}" has an invalid or missing 'stockQuantity'`);
+      }
+      if (!level) {
+        throw new Error(`Product is missing required 'level'`);
+      }
+      newVariantIds.push(variant.id);
       return {
         ...variant,
         stockCondition: calculateStockCondition(variant.stockQuantity)
       };
     });
-    const updatedProduct = await sequelize.transaction(async (transaction) => {
+    return await sequelize.transaction(async (transaction) => {
       // Update product fields
       await product.update(
         {
@@ -587,28 +615,48 @@ export class ProductService {
           image,
           type,
           category,
-          departmentId
+          departmentId,
+          level: level ?? department.level
         },
         {transaction}
       );
 
-      // Optionally delete old variants and recreate them (if your logic requires replacement)
-      await ProductVariant.destroy({
-        where: {productId},
+      for (const variant of productVariantWithStockCondition) {
+        const productVariant = await DB.ProductVariant.findOne({
+          transaction,
+          where: {
+            id: variant.id,
+            productId
+          }
+        });
+        if (productVariant) {
+          await productVariant.update(variant, {transaction});
+        } else {
+          await DB.ProductVariant.create(
+            {
+              productId,
+              stockCondition: variant.stockCondition,
+              name: variant.name,
+              productAttributeId: variant.productAttributeId,
+              size: variant.size,
+              price: Number(variant.price),
+              stockQuantity: variant.stockQuantity
+            },
+            {
+              transaction
+            }
+          );
+        }
+      }
+      await DB.ProductVariant.destroy({
+        where: {
+          productId,
+          id: {
+            [Op.notIn]: newVariantIds
+          }
+        },
         transaction
       });
-
-      const newVariants = await Promise.all(
-        productVariantWithStockCondition.map((variant) =>
-          ProductVariant.create(
-            {
-              ...variant,
-              productId
-            },
-            {transaction}
-          )
-        )
-      );
 
       // Optionally send a notification
       await NotificationService.createNotification(
@@ -636,8 +684,6 @@ export class ProductService {
 
       return product;
     });
-
-    return updatedProduct;
   }
 
   /**
