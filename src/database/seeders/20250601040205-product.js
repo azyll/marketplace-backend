@@ -856,7 +856,7 @@ export async function up(queryInterface, Sequelize) {
       ]
     }
   );
-  
+
   await DB.Product.create(
     {
       name: 'Tertiary PE Uniform TShirt',
@@ -956,6 +956,256 @@ export async function up(queryInterface, Sequelize) {
       category: 'proware-item',
       departmentId: departments[6].id,
       productVariant: productVariantWithMaleAndFemale(productAttributes[1].id),
+      createdAt,
+      updatedAt
+    },
+    {
+      include: [
+        {
+          model: DB.ProductVariant,
+          as: 'productVariant'
+        }
+      ]
+    }
+  );
+  // HM
+  await DB.Product.create(
+    {
+      name: 'HM Long Sleeve White Polo',
+      description: 'Hospitality Management Daily Long Sleeve White Polo Uniform. For Tertiary (BSHM)',
+      image: 'hm.jpg',
+      level: 'tertiary',
+      type: 'upper-wear',
+      category: 'uniform',
+      departmentId: departments[2].id,
+      productVariant: productVariantWithGender('Male', productAttributes[1].id),
+      createdAt,
+      updatedAt
+    },
+    {
+      include: [
+        {
+          model: DB.ProductVariant,
+          as: 'productVariant'
+        }
+      ]
+    }
+  );
+  await DB.Product.create(
+    {
+      name: 'HM Pin',
+      description: 'Hotel and Management Pin. For Tertiary (BSTM)',
+      image: 'hm-pin.jpg',
+      level: 'tertiary',
+      type: 'accessory',
+      category: 'proware-item',
+      departmentId: departments[2].id,
+      productVariant: productWithNoVariant(productAttributes[0].id),
+      createdAt,
+      updatedAt
+    },
+    {
+      include: [
+        {
+          model: DB.ProductVariant,
+          as: 'productVariant'
+        }
+      ]
+    }
+  );
+
+  await DB.Product.create(
+    {
+      name: 'HM Gray Pants',
+      description: 'Hotel and Management Daily Gray Pants Uniform. For Tertiary (BSHM)',
+      image: 'hm.jpg',
+      level: 'tertiary',
+      type: 'lower-wear',
+      category: 'uniform',
+      departmentId: departments[2].id,
+      productVariant: productVariantWithMaleAndFemale(productAttributes[1].id),
+      createdAt,
+      updatedAt
+    },
+    {
+      include: [
+        {
+          model: DB.ProductVariant,
+          as: 'productVariant'
+        }
+      ]
+    }
+  );
+  await DB.Product.create(
+    {
+      name: 'HM Blazer',
+      description: 'Hotel and Management Daily Blazer Uniform. For Tertiary (BSHM)',
+      image: 'hm.jpg',
+      level: 'tertiary',
+      type: 'upper-wear',
+      category: 'uniform',
+      departmentId: departments[2].id,
+      productVariant: productVariantWithMaleAndFemale(productAttributes[1].id),
+      createdAt,
+      updatedAt
+    },
+    {
+      include: [
+        {
+          model: DB.ProductVariant,
+          as: 'productVariant'
+        }
+      ]
+    }
+  );
+
+  await DB.Product.create(
+    {
+      name: 'HM White Blouse',
+      description: 'Hotel and Management Daily White Blouse Uniform. For Tertiary (BSHM)',
+      image: 'hm.jpg',
+      type: 'upper-wear',
+      level: 'tertiary',
+      category: 'uniform',
+      departmentId: departments[2].id,
+      productVariant: productVariantWithGender('Female', productAttributes[1].id),
+      createdAt,
+      updatedAt
+    },
+    {
+      include: [
+        {
+          model: DB.ProductVariant,
+          as: 'productVariant'
+        }
+      ]
+    }
+  );
+  await DB.Product.create(
+    {
+      name: 'HM Gray Skirt',
+      description: 'Hotel and Management Daily Gray Skirt Uniform. For Tertiary (BSHM)',
+      image: 'hm.jpg',
+      type: 'lower-wear',
+      level: 'tertiary',
+      category: 'uniform',
+      departmentId: departments[2].id,
+      productVariant: productVariantWithGender('Female', productAttributes[1].id),
+      createdAt,
+      updatedAt
+    },
+    {
+      include: [
+        {
+          model: DB.ProductVariant,
+          as: 'productVariant'
+        }
+      ]
+    }
+  );
+
+  // HM FOOD AND BEVERAGES
+
+  await DB.Product.create(
+    {
+      name: 'HM Vest',
+      description: 'Hotel and Management Daily Vest Uniform. For Tertiary (BSHM)',
+      image: 'hm-f-b.jpg',
+      level: 'tertiary',
+      type: 'upper-wear',
+      category: 'uniform',
+      departmentId: departments[2].id,
+      productVariant: productVariantWithMaleAndFemale(productAttributes[1].id),
+      createdAt,
+      updatedAt
+    },
+    {
+      include: [
+        {
+          model: DB.ProductVariant,
+          as: 'productVariant'
+        }
+      ]
+    }
+  );
+
+  await DB.Product.create(
+    {
+      name: 'HM Chefs Polo',
+      description: 'Hotel and Management Chef Polo',
+      image: 'hm-kitchen.jpg',
+      type: 'upper-wear',
+      level: 'tertiary',
+      category: 'uniform',
+      departmentId: departments[2].id,
+      productVariant: productVariantWithoutGenderButHaveSize(productAttributes[0].id),
+      createdAt,
+      updatedAt
+    },
+    {
+      include: [
+        {
+          model: DB.ProductVariant,
+          as: 'productVariant'
+        }
+      ]
+    }
+  );
+  await DB.Product.create(
+    {
+      name: 'HM Chefs Pants',
+      description: 'Hotel and Management Chef Pants',
+      image: 'hm-kitchen.jpg',
+      type: 'lower-wear',
+      level: 'tertiary',
+      category: 'uniform',
+      departmentId: departments[2].id,
+      productVariant: productVariantWithoutGenderButHaveSize(productAttributes[0].id),
+      createdAt,
+      updatedAt
+    },
+    {
+      include: [
+        {
+          model: DB.ProductVariant,
+          as: 'productVariant'
+        }
+      ]
+    }
+  );
+
+  await DB.Product.create(
+    {
+      name: 'HM Chef Apron',
+      description: 'Hotel and Management Apron. For Tertiary (BSTM)',
+      image: 'hm-kitchen.jpg',
+      level: 'tertiary',
+      type: 'upper-wear',
+      category: 'uniform',
+      departmentId: departments[2].id,
+      productVariant: productWithNoVariant(productAttributes[0].id),
+      createdAt,
+      updatedAt
+    },
+    {
+      include: [
+        {
+          model: DB.ProductVariant,
+          as: 'productVariant'
+        }
+      ]
+    }
+  );
+  await DB.Product.create(
+    {
+      name: 'HM Chef Skull Cap',
+      description: 'Hotel and Management Skull Cap. For Tertiary (BSTM)',
+      image: 'hm-kitchen.jpg',
+      level: 'tertiary',
+      type: 'upper-wear',
+      category: 'uniform',
+      departmentId: departments[2].id,
+      productVariant: productWithNoVariant(productAttributes[0].id),
       createdAt,
       updatedAt
     },

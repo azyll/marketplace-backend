@@ -11,7 +11,8 @@ import {
   getProductsFilteredByStudentDepartment,
   restoreProduct,
   deleteProduct,
-  updateProduct
+  updateProduct,
+  getInventory
 } from '../../controllers/product.controller.js';
 import {validate} from '../../middleware/validation.js';
 import {Joi} from 'sequelize-joi';
@@ -29,6 +30,7 @@ router.post('/attribute', createProductAttribute);
 router.put('/stock/:productId', updateProductStock);
 
 // Get Create Product
+router.get('/inventory', getInventory);
 router.get('/create', getCreateProductData);
 
 router.get('/user/:userId/all', getProductsFilteredByStudentDepartment);

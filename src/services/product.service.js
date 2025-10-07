@@ -108,11 +108,9 @@ export class ProductService {
    *     latest?: boolean,
    *     program?:string,
    *      paranoid:boolean
-   *      raw?: boolean
    *   }} query Query
    *
    *
-   * raw - if true product variants have own columns
    * @returns {Promise<ProductResponse>} All products
    */
   static async getProducts(query) {
@@ -255,17 +253,15 @@ export class ProductService {
         }
       ],
       distinct: true,
-      raw: query.raw || false,
-      nest: query.raw || false,
+
       order: [
         query?.latest ? ['createdAt', 'DESC'] : ['name', 'ASC'],
         ['productVariant', 'name', 'ASC'],
         ['productVariant', 'size', 'ASC']
       ],
-      ...(!query.raw && {
-        offset: (page - 1) * limit,
-        limit
-      })
+
+      offset: (page - 1) * limit,
+      limit
     });
 
     return {
@@ -277,6 +273,144 @@ export class ProductService {
       }
     };
   }
+
+  /**
+   * Get All Products
+   * @param { QueryParams&{
+   *     category?: string,
+   *     name?: string,
+   *     search?: string,  // Add this new parameter
+   *     department?: string,
+   *     latest?: boolean,
+   *     program?:string,
+   *      paranoid:boolean
+   *   }} query Query
+   *
+   *
+   * @returns {Promise<ProductResponse>} All products
+   */
+  static async getInventory(query) {
+    const page = Number(query?.page) || 1;
+    const limit = Number(query?.limit) || 10;
+    const whereClause = {};
+
+    // Category filter
+    if (query?.category) {
+      whereClause.category = where(cast(col('category'), 'TEXT'), {
+        [Op.iLike]: `%${query.category}%`
+      });
+    }
+
+    // Search filter (searches name and description)
+    if (query?.search?.trim()) {
+      const searchTerm = convertFromSlug(query.search.trim());
+
+      whereClause[Op.or] = [{name: {[Op.iLike]: `%${searchTerm}%`}}, {description: {[Op.iLike]: `%${searchTerm}%`}}];
+    } else if (query?.name) {
+      whereClause.name = {[Op.iLike]: `%${convertFromSlug(query.name)}%`};
+    }
+
+    // Program-based department filter
+    if (query.program) {
+      const program = await DB.Program.findOne({
+        where: {
+          [Op.or]: [{acronym: {[Op.iLike]: `%${query.program}%`}}, {name: {[Op.iLike]: `%${query.program}%`}}]
+        },
+        include: [{model: DB.Department, as: 'department'}]
+      });
+
+      if (!program) {
+        return {
+          data: [],
+          meta: {
+            currentPage: page,
+            itemsPerPage: limit,
+            totalItems: 0
+          }
+        };
+      }
+
+      const departments = await DB.Department.findByPk(program.departmentId);
+
+      if (!departments) {
+        return {
+          data: [],
+          meta: {
+            currentPage: page,
+            itemsPerPage: limit,
+            totalItems: 0
+          }
+        };
+      }
+      whereClause.departmentId = program.departmentId;
+      whereClause.level = departments.level;
+    }
+
+    // Direct department filter
+    if (query.department) {
+      const departments = await DB.Department.findOne({
+        where: {
+          [Op.or]: [{name: {[Op.eq]: query.department}}, {acronym: {[Op.eq]: query.department}}]
+        }
+      });
+
+      if (!departments) {
+        return {
+          data: [],
+          meta: {
+            currentPage: page,
+            itemsPerPage: limit,
+            totalItems: 0
+          }
+        };
+      }
+      whereClause.departmentId = departments.id;
+      whereClause.level = departments.level;
+    }
+
+    const {count, rows: inventoryData} = await ProductVariant.findAndCountAll({
+      where:
+        query.sex ?
+          {
+            name: {[Op.notILike]: `${query.sex === 'female' ? 'Male' : 'Female'}`}
+          }
+        : {},
+
+      order: [
+        query?.latest ? ['product', 'createdAt', 'DESC'] : ['name', 'ASC'],
+        ['product', 'name', 'ASC'],
+        ['name', 'ASC'],
+        ['size', 'ASC']
+      ],
+
+      offset: (page - 1) * limit,
+      limit,
+      include: [
+        {model: ProductAttribute, as: 'productAttribute'},
+        {
+          model: Product,
+          as: 'product',
+          where: whereClause,
+          include: [
+            {
+              model: Department,
+              as: 'department'
+            }
+          ]
+        }
+      ]
+    });
+
+    return {
+      data: inventoryData,
+      meta: {
+        currentPage: page,
+        itemsPerPage: limit,
+        totalItems: count
+      }
+    };
+  }
+  static async getProductsInInventory() {}
 
   /**
    * Get All Products by Department

@@ -55,12 +55,14 @@ export const addProduct = async (req, res) => {
  *   {},
  *   {},
  *   {},
- *   QueryParams &{
- *     category: string,
- *     name: string,
- *     search: string,
- *     department: string,
- *     latest: boolean,
+ *  QueryParams&{
+ *     category?: string,
+ *     name?: string,
+ *     search?: string,  // Add this new parameter
+ *     department?: string,
+ *     latest?: boolean,
+ *     program?:string,
+ *      paranoid:boolean
  *   }
  * >} req
  * @param {import('express').Response} res
@@ -69,6 +71,42 @@ export const addProduct = async (req, res) => {
 export const getProducts = async (req, res) => {
   try {
     const data = await ProductService.getProducts(req.query);
+    return res.status(200).json({message: 'Products retrieve successfully', ...data});
+  } catch (error) {
+    const message = 'Failed to get products';
+    if (
+      error instanceof NotFoundException ||
+      error instanceof AlreadyExistException ||
+      error instanceof UnauthorizedException
+    ) {
+      return res.status(error.statusCode).json({message, error: error.message});
+    }
+    return res.status(400).json({message, error: error.message || defaultErrorMessage});
+  }
+};
+
+/**
+ * Get Inventory Products
+ * @param {import('express').Request<
+ *   {},
+ *   {},
+ *   {},
+ *  QueryParams&{
+ *     category?: string,
+ *     name?: string,
+ *     search?: string,  // Add this new parameter
+ *     department?: string,
+ *     latest?: boolean,
+ *     program?:string,
+ *      paranoid:boolean
+ *   }
+ * >} req
+ * @param {import('express').Response} res
+ * @returns {Promise<import('express').Response>}
+ */
+export const getInventory = async (req, res) => {
+  try {
+    const data = await ProductService.getInventory(req.query);
     return res.status(200).json({message: 'Products retrieve successfully', ...data});
   } catch (error) {
     const message = 'Failed to get products';
