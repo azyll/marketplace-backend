@@ -828,6 +828,7 @@ export class OrderService {
         order.status = 'cancelled';
 
         await order.save({transaction});
+
         await NotificationService.createNotification(
           `Order #${order.id} automatically cancelled after 24 hours`,
           `Your order exceeded the 24-hour window and has been marked as cancelled.\n\nOrder items:\n${order.orderItems
@@ -844,11 +845,13 @@ export class OrderService {
           }
         );
       }
-      await ActivityLogService.createLog(
-        `${orders.length} orders marked as cancelled after exceeding the 24-hour limit.`,
-        'Bulk order status updated to "cancelled".',
-        'order'
-      );
+      if (orders.length > 0) {
+        await ActivityLogService.createLog(
+          `${orders.length} orders marked as cancelled after exceeding the 24-hour limit.`,
+          'Bulk order status updated to "cancelled".',
+          'order'
+        );
+      }
     });
     return transaction;
   }
