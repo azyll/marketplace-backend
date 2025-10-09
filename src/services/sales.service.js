@@ -50,18 +50,18 @@ export class SalesService {
   static async getSales(query) {
     const page = Number(query.page) || 1;
     const limit = Number(query.limit) || 10;
-    const {start, end} = query;
+    const {from, to} = query;
     const where = {};
 
-    if (start && end) {
+    if (from && to) {
       // Date range
       where.createdAt = {
-        [Op.gte]: new Date(start),
-        [Op.lt]: new Date(new Date(end).setDate(new Date(end).getDate() + 1)) // add 1 day to make end inclusive
+        [Op.gte]: new Date(from),
+        [Op.lt]: new Date(new Date(to).setDate(new Date(to).getDate() + 1)) // add 1 day to make end inclusive
       };
-    } else if (start) {
+    } else if (from) {
       // Single date
-      const day = new Date(start);
+      const day = new Date(from);
       const nextDay = new Date(day);
       nextDay.setDate(day.getDate() + 1);
 
