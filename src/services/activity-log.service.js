@@ -35,11 +35,23 @@ export class ActivityLogService {
   static async getLogs(query) {
     const page = Number(query?.page) || 1;
     const limit = Number(query?.limit) || 10;
+    // ✅ Define allowed enum values
     const where = {};
+    const validTypes = ['user', 'system', 'inventory', 'sales', 'order'];
+
     if (query.type) {
-      where.type = {
-        [Op.iLike]: `%${query.type}`
-      };
+      if (validTypes.includes(query.type)) {
+        where.type = query.type;
+      } else {
+        return {
+          data: [],
+          meta: {
+            currentPage: page,
+            itemsPerPage: limit,
+            totalItems: 0
+          }
+        };
+      }
     }
     const {count, rows} = await DB.ActivityLog.findAndCountAll({
       order: [['createdAt', 'DESC']],
