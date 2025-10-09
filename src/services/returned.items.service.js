@@ -136,15 +136,13 @@ export class ReturnedItemService {
     });
   }
   static async getReturnedItems(query) {
-    const page = Number(query.page) ?? 1;
-    const limit = Number(query.limit) ?? 10;
+    const page = Number(query.page ?? 1);
+    const limit = Number(query.limit ?? 10);
     const {count, rows} = await DB.ReturnedItems.findAndCountAll({
-      transaction,
       include: [
         {
           model: DB.ProductVariant,
           as: 'productVariant',
-
           include: [
             {
               model: DB.Product,

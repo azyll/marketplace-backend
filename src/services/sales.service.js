@@ -1,5 +1,5 @@
 // @ts-check
-import {col, fn, Op} from 'sequelize';
+import {col, fn, Op, Sequelize} from 'sequelize';
 import {getSales} from '../controllers/sales.controller.js';
 import {DB} from '../database/index.js';
 import {AlreadyExistException} from '../exceptions/alreadyExist.js';
@@ -163,7 +163,60 @@ export class SalesService {
     return sales;
   }
 
-  static async getTotalSales() {}
+  static async getTotalSalesPerDepartment() {
+    return await await DB.Sales.findAll({
+      attributes: [
+        [col('order.orderItems.productVariant.product.department.name'), 'name'],
+        [col('order.orderItems.productVariant.product.department.acronym'), 'acronym'],
+        [fn('SUM', col('Sales.total')), 'totalSales']
+      ],
+      include: [
+        {
+          model: DB.Order,
+          as: 'order',
+          required: true,
+          attributes: [],
+          include: [
+            {
+              model: DB.OrderItems,
+              as: 'orderItems',
+              required: true,
+              attributes: [],
+              include: [
+                {
+                  model: DB.ProductVariant,
+                  as: 'productVariant',
+                  required: true,
+                  attributes: [],
+                  include: [
+                    {
+                      model: DB.Product,
+                      as: 'product',
+                      required: true,
+                      attributes: [],
+                      include: [
+                        {
+                          model: DB.Department,
+                          as: 'department',
+                          required: true,
+                          attributes: []
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      group: [
+        col('order.orderItems.productVariant.product.department.id'),
+        col('order.orderItems.productVariant.product.department.name')
+      ],
+      raw: true
+    });
+  }
 
   /**
    *

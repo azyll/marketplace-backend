@@ -100,3 +100,20 @@ export const getSalesTrend = async (req, res) => {
   }
 };
 
+export const getTotalSalesPerDepartment = async (req, res) => {
+  try {
+    const data = await SalesService.getTotalSalesPerDepartment();
+    return res.status(200).json({message: 'Sales per department retrieve successfully', data});
+  } catch (error) {
+    const message = 'Failed to get total sales per department ';
+    if (
+      error instanceof NotFoundException ||
+      error instanceof AlreadyExistException ||
+      error instanceof UnauthorizedException
+    ) {
+      return res.status(error.statusCode).json({message, error: error.message});
+    }
+    return res.status(400).json({message, error: error.message || defaultErrorMessage});
+  }
+};
+

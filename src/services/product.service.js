@@ -414,14 +414,119 @@ export class ProductService {
       offset: (page - 1) * limit,
       limit
     });
+    const formatCurrency = (value) => `₱${value.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
 
+    const result = [];
+
+    for (const product of inventoryData) {
+      const sizeMap = {};
+      let productTotal = 0;
+
+      for (const variant of product.productVariant) {
+        const {size, price, stockQuantity} = variant;
+        const total = price * stockQuantity;
+
+        if (!sizeMap[size]) {
+          sizeMap[size] = {
+            price,
+            quantity: 0,
+            totalValue: 0
+          };
+        }
+
+        sizeMap[size].quantity += stockQuantity;
+        sizeMap[size].totalValue += total;
+
+        productTotal += total;
+      }
+
+      const productOutput = {
+        productName: product.name,
+        variants: [],
+        totalValue: productTotal
+      };
+
+      for (const [size, data] of Object.entries(sizeMap)) {
+        productOutput.variants.push({
+          size,
+          price: formatCurrency(data.price),
+          quantity: data.quantity,
+          total: formatCurrency(data.totalValue)
+        });
+      }
+
+      result.push(productOutput);
+    }
     return {
       data: inventoryData,
       meta: {
         currentPage: page,
         itemsPerPage: limit,
-        totalItems: count
+        totalItems: count,
+        inventoryValue: result
       }
+    };
+  }
+
+  static async getInventoryValue() {
+    const {rows: inventoryData} = await Product.findAndCountAll({
+      include: [
+        {
+          model: ProductVariant,
+          include: [{model: ProductAttribute, as: 'productAttribute'}],
+          as: 'productVariant'
+        },
+        {
+          model: Department,
+          as: 'department'
+        }
+      ]
+    });
+    const formatCurrency = (value) => `₱${value.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+
+    const result = [];
+
+    for (const product of inventoryData) {
+      const sizeMap = {};
+      let productTotal = 0;
+
+      for (const variant of product.productVariant) {
+        const {size, price, stockQuantity} = variant;
+        const total = price * stockQuantity;
+
+        if (!sizeMap[size]) {
+          sizeMap[size] = {
+            price,
+            quantity: 0,
+            totalValue: 0
+          };
+        }
+
+        sizeMap[size].quantity += stockQuantity;
+        sizeMap[size].totalValue += total;
+
+        productTotal += total;
+      }
+
+      const productOutput = {
+        productName: product.name,
+        variants: [],
+        totalValue: productTotal
+      };
+
+      for (const [size, data] of Object.entries(sizeMap)) {
+        productOutput.variants.push({
+          size,
+          price: formatCurrency(data.price),
+          quantity: data.quantity,
+          total: formatCurrency(data.totalValue)
+        });
+      }
+
+      result.push(productOutput);
+    }
+    return {
+      data: result
     };
   }
   static async getInventoryAlerts() {
