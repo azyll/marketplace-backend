@@ -35,7 +35,7 @@ export const createLog = async (req, res) => {
 
 export const getLogs = async (req, res) => {
   try {
-    const logs = await ActivityLogService.getLogs();
+    const logs = await ActivityLogService.getLogs(req.query);
     return res.status(200).json({message: 'Log retrieve successfully', data: logs});
   } catch (error) {
     const message = 'Failed to get activity logs';

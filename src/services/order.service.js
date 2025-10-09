@@ -197,16 +197,13 @@ export class OrderService {
       );
       await ActivityLogService.createLog(
         'Order Created Successfully',
-        `Order created with a total of ${totalOrder || 0}`,
+        `A new order (ID: ${order.id}) was created with a total amount of ₱${totalOrder?.toFixed(2) || '0.00'}.`,
         'order'
       );
-      if (orderType == 'cart') {
-        await CartService.archiveCart(user.id, variantIds);
-      }
 
       await NotificationService.createNotification(
-        'Order Created',
-        `${user.student.id} pushed a new order`,
+        'New Order Created',
+        `Student ID ${user.student.id} has placed a new order (Order ID: ${order.id}).`,
         'order',
         'employees',
         {
@@ -214,6 +211,7 @@ export class OrderService {
           departmentId: null
         }
       );
+
       return order;
     });
 
@@ -476,11 +474,10 @@ export class OrderService {
           total: order.total,
           oracleInvoice
         });
-        await ActivityLogService.createLog(`New Sales Created`, 'A new complete transaction for sales', 'sales');
 
         await NotificationService.createNotification(
-          'Order Successful',
-          `Student :${student.id} marked order as ${newStatus}`,
+          'Order Status Updated',
+          `Student ID ${student.id} marked order #${order.id} (Total: ₱${order.total.toFixed(2)}) as "${newStatus}".`,
           'order',
           'individual',
           {
@@ -488,9 +485,10 @@ export class OrderService {
             userId: student.user.id
           }
         );
+
         await NotificationService.createNotification(
-          'New Sales',
-          `${student.id} created new Sales`,
+          'New Sale Recorded',
+          `Student ID ${student.id} has created a new sale.`,
           'sale',
           'employees',
           {
@@ -523,8 +521,8 @@ export class OrderService {
         }
       }
       await ActivityLogService.createLog(
-        `The order ${order.id} marked as ${newStatus}`,
-        `A order marked as ${newStatus}`,
+        `Order #${order.id} status updated to "${newStatus}"`,
+        `Order #${order.id} status was changed to "${newStatus}".`,
         'order'
       );
 
@@ -675,17 +673,25 @@ export class OrderService {
       // Log the activity
       await ActivityLogService.createLog(
         'Order Updated Successfully',
-        `Order ${orderId} updated with new items totaling ${totalUpdatedOrder || 0}`,
+        `Order #${orderId} was updated with new items. Total amount is now ₱${totalUpdatedOrder?.toFixed(2) || '0.00'}.`,
         'order'
       );
 
-      // Send notification
+      // Send notification to student
       await NotificationService.createNotification(
-        'Order Updated',
-        `${order.student.id} updated their order`,
+        `Your order #${order.id} has been updated`,
+        `The new order items are:\n${order.orderItems
+          .map(
+            (orderItem) =>
+              `• ${orderItem.productVariant.product.name} ${orderItem.productVariant.name} (${orderItem.productVariant.size}) — Quantity: ${orderItem.quantity} x ₱${orderItem.price.toFixed(2)}`
+          )
+          .join('\n')}`,
         'order',
-        'employees',
-        {userId: null, departmentId: null}
+        'individual',
+        {
+          departmentId: null,
+          userId: order.student.userId
+        }
       );
     });
 
@@ -763,7 +769,29 @@ export class OrderService {
     const thresholdDate = new Date(Date.now() - 24 * 60 * 60 * 1000); // 24 hours ago
     const transaction = await sequelize.transaction(async (transaction) => {
       const orders = await Order.findAll({
-        include: [{model: OrderItems, as: 'orderItems'}],
+        include: [
+          {
+            model: OrderItems,
+            as: 'orderItems',
+            include: [
+              {
+                model: DB.ProductVariant,
+                as: 'productVariant',
+                include: [
+                  {
+                    model: Product,
+                    as: 'product',
+                    required: true
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            model: Student,
+            as: 'student'
+          }
+        ],
         where: {
           status: 'ongoing',
           createdAt: {
@@ -798,14 +826,36 @@ export class OrderService {
 
         // Optionally update order status to cancelled
         order.status = 'cancelled';
+
         await order.save({transaction});
+        await NotificationService.createNotification(
+          `Order #${order.id} automatically cancelled after 24 hours`,
+          `Your order exceeded the 24-hour window and has been marked as cancelled.\n\nOrder items:\n${order.orderItems
+            .map(
+              (orderItem) =>
+                `• ${orderItem.productVariant.product.name} ${orderItem.productVariant.name} (${orderItem.productVariant.size}) — Quantity: ${orderItem.quantity} x ₱${orderItem.price.toFixed(2)}`
+            )
+            .join('\n')}`,
+          'order',
+          'individual',
+          {
+            departmentId: null,
+            userId: student.user.id
+          }
+        );
       }
+      await ActivityLogService.createLog(
+        `${orders.length} orders marked as cancelled after exceeding the 24-hour limit.`,
+        'Bulk order status updated to "cancelled".',
+        'order'
+      );
     });
     return transaction;
   }
   static async getOrderLimit() {
     const limit = await OrderLimit.findByPk(1);
     if (!limit) return 1;
+
     return Number(limit.limit);
   }
 }

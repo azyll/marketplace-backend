@@ -44,7 +44,7 @@
  */
 
 /**
- * @typedef {'user'|'application'|'stock'|'sales'|'order'} TLog
+ * @typedef {'user'| 'system'| 'inventory'| 'sales'| 'order'} TLog
  */
 
 /**

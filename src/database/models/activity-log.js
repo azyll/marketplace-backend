@@ -1,4 +1,4 @@
-'use strict';
+
 
 import {Model, DataTypes} from 'sequelize';
 import {Joi, sequelizeJoi} from 'sequelize-joi';
@@ -28,8 +28,8 @@ export default (sequelize) => {
       },
       type: {
         type: DataTypes.ENUM,
-        values: ['user', 'application', 'stock', 'sales', 'order'],
-        schema: Joi.string().required().valid('user', 'application', 'stock', 'sales', 'order')
+        values: ['user', 'system', 'inventory', 'sales', 'order'],
+        schema: Joi.string().required().valid('user', 'system', 'inventory', 'sales', 'order')
       }
     },
     {

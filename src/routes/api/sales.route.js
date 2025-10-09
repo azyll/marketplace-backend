@@ -1,5 +1,5 @@
 import {Router} from 'express';
-import {getAnnualSales, getSale, getSales} from '../../controllers/sales.controller.js';
+import {getAnnualSales, getSale, getSales, getSalesTrend} from '../../controllers/sales.controller.js';
 
 const router = Router();
 
@@ -8,6 +8,7 @@ router.get('/', getSales);
 
 //Annual Sales
 router.get('/annual', getAnnualSales);
+router.get('/trend', getSalesTrend);
 //Annual Sale
 router.get('/:oracleInvoice', getSale);
 export default router;

@@ -1,7 +1,7 @@
 'use strict';
-import {Model} from 'sequelize';
+import {DataTypes, Model} from 'sequelize';
 import {Joi, sequelizeJoi} from 'sequelize-joi';
-export default (sequelize, DataTypes) => {
+export default (sequelize) => {
   class ReturnedItem extends Model {
     /**
      * Helper method for defining associations.

@@ -18,6 +18,7 @@ import NotificationReceiverModel from './models/notification-receiver.js';
 import OrderLimitModel from './models/order-limit.js';
 import ModulePermissionModel from './models/module-permission.js';
 import StudentProductCountModel from './models/student-product-count.js';
+import ReturnedItemsModel from './models/returned-items.js';
 
 export const DB = {
   sequelize,
@@ -38,7 +39,8 @@ export const DB = {
   NotificationReceiver: NotificationReceiverModel(sequelize),
   ModulePermission: ModulePermissionModel(sequelize),
   OrderLimit: OrderLimitModel(sequelize),
-  StudentProductCount: StudentProductCountModel(sequelize)
+  StudentProductCount: StudentProductCountModel(sequelize),
+  ReturnedItems: ReturnedItemsModel(sequelize)
 };
 
 Object.values(DB).forEach((model) => {

@@ -82,7 +82,8 @@ export default (sequelize) => {
       stockCondition: {
         type: DataTypes.ENUM,
         values: ['out-of-stock', 'low-stock', 'in-stock'],
-        schema: Joi.string().trim().required().valid('out-of-stock', 'low-stock', 'in-stock')
+        schema: Joi.string().trim().required().valid('out-of-stock', 'low-stock', 'in-stock'),
+        // Can automatic update here when the stockAvailable updates the stockCondition will update i have function, getStockCondition(stockAvailable),
       }
     },
     {

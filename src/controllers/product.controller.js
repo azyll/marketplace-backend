@@ -122,6 +122,41 @@ export const getInventory = async (req, res) => {
 };
 
 /**
+ * Get Inventory Products
+ * @param {import('express').Request<
+ *   {},
+ *   {},
+ *   {},
+ *  QueryParams&{
+ *     category?: string,
+ *     name?: string,
+ *     search?: string,  // Add this new parameter
+ *     department?: string,
+ *     latest?: boolean,
+ *     program?:string,
+ *      paranoid:boolean
+ *   }
+ * >} req
+ * @param {import('express').Response} res
+ * @returns {Promise<import('express').Response>}
+ */
+export const getInventoryAlerts = async (req, res) => {
+  try {
+    const data = await ProductService.getInventoryAlerts();
+    return res.status(200).json({message: 'Inventory alerts retrieve successfully', data});
+  } catch (error) {
+    const message = 'Failed to get products';
+    if (
+      error instanceof NotFoundException ||
+      error instanceof AlreadyExistException ||
+      error instanceof UnauthorizedException
+    ) {
+      return res.status(error.statusCode).json({message, error: error.message});
+    }
+    return res.status(400).json({message, error: error.message || defaultErrorMessage});
+  }
+};
+/**
  * @param {import('express').Response} res
  * @param {import('express').Request} req
  * @returns {Promise<import('express').Response>}
@@ -175,7 +210,6 @@ export const getProduct = async (req, res) => {
  * @returns {Promise<import('express').Response>}
  */
 export const updateProductStock = async (req, res) => {
-  const {productId} = req.params;
   const {productVariantId, newStockQuantity} = req.body;
   const {action = 'add'} = req.query;
 
@@ -183,7 +217,7 @@ export const updateProductStock = async (req, res) => {
     if (action !== 'add' && action !== 'minus') {
       throw new Error('Invalid Credentials');
     }
-    await ProductService.updateProductStock(productId, productVariantId, newStockQuantity, action);
+    await ProductService.updateProductStock(productVariantId, newStockQuantity, action);
     return res.status(200).json({message: 'Product stock update successfully'});
   } catch (error) {
     const message = 'Failed to update product stock';

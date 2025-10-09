@@ -4,6 +4,8 @@ import {getSales} from '../controllers/sales.controller.js';
 import {DB} from '../database/index.js';
 import {AlreadyExistException} from '../exceptions/alreadyExist.js';
 import {NotFoundException} from '../exceptions/notFound.js';
+import {ActivityLogService} from './activity-log.service.js';
+import sequelize from '../database/config/sequelize.js';
 
 const {Sales, Order, OrderItems, Student, User, Program, Product, ProductVariant} = DB;
 
@@ -19,17 +21,26 @@ export class SalesService {
    * @returns {Promise<Sales>}
    */
   static async createSales(salesData) {
-    const order = await Order.findByPk(salesData.orderId);
+    return await sequelize.transaction(async (transaction) => {
+      const order = await Order.findByPk(salesData.orderId, {transaction});
 
-    if (!order) throw new NotFoundException('Order not found', 404);
+      if (!order) throw new NotFoundException('Order not found', 404);
 
-    const [sales, isNewSales] = await Sales.findOrCreate({
-      where: {oracleInvoice: salesData.oracleInvoice},
-      defaults: salesData
+      const [sales, isNewSales] = await Sales.findOrCreate({
+        where: {oracleInvoice: salesData.oracleInvoice},
+        defaults: salesData,
+        transaction
+      });
+      if (!isNewSales) throw new AlreadyExistException('The Oracle Invoice You Input is already existing', 409);
+      await ActivityLogService.createLog(
+        `New Sale recorded: Total ${sales.total}, Oracle Invoice #${sales.oracleInvoice}`,
+        `For Order Number: ${order.id}\n` +
+          `Total amount: ${sales.total}\n` +
+          `Oracle Invoice Number: ${sales.oracleInvoice}`,
+        'sales'
+      );
+      return sales;
     });
-    if (!isNewSales) throw new AlreadyExistException('The Oracle Invoice You Input is already existing', 409);
-
-    return sales;
   }
   /**
    * Get All Sales
@@ -43,12 +54,8 @@ export class SalesService {
     const {count, rows: salesData} = await Sales.findAndCountAll({
       distinct: true,
       order: [['createdAt', 'DESC']],
-      // If may may limit and page na query, then may pagination
-      ...(query.limit &&
-        query.page && {
-          offset: (page - 1) * limit,
-          limit
-        }),
+      offset: (page - 1) * limit,
+      limit,
       include: [
         {
           model: Order,
@@ -76,13 +83,16 @@ export class SalesService {
         }
       ]
     });
-
+    const totalSales = salesData.reduce((prev, curr) => {
+      return prev + Number(curr.total);
+    }, 0);
     return {
       data: salesData,
       meta: {
         currentPage: page,
         itemsPerPage: limit,
-        totalItems: count
+        totalItems: count,
+        totalSales
       }
     };
   }
@@ -147,6 +157,69 @@ export class SalesService {
       }
     });
     return filteredSales || 0;
+  }
+  static async getSalesTrend() {
+    const now = new Date();
+
+    // Current month boundaries
+    const startOfCurrentMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const endOfCurrentMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
+
+    // Previous month boundaries
+    const startOfPreviousMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+    const endOfPreviousMonth = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59, 999);
+
+    // Total sales for current month
+    const currentMonthResult = await Sales.findOne({
+      attributes: [[fn('SUM', col('total')), 'total']],
+      where: {
+        createdAt: {
+          [Op.between]: [startOfCurrentMonth, endOfCurrentMonth]
+        }
+      },
+      raw: true
+    });
+
+    // Total sales for previous month
+    const previousMonthResult = await Sales.findOne({
+      attributes: [[fn('SUM', col('total')), 'total']],
+      where: {
+        createdAt: {
+          [Op.between]: [startOfPreviousMonth, endOfPreviousMonth]
+        }
+      },
+      raw: true
+    });
+
+    const currentSales = parseFloat(currentMonthResult.total) || 0;
+    const previousSales = parseFloat(previousMonthResult.total) || 0;
+
+    let percentageChange = '↔ 0%';
+
+    if (previousSales === 0 && currentSales > 0) {
+      percentageChange = '↑ 100%';
+    } else if (previousSales > 0 && currentSales === 0) {
+      percentageChange = '↓ 100%';
+    } else if (previousSales > 0) {
+      const change = ((currentSales - previousSales) / previousSales) * 100;
+      const roundedChange = Math.abs(change).toFixed(1);
+
+      if (change > 0) {
+        percentageChange = `↑ ${roundedChange}%`;
+      } else if (change < 0) {
+        percentageChange = `↓ ${roundedChange}%`;
+      }
+    }
+
+    return {
+      previousMonth: {
+        totalSales: previousSales
+      },
+      currentMonth: {
+        totalSales: currentSales,
+        increasePercentage: percentageChange
+      }
+    };
   }
   static async getSalesPerMonth() {
     const year = new Date().getFullYear();

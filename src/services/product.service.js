@@ -9,6 +9,7 @@ import {NotificationService} from './notification.service.js';
 import {validate} from 'uuid';
 import {convertFromSlug, hasInvalidSlugCharacters} from '../utils/slug-helper.js';
 import sequelize from '../database/config/sequelize.js';
+import {ActivityLogService} from './activity-log.service.js';
 const {Product, Department, ProductVariant, ProductAttribute, User, Student, Program} = DB;
 
 /**
@@ -81,8 +82,13 @@ export class ProductService {
         throw new AlreadyExistException('Product is already exists');
       }
       await NotificationService.createNotification(
-        'New Product Added',
-        `New Product added for ${department.name}`,
+        `New Product Created: ${newProduct.name}`,
+        `A new product has been added to the ${department.name} department.\n\nVariants:\n${newProduct.productVariant
+          .map(
+            (variant) =>
+              `• ${variant.name} (${variant.size}) - Price: ${variant.price}, Stock: ${variant.stockAvailable}`
+          )
+          .join('\n')}`,
         'announcement',
         department.name === 'Proware' ? 'students' : 'department students',
         {
@@ -91,8 +97,16 @@ export class ProductService {
         }
       );
 
-      // @ts-ignore
-
+      await ActivityLogService.createLog(
+        `New product created: ${newProduct.name}`,
+        `The product "${newProduct.name}" was created and assigned to the ${department.name} department with the following variants:\n${newProduct.productVariant
+          .map(
+            (variant) =>
+              `• ${variant.name} (${variant.size}) - Price: ${variant.price}, Stock: ${variant.stockAvailable}`
+          )
+          .join('\n')}`,
+        'system'
+      );
       return product;
     });
     return createdProduct;
@@ -160,7 +174,7 @@ export class ProductService {
         }
       });
 
-      if (departments.length <= 1) {
+      if (departments.length < 2) {
         return {
           data: [],
           meta: {
@@ -201,7 +215,7 @@ export class ProductService {
         }
       });
 
-      if (departments.length >= 1) {
+      if (departments.length < 2) {
         return {
           data: [],
           meta: {
@@ -410,7 +424,28 @@ export class ProductService {
       }
     };
   }
-  static async getProductsInInventory() {}
+  static async getInventoryAlerts() {
+    const {count: noStockCount} = await ProductVariant.findAndCountAll({
+      where: {
+        stockCondition: 'out-of-stock'
+      }
+    });
+    const {count: lowStockCount} = await ProductVariant.findAndCountAll({
+      where: {
+        stockCondition: 'low-stock'
+      }
+    });
+    const {count: inStockCount} = await ProductVariant.findAndCountAll({
+      where: {
+        stockCondition: 'in-stock'
+      }
+    });
+    return [
+      {value: noStockCount, label: 'No Stock'},
+      {value: lowStockCount, label: 'Low Stock'},
+      {value: inStockCount, label: 'In Stock'}
+    ];
+  }
 
   /**
    * Get All Products by Department
@@ -509,27 +544,123 @@ export class ProductService {
    * @param {string} productId
    */
   static async archiveProduct(productId) {
-    const product = await Product.findByPk(productId, {
-      paranoid: false
-    });
-    if (!product) throw new NotFoundException('Product not found');
+    return await sequelize.transaction(async (transaction) => {
+      const product = await Product.findByPk(productId, {
+        paranoid: false,
+        include: [
+          {
+            model: DB.ProductVariant,
+            as: 'productVariant'
+          },
+          {
+            model: DB.Department,
+            as: 'department'
+          }
+        ],
+        transaction
+      });
 
-    if (product.deletedAt !== null) throw new NotFoundException('Product is already archived');
-    return await product.destroy();
+      if (!product) throw new NotFoundException('Product not found');
+
+      if (product.deletedAt !== null) throw new NotFoundException('Product is already archived');
+
+      // Archive the product
+      await product.destroy({transaction});
+
+      // Send notification about the archive
+      await NotificationService.createNotification(
+        `Product Archived: ${product.name}`,
+        `The product "${product.name}" from the ${product.department.name} department has been archived.\n\nVariants:\n${product.productVariant
+          .map(
+            (variant) =>
+              `• ${variant.name} (${variant.size}) - Price: ${variant.price}, Stock: ${variant.stockAvailable}`
+          )
+          .join('\n')}`,
+        'announcement',
+        product.department.name === 'Proware' ? 'students' : 'department students',
+        {
+          departmentId: product.departmentId,
+          userId: null
+        }
+      );
+
+      // Log the archive activity
+      await ActivityLogService.createLog(
+        `Product archived: ${product.name}`,
+        `The product "${product.name}" from the ${product.department.name} department was archived.\n\nArchived Variants:\n${product.productVariant
+          .map(
+            (variant) =>
+              `• ${variant.name} (${variant.size}) - Price: ${variant.price}, Stock: ${variant.stockAvailable}`
+          )
+          .join('\n')}`,
+        'system'
+      );
+
+      return product;
+    });
   }
+
   /**
    * Restore Product
    * @param {string} productId
    */
   static async restoreProduct(productId) {
-    const product = await Product.findByPk(productId, {
-      paranoid: false
-    });
-    if (!product) throw new NotFoundException('Product not found');
+    return await sequelize.transaction(async (transaction) => {
+      const product = await Product.findByPk(productId, {
+        paranoid: false,
+        include: [
+          {
+            model: DB.ProductVariant,
+            as: 'productVariant'
+          },
+          {
+            model: DB.Department,
+            as: 'department'
+          }
+        ],
+        transaction
+      });
 
-    if (product.deletedAt === null) throw new NotFoundException('Product is not archived');
-    return await product.restore();
+      if (!product) throw new NotFoundException('Product not found');
+
+      if (product.deletedAt === null) throw new NotFoundException('Product is not archived');
+
+      // Restore the product
+      await product.restore({transaction});
+
+      // Send notification to relevant users
+      await NotificationService.createNotification(
+        `Product Restored: ${product.name}`,
+        `The product "${product.name}" has been restored to the ${product.department.name} department.\n\nVariants:\n${product.productVariant
+          .map(
+            (variant) =>
+              `• ${variant.name} (${variant.size}) - Price: ${variant.price}, Stock: ${variant.stockAvailable}`
+          )
+          .join('\n')}`,
+        'announcement',
+        product.department.name === 'Proware' ? 'students' : 'department students',
+        {
+          departmentId: product.departmentId,
+          userId: null
+        }
+      );
+
+      // Log the restore action
+      await ActivityLogService.createLog(
+        `Product restored: ${product.name}`,
+        `The product "${product.name}" has been restored to the ${product.department.name} department with the following variants:\n${product.productVariant
+          .map(
+            (variant) =>
+              `• ${variant.name} (${variant.size}) - Price: ${variant.price}, Stock: ${variant.stockAvailable}`
+          )
+          .join('\n')}`,
+        'system'
+      );
+
+      return product;
+    });
   }
+
   /**
    *
    * @param {string} productId
@@ -583,24 +714,25 @@ export class ProductService {
         throw new Error(`Variant is missing 'id'`);
       }
       if (!variant.name) {
-        throw new Error(`Variant "${variant.id}" is missing 'name'`);
+        throw new Error(`Variant  is missing 'name'`);
       }
       if (variant.price == null || isNaN(variant.price)) {
-        throw new Error(`Variant "${variant.id}" has an invalid or missing 'price'`);
+        throw new Error(`Variant  has an invalid or missing 'price'`);
       }
       if (!variant.productAttributeId) {
-        throw new Error(`Variant "${variant.id}" is missing 'productAttributeId'`);
+        throw new Error(`Variant is missing 'productAttributeId'`);
       }
       if (!variant.size) {
-        throw new Error(`Variant "${variant.id}" is missing 'size'`);
+        throw new Error(`Variant is missing 'size'`);
       }
       if (variant.stockQuantity == null || isNaN(variant.stockQuantity)) {
-        throw new Error(`Variant "${variant.id}" has an invalid or missing 'stockQuantity'`);
+        throw new Error(`Variant has an invalid or missing 'stockQuantity'`);
       }
       if (!level) {
         throw new Error(`Product is missing required 'level'`);
       }
       newVariantIds.push(variant.id);
+      // !TODO: Fix variant calculate stock condition, it should be stockAvailable not quantity
       return {
         ...variant,
         stockCondition: calculateStockCondition(variant.stockQuantity)
@@ -648,6 +780,7 @@ export class ProductService {
           );
         }
       }
+
       await DB.ProductVariant.destroy({
         where: {
           productId,
@@ -657,11 +790,36 @@ export class ProductService {
         },
         transaction
       });
+      // Reload updated product with relations
+      await product.reload({
+        include: [
+          {
+            model: ProductVariant,
+            as: 'productVariant',
+            include: [{model: ProductAttribute, as: 'productAttribute'}]
+          },
+          {
+            model: DB.Department,
+            as: 'department'
+          }
+        ],
+        transaction
+      });
+      const variantDetails =
+        product.productVariant ?
+          product.productVariant
+            .map(
+              (variant) =>
+                `• ${variant.name} (${variant.size}) - Price: ${variant.price}, Stock: ${variant.stockAvailable}`
+            )
+            .join('\n')
+        : null;
 
-      // Optionally send a notification
+      const variantText = variantDetails ? `\n\nUpdated Variants:\n${variantDetails}` : '';
+
       await NotificationService.createNotification(
-        'Product Updated',
-        `Product "${product.name}" was updated in ${department.name}`,
+        `Product Updated: ${product.name}`,
+        `The product "${product.name}" has been updated in the ${department.name} department. ${variantText}`,
         'announcement',
         department.name === 'Proware' ? 'students' : 'department students',
         {
@@ -670,17 +828,11 @@ export class ProductService {
         }
       );
 
-      // Reload updated product with relations
-      await product.reload({
-        include: [
-          {
-            model: ProductVariant,
-            as: 'productVariant',
-            include: [{model: ProductAttribute, as: 'productAttribute'}]
-          }
-        ],
-        transaction
-      });
+      await ActivityLogService.createLog(
+        `Product updated: ${product.name}`,
+        `The product "${product.name}" in the ${department.name} department was updated. ${variantText}`,
+        'system'
+      );
 
       return product;
     });
@@ -688,46 +840,40 @@ export class ProductService {
 
   /**
    *
-   * @param {string} productId
    * @param {string} productVariantId
    * @param {number} newStock
    * @param {'add'|'minus'} action
    * @returns {Promise<Product>}
    * @throws {NotFoundException} Product not found
    */
-  static async updateProductStock(productId, productVariantId, newStock, action) {
-    if (!validate(productId) || !validate(productVariantId)) {
+  static async updateProductStock(productVariantId, newStock, action) {
+    if (!validate(productVariantId)) {
       throw new NotFoundException('Product not found', 404);
     }
 
-    const product = await Product.findByPk(productId, {
+    const variant = await ProductVariant.findByPk(productVariantId, {
       include: [
         {
-          model: ProductVariant,
-          as: 'productVariant',
+          model: Product,
+          as: 'product',
+          required: true,
           include: [
             {
-              model: ProductAttribute,
-              as: 'productAttribute'
+              model: Department,
+              as: 'department'
             }
-          ],
-          where: {
-            id: productVariantId
-          }
+          ]
         },
         {
-          model: Department,
-          as: 'department'
+          model: ProductAttribute,
+          as: 'productAttribute'
         }
       ]
     });
 
-    if (!product) throw new NotFoundException('Product not found', 404);
+    if (!variant) throw new NotFoundException('Product not found', 404);
 
     await sequelize.transaction(async (transaction) => {
-      const variant = product.productVariant?.[0];
-      if (!variant) throw new NotFoundException('Product Variant not found', 404);
-
       let stockQuantity = variant.stockQuantity;
 
       if (action == 'minus') {
@@ -739,8 +885,7 @@ export class ProductService {
         throw new Error('Insufficient stock: the resulting quantity cannot be negative. Please enter a valid value.');
       }
       const resetStockValue = 50;
-      const newStockAvailable = newStock + variant.stockAvailable;
-      if (action == 'add' && newStockAvailable >= resetStockValue) {
+      if (action == 'add' && newStock >= resetStockValue) {
         await DB.StudentProductCount.update(
           {
             count: 0
@@ -753,20 +898,50 @@ export class ProductService {
           }
         );
       }
+      await ActivityLogService.createLog(
+        `Stock updated: ${variant.product.name} - ${variant.name} (${variant.size})`,
+        `Stock quantity for "${variant.product.name}" (${variant.name}, ${variant.size}) was updated from ${variant.stockQuantity} to ${stockQuantity}.`,
+        'inventory'
+      );
       variant.stockQuantity = stockQuantity;
-      const newStockCondition = variant.stockAvailable + stockQuantity;
+      const newStockCondition = stockQuantity - variant.stockReserved;
       variant.stockCondition = calculateStockCondition(newStockCondition);
 
       await variant.save({transaction});
 
+      let notificationTitle = '';
+      let notificationMessage = '';
+
+      switch (variant.stockCondition) {
+        case 'out-of-stock':
+          notificationTitle = 'Product Out of Stock';
+          notificationMessage = `Unfortunately, "${variant.product.name}" (${variant.name}, ${variant.size}) is now out of stock. Stay tuned for restocks!`;
+          break;
+
+        case 'low-stock':
+          notificationTitle = 'Low Stock Alert';
+          notificationMessage = `Hurry! "${variant.product.name}" (${variant.name}, ${variant.size}) is running low. Only ${stockQuantity} left! Grab it before it’s gone.`;
+          break;
+
+        case 'in-stock':
+          notificationTitle = 'Product Restocked';
+          notificationMessage = `Good news! "${variant.product.name}" (${variant.name}, ${variant.size}) is back in stock. Available quantity: ${stockQuantity}.`;
+          break;
+
+        default:
+          notificationTitle = 'Product Stock Update';
+          notificationMessage = `"${variant.product.name}" (${variant.name}, ${variant.size}) stock has been updated. Current stock: ${stockQuantity}.`;
+          break;
+      }
+
       await NotificationService.createNotificationForInventoryStockUpdate(
-        'Product Stock Update',
-        `New Product Stock for ${product.name} new stock is ${newStock}, buy it now before it ran out-of-stock`,
+        notificationTitle,
+        notificationMessage,
         variant.id
       );
     });
 
-    return product;
+    return variant;
   }
 
   /**
@@ -775,19 +950,27 @@ export class ProductService {
    * @throws {AlreadyExistException} if attribute already exists
    */
   static async createAttribute(name) {
-    const [productAttribute, isJustCreated] = await ProductAttribute.findOrCreate({
-      where: {
-        name: name
-      },
-      defaults: {
-        name: name
-      }
-    });
+    return await sequelize.transaction(async (transaction) => {
+      const [productAttribute, isJustCreated] = await ProductAttribute.findOrCreate({
+        where: {
+          name: name
+        },
+        defaults: {
+          name: name
+        },
+        transaction
+      });
 
-    if (!isJustCreated) {
-      throw new AlreadyExistException('Attribute already exists');
-    }
-    return productAttribute;
+      if (!isJustCreated) {
+        throw new AlreadyExistException('Attribute already exists');
+      }
+      await ActivityLogService.createLog(
+        `Attribute created: ${name}`,
+        `A new product attribute "${name}" has been created.`,
+        'system'
+      );
+      return productAttribute;
+    });
   }
   /**
    * Get all Product Attributes
@@ -816,4 +999,3 @@ export class ProductService {
     return products;
   }
 }
-
