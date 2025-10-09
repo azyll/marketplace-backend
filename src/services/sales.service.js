@@ -50,9 +50,29 @@ export class SalesService {
   static async getSales(query) {
     const page = Number(query.page) || 1;
     const limit = Number(query.limit) || 10;
+    const {start, end} = query;
+    const where = {};
 
+    if (start && end) {
+      // Date range
+      where.createdAt = {
+        [Op.gte]: new Date(start),
+        [Op.lt]: new Date(new Date(end).setDate(new Date(end).getDate() + 1)) // add 1 day to make end inclusive
+      };
+    } else if (start) {
+      // Single date
+      const day = new Date(start);
+      const nextDay = new Date(day);
+      nextDay.setDate(day.getDate() + 1);
+
+      where.createdAt = {
+        [Op.gte]: day,
+        [Op.lt]: nextDay
+      };
+    }
     const {count, rows: salesData} = await Sales.findAndCountAll({
       distinct: true,
+      where,
       order: [['createdAt', 'DESC']],
       offset: (page - 1) * limit,
       limit,
@@ -83,9 +103,9 @@ export class SalesService {
         }
       ]
     });
-    const totalSales = salesData.reduce((prev, curr) => {
-      return prev + Number(curr.total);
-    }, 0);
+    const totalSales = await Sales.sum('total', {
+      where
+    });
     return {
       data: salesData,
       meta: {
@@ -142,6 +162,8 @@ export class SalesService {
     if (!sales) throw new NotFoundException('Sale not found', 404);
     return sales;
   }
+
+  static async getTotalSales() {}
 
   /**
    *

@@ -35,15 +35,16 @@ export class ActivityLogService {
   static async getLogs(query) {
     const page = Number(query?.page) || 1;
     const limit = Number(query?.limit) || 10;
-
+    const where = {};
+    if (query.type) {
+      where.type = {
+        [Op.iLike]: `%${query.type}`
+      };
+    }
     const {count, rows} = await DB.ActivityLog.findAndCountAll({
       order: [['createdAt', 'DESC']],
       offset: (page - 1) * limit,
-      where: {
-        type: {
-          [Op.iLike]: `%${query.type}`
-        }
-      },
+      where,
       limit
     });
     return {
