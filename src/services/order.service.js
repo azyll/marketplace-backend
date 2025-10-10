@@ -212,6 +212,9 @@ export class OrderService {
         }
       );
 
+      if (orderType == 'cart') {
+        await CartService.archiveCart(user.id, variantIds);
+      }
       return order;
     });
 

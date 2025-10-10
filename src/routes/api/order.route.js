@@ -79,7 +79,12 @@ router.get('/:orderId', auth(['admin', 'employee', 'student']), getOrder);
 // Create Order
 router.post(
   '/:userId',
-  auth(['admin', 'employee', 'student']),
+  auth(['student'], {
+    selfOnly: {
+      param: 'userId',
+      roles: ['student']
+    }
+  }),
   validate({
     orderItems: Joi.array()
       .items(
