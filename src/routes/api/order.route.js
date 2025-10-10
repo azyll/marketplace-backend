@@ -38,7 +38,7 @@ router.put(
   '/status/:userId',
   auth(['admin', 'employee']),
   validate({
-    orderId: Joi.string().uuid().required(),
+    orderId: Joi.string().required(),
     newStatus: Joi.string().required().trim().valid('completed', 'ongoing', 'cancelled', 'confirmed'),
     oracleInvoice: Joi.string().optional()
   }),
@@ -68,7 +68,7 @@ router.delete(
   '/:userId',
   auth(['admin', 'employee', 'student']),
   validate({
-    orderId: Joi.string().uuid().required()
+    orderId: Joi.string().required()
   }),
   deleteStudentOrder
 );
