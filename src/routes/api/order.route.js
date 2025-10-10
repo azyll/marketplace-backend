@@ -90,7 +90,8 @@ router.post(
       .items(
         Joi.object({
           productVariantId: Joi.string().uuid().required(),
-          quantity: Joi.number().integer().positive().required()
+          quantity: Joi.number().integer().positive().required(),
+          studentId: Joi.string().uuid().required()
         })
       )
       .min(1)
