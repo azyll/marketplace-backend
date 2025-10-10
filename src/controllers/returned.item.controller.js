@@ -41,7 +41,7 @@ export const restoreReturnedItems = async (req, res) => {
 
 export const updateReturnItemQuantity = async (req, res) => {
   const {returnItemId} = req.params;
-  const {quantity} = req.params;
+  const {quantity} = req.body;
 
   try {
     await ReturnedItemService.updateReturnedItemQuantity(returnItemId, quantity);

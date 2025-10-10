@@ -23,9 +23,7 @@ router.get('/:userId', auth(['admin', 'student', 'employee']), getUser);
 router.get('/', auth(['admin', 'student']), getAllUsers);
 
 // Create User
-// router.post("/", auth(["admin"]), addUser);
-router.post('/', addUser);
-// router.post("/", addUser);
+router.post('/', auth(['admin']), addUser);
 
 // Update User
 router.put(
@@ -37,13 +35,24 @@ router.put(
     }
   }),
   validate({
-    firstName: Joi.string(),
-    lastName: Joi.string()
+    firstName: Joi.string().required(),
+    lastName: Joi.string().required(),
+    username: Joi.string().required(),
+    password: Joi.string().required()
   }),
   updateUser
 );
 
-router.get('/:userId/module-permission', userModulesPermission);
+router.get(
+  '/:userId/module-permission',
+  auth(['admin', 'employee'], {
+    selfOnly: {
+      param: 'userId',
+      roles: ['admin', 'employee']
+    }
+  }),
+  userModulesPermission
+);
 
 // Archive User
 router.delete('/:userId', auth(['admin']), archiveUser);
@@ -66,15 +75,5 @@ router.post(
   }),
   updatePassword
 );
-
-// Create Role
-// router.post(
-//   '/role',
-//   validate({
-//     name: Joi.string().required(),
-//     systemTag: Joi.string().required().valid('student', 'admin', 'employee')
-//   }),
-//   createRole
-// );
 
 export default router;

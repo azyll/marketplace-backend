@@ -6,17 +6,18 @@ import {
   getSalesTrend,
   getTotalSalesPerDepartment
 } from '../../controllers/sales.controller.js';
+import {auth} from '../../middleware/auth.js';
 
 const router = Router();
 
 //Get All Sales
-router.get('/', getSales);
+router.get('/', auth(['admin', 'employee']), getSales);
 
 //Annual Sales
-router.get('/annual', getAnnualSales);
-router.get('/trend', getSalesTrend);
-router.get('/total-per-department', getTotalSalesPerDepartment);
+router.get('/annual', auth(['admin', 'employee']), getAnnualSales);
+router.get('/trend', auth(['admin', 'employee']), getSalesTrend);
+router.get('/total-per-department', auth(['admin', 'employee']), getTotalSalesPerDepartment);
 //Annual Sale
-router.get('/:oracleInvoice', getSale);
+router.get('/:oracleInvoice', auth(['admin', 'employee']), getSale);
 export default router;
 

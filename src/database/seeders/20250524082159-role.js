@@ -22,7 +22,7 @@ export async function up(queryInterface, Sequelize) {
       },
       {
         id: uuid(),
-        name: 'Employee',
+        name: 'Proware',
         systemTag: 'employee',
         createdAt: new Date(2025, 5, 5),
         updatedAt: new Date()
