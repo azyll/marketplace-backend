@@ -78,7 +78,7 @@ router.get(
 );
 
 //Get All Products
-router.get('/', auth(['admin', 'employee', 'student']), getProducts);
+router.get('/', getProducts);
 
 //Get Department Products
 
@@ -106,6 +106,6 @@ router.put('/:productId', auth(['admin', 'employee']), uploadFormData('products'
 router.delete('/:productId', auth(['admin', 'employee']), deleteProduct);
 
 // Get Product
-router.get('/:productSlug', auth(['admin', 'employee', 'student']), getProduct);
+router.get('/:productSlug', getProduct);
 
 export default router;
