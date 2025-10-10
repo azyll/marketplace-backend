@@ -52,7 +52,7 @@ router.get('/inventory/value', auth(['admin', 'employee']), getInventoryValue);
 router.get('/inventory', auth(['admin', 'employee']), getInventory);
 
 // Get Create Product
-router.get('/create', auth(['admin', 'employee']), getCreateProductData);
+router.get('/create', getCreateProductData);
 
 router.get(
   '/user/:userId/all',

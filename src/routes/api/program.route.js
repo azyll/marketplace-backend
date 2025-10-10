@@ -18,7 +18,7 @@ router.post(
 );
 
 // Get Program
-router.get('/', auth(['admin', 'employee', 'student']), getPrograms);
+router.get('/', getPrograms);
 
 // Update Program
 router.put('/', auth(['admin', 'employee', 'student']), updateProgram);
