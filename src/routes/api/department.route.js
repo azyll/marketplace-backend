@@ -22,7 +22,7 @@ router.post(
   createDepartment
 );
 // Get All Departments
-router.get('/', auth(['admin', 'employee', 'student']), getDepartments);
+router.get('/', getDepartments);
 // Get Department
 router.get('/:departmentId', auth(['admin', 'employee', 'student']), getDepartment);
 // Update Department
