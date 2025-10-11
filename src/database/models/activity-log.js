@@ -1,5 +1,3 @@
-
-
 import {Model, DataTypes} from 'sequelize';
 import {Joi, sequelizeJoi} from 'sequelize-joi';
 
@@ -18,12 +16,12 @@ export default (sequelize) => {
   ActivityLog.init(
     {
       title: {
-        type: DataTypes.STRING,
+        type: DataTypes.TEXT,
         schema: Joi.string().trim().required(),
         allowNull: false
       },
       content: {
-        type: DataTypes.STRING,
+        type: DataTypes.TEXT,
         schema: Joi.string().trim().required()
       },
       type: {

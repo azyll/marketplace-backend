@@ -30,11 +30,11 @@ export default (sequelize) => {
       },
       title: {
         allowNull: false,
-        type: DataTypes.STRING
+        type: DataTypes.TEXT
       },
       message: {
         allowNull: false,
-        type: DataTypes.STRING
+        type: DataTypes.TEXT
       },
       type: {
         type: DataTypes.ENUM,

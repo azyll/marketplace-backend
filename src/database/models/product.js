@@ -35,12 +35,12 @@ export default (sequelize) => {
         primaryKey: true
       },
       name: {
-        type: DataTypes.STRING,
+        type: DataTypes.TEXT,
         schema: Joi.string().trim().required(),
         unique: true
       },
       description: {
-        type: DataTypes.STRING,
+        type: DataTypes.TEXT,
         schema: Joi.string().trim().required()
       },
       image: {

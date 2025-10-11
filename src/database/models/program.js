@@ -37,7 +37,7 @@ export default (sequelize) => {
         defaultValue: DataTypes.UUIDV4
       },
       name: {
-        type: DataTypes.STRING,
+        type: DataTypes.TEXT,
         schema: Joi.string().trim().required(),
         allowNull: false,
         unique: true

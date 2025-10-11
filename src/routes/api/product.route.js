@@ -94,13 +94,29 @@ router.post(
     type: Joi.string().trim().required(),
     category: Joi.string().trim().required(),
     variants: Joi.string().required(),
-    departmentId: Joi.string().required()
+    departmentId: Joi.string().required(),
+    level: Joi.string().valid('shs', 'tertiary', 'all').optional()
   }),
   addProduct
 );
 
 // Update Product
-router.put('/:productId', auth(['admin', 'employee']), uploadFormData('products', {upsert: true}), updateProduct);
+router.put(
+  '/:productId',
+  auth(['admin', 'employee']),
+  uploadFormData('products', {upsert: true}),
+  validate({
+    name: Joi.string().trim().required(),
+    description: Joi.string().trim().required(),
+    image: Joi.string().trim().optional(),
+    type: Joi.string().trim().required(),
+    category: Joi.string().trim().required(),
+    variants: Joi.string().required(),
+    departmentId: Joi.string().required(),
+    level: Joi.string().valid('shs', 'tertiary', 'all').optional()
+  }),
+  updateProduct
+);
 
 //Archive Product
 router.delete('/:productId', auth(['admin', 'employee']), deleteProduct);

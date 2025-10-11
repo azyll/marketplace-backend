@@ -86,7 +86,7 @@ export class ProductService {
         `A new product has been added to the ${department.name} department.\n\nVariants:\n${newProduct.productVariant
           .map(
             (variant) =>
-              `• ${variant.name} (${variant.size}) - Price: ${variant.price}, Stock: ${variant.stockAvailable}`
+              ` • ${variant.productAttribute.name} ${variant.name} (${variant.size}) - Price: ${variant.price}, Stock: ${variant.stockAvailable}`
           )
           .join('\n')}`,
         'announcement',
@@ -102,7 +102,7 @@ export class ProductService {
         `The product "${newProduct.name}" was created and assigned to the ${department.name} department with the following variants:\n${newProduct.productVariant
           .map(
             (variant) =>
-              `• ${variant.name} (${variant.size}) - Price: ${variant.price}, Stock: ${variant.stockAvailable}`
+              `•  ${variant.productAttribute.name} ${variant.name} (${variant.size}) - Price: ${variant.price}, Stock: ${variant.stockAvailable}`
           )
           .join('\n')}`,
         'system'
@@ -785,6 +785,9 @@ export class ProductService {
   static async updateProduct(productId, newProduct) {
     const {category, description, image, name, departmentId, type, level, variants} = newProduct;
 
+    if (hasInvalidSlugCharacters(name)) {
+      throw new Error('Name contains invalid characters. Please use only letters, numbers, and spaces.');
+    }
     const product = await Product.findByPk(productId, {
       include: [
         {
@@ -845,6 +848,7 @@ export class ProductService {
     });
     return await sequelize.transaction(async (transaction) => {
       // Update product fields
+
       await product.update(
         {
           name,
