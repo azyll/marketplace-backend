@@ -900,7 +900,7 @@ export class ProductService {
               {transaction}
             );
           } else {
-            await DB.ProductVariant.create(
+            const productVariant = await DB.ProductVariant.create(
               {
                 productId,
                 stockCondition: variant.stockCondition,
@@ -914,10 +914,11 @@ export class ProductService {
                 transaction
               }
             );
+            newVariantIds.push(productVariant.id);
           }
           continue;
         }
-        await DB.ProductVariant.create(
+        const productVariant = await DB.ProductVariant.create(
           {
             productId,
             stockCondition: variant.stockCondition,
@@ -931,6 +932,7 @@ export class ProductService {
             transaction
           }
         );
+        newVariantIds.push(productVariant.id);
       }
 
       await DB.ProductVariant.destroy({
