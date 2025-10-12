@@ -45,6 +45,9 @@ export class ProductService {
     if (!department) {
       throw new NotFoundException('Department not found', 404);
     }
+    if (variants.length <= 0) {
+      throw new Error('Variant is required');
+    }
 
     const productVariantWithStockCondition = variants.map((variant) => {
       if (!variant.name || !variant.price || !variant.productAttributeId || !variant.size || !variant.stockQuantity) {
@@ -827,6 +830,13 @@ export class ProductService {
     if (existingProduct) {
       throw new AlreadyExistException('Product with this name already exists');
     }
+    if (variants.length <= 0) {
+      throw new Error('Variant is required');
+    }
+
+    /**
+     * @type {string[]}
+     */
     const newVariantIds = [];
     const productVariantWithStockCondition = variants.map((variant) => {
       if (!variant.id) {
@@ -850,7 +860,9 @@ export class ProductService {
       if (!level) {
         throw new Error(`Product is missing required 'level'`);
       }
-      newVariantIds.push(variant.id);
+      if (isNaN(variant.id)) {
+        newVariantIds.push(variant.id);
+      }
       // !TODO: Fix variant calculate stock condition, it should be stockAvailable not quantity
       return {
         ...variant,
@@ -882,7 +894,10 @@ export class ProductService {
           }
         });
         if (productVariant) {
-          await productVariant.update(variant, {transaction});
+          await productVariant.update(
+            {variant, stockCondition: calculateStockCondition(variant.stockQuantity - productVariant.stockReserved)},
+            {transaction}
+          );
         } else {
           await DB.ProductVariant.create(
             {
