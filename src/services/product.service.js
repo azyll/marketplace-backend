@@ -56,7 +56,7 @@ export class ProductService {
       };
     });
     const createdProduct = await sequelize.transaction(async (transaction) => {
-      const [product, isJustCreated] = await Product.findOrCreate({
+      const [newProduct, isJustCreated] = await Product.findOrCreate({
         where: {name},
         defaults: {
           name,
@@ -71,8 +71,7 @@ export class ProductService {
         include: [
           {
             model: ProductVariant,
-            as: 'productVariant',
-            include: [{model: ProductAttribute, as: 'productAttribute'}]
+            as: 'productVariant'
           }
         ],
         transaction
@@ -81,9 +80,21 @@ export class ProductService {
       if (!isJustCreated) {
         throw new AlreadyExistException('Product is already exists');
       }
+
+      const product = await Product.findByPk(newProduct.id, {
+        include: [
+          {
+            model: ProductVariant,
+            as: 'productVariant',
+            include: [{model: ProductAttribute, as: 'productAttribute'}]
+          }
+        ],
+        transaction
+      });
+
       await NotificationService.createNotification(
-        `New Product Created: ${newProduct.name}`,
-        `A new product has been added to the ${department.name} department.\n\nVariants:\n${newProduct.productVariant
+        `New Product Created: ${product.name}`,
+        `A new product has been added to the ${department.name} department.\n\nVariants:\n${product.productVariant
           .map(
             (variant) =>
               ` • ${variant.productAttribute.name} ${variant.name} (${variant.size}) - Price: ${variant.price}, Stock: ${variant.stockAvailable}`
@@ -98,8 +109,8 @@ export class ProductService {
       );
 
       await ActivityLogService.createLog(
-        `New product created: ${newProduct.name}`,
-        `The product "${newProduct.name}" was created and assigned to the ${department.name} department with the following variants:\n${newProduct.productVariant
+        `New product created: ${product.name}`,
+        `The product "${product.name}" was created and assigned to the ${department.name} department with the following variants:\n${product.productVariant
           .map(
             (variant) =>
               `•  ${variant.productAttribute.name} ${variant.name} (${variant.size}) - Price: ${variant.price}, Stock: ${variant.stockAvailable}`
@@ -919,7 +930,7 @@ export class ProductService {
           product.productVariant
             .map(
               (variant) =>
-                `• ${variant.name} (${variant.size}) - Price: ${variant.price}, Stock: ${variant.stockAvailable}`
+                `• ${variant.productAttribute.name} ${variant.name} (${variant.size}) - Price: ${variant.price}, Stock: ${variant.stockAvailable}`
             )
             .join('\n')
         : null;
