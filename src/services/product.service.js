@@ -839,9 +839,6 @@ export class ProductService {
      */
     const newVariantIds = [];
     const productVariantWithStockCondition = variants.map((variant) => {
-      if (!variant.id) {
-        throw new Error(`Variant is missing 'id'`);
-      }
       if (!variant.name) {
         throw new Error(`Variant  is missing 'name'`);
       }
