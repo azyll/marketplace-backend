@@ -1,6 +1,6 @@
 // @ts-check
 
-import {col, fn, literal, Op, or, Transaction} from 'sequelize';
+import {cast, col, fn, literal, Op, or, Transaction, where} from 'sequelize';
 import {DB} from '../database/index.js';
 import {NotFoundException} from '../exceptions/notFound.js';
 import {ActivityLogService} from './activity-log.service.js';
@@ -223,7 +223,7 @@ export class OrderService {
 
   /**
    * Get all Orders
-   * @param {QueryParams & {from:string, to:string, status:'ongoing'|'completed'|'cancelled'|'confirmed'}} query
+   * @param {QueryParams & {from:string, to:string, status:'ongoing'|'completed'|'cancelled'|'confirmed',search:string}} query
    * @returns {Promise<PaginatedOrders>} All of the orders
    */
   static async getOrders(query) {
@@ -240,9 +240,24 @@ export class OrderService {
     if (query?.status) {
       whereClause.status = query.status;
     }
+    if (query.search) {
+      const search = query.search.trim();
+      whereClause[Op.or] = [
+        {id: {[Op.iLike]: `%${search}%`}},
+        // Match student's first or last name (through associated User)
+        {'$student.user.firstName$': {[Op.iLike]: `%${search}%`}},
+        {'$student.user.lastName$': {[Op.iLike]: `%${search}%`}},
+        {'$student.user.username$': {[Op.iLike]: `%${search}%`}},
+
+        // Match program name or acronym
+        {'$student.program.name$': {[Op.iLike]: `%${search}%`}},
+        {'$student.program.acronym$': {[Op.iLike]: `%${search}%`}}
+      ];
+    }
 
     const {rows: orderData, count} = await Order.findAndCountAll({
       distinct: true,
+      subQuery: false, // <-- this is critical for alias search to work!
       where: whereClause,
       ...(query.limit &&
         query.page && {
@@ -266,10 +281,19 @@ export class OrderService {
         {
           model: Student,
           as: 'student',
+          attributes: {
+            include: ['id', 'level', 'sex']
+          },
           include: [
             {
               model: User,
-              as: 'user'
+              as: 'user',
+              attributes: {include: ['firstName', 'lastName', 'username']}
+            },
+            {
+              model: Program,
+              as: 'program',
+              attributes: {include: ['name', 'acronym']}
             }
           ]
         }

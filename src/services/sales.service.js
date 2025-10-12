@@ -44,7 +44,7 @@ export class SalesService {
   }
   /**
    * Get All Sales
-   * @param {QueryParams} query
+   * @param {QueryParams &{search:string}} query
    * @returns {Promise<SalesResponse>} Sales Pagination
    */
   static async getSales(query) {
@@ -70,12 +70,28 @@ export class SalesService {
         [Op.lt]: nextDay
       };
     }
+    if (query.search) {
+      const search = query.search.trim();
+      where[Op.or] = [
+        // Match student's first or last name (through associated User)
+        {orderId: {[Op.iLike]: `%${search}%`}},
+        {oracleInvoice: {[Op.iLike]: `%${search}%`}},
+        {'$order.student.user.firstName$': {[Op.iLike]: `%${search}%`}},
+        {'$order.student.user.lastName$': {[Op.iLike]: `%${search}%`}},
+        {'$order.student.user.username$': {[Op.iLike]: `%${search}%`}},
+
+        // Match program name or acronym
+        {'$order.student.program.name$': {[Op.iLike]: `%${search}%`}},
+        {'$order.student.program.acronym$': {[Op.iLike]: `%${search}%`}}
+      ];
+    }
     const {count, rows: salesData} = await Sales.findAndCountAll({
       distinct: true,
       where,
       order: [['createdAt', 'DESC']],
       offset: (page - 1) * limit,
       limit,
+      subQuery: false, // <-- this is critical for alias search to work!
       include: [
         {
           model: Order,
@@ -103,9 +119,39 @@ export class SalesService {
         }
       ]
     });
-    const totalSales = await Sales.sum('total', {
-      where
+    const salesRecords = await Sales.findAll({
+      distinct: true,
+      where,
+      order: [['createdAt', 'DESC']],
+      subQuery: false, // <-- this is critical for alias search to work!
+      include: [
+        {
+          model: Order,
+          as: 'order',
+          include: [
+            {
+              model: OrderItems,
+              as: 'orderItems'
+            },
+            {
+              model: Student,
+              as: 'student',
+              include: [
+                {
+                  model: User,
+                  as: 'user'
+                },
+                {
+                  model: Program,
+                  as: 'program'
+                }
+              ]
+            }
+          ]
+        }
+      ]
     });
+    const totalSales = salesRecords.reduce((sum, sale) => sum + Number(sale.total || 0), 0);
     return {
       data: salesData,
       meta: {
