@@ -883,34 +883,54 @@ export class ProductService {
       );
 
       for (const variant of productVariantWithStockCondition) {
-        const productVariant = await DB.ProductVariant.findOne({
-          transaction,
-          where: {
-            id: variant.id,
-            productId
-          }
-        });
-        if (productVariant) {
-          await productVariant.update(
-            {variant, stockCondition: calculateStockCondition(variant.stockQuantity - productVariant.stockReserved)},
-            {transaction}
-          );
-        } else {
-          await DB.ProductVariant.create(
-            {
-              productId,
-              stockCondition: variant.stockCondition,
-              name: variant.name,
-              productAttributeId: variant.productAttributeId,
-              size: variant.size,
-              price: Number(variant.price),
-              stockQuantity: variant.stockQuantity
-            },
-            {
-              transaction
+        if (isNaN(variant.id)) {
+          const productVariant = await DB.ProductVariant.findOne({
+            transaction,
+            where: {
+              id: String(variant.id),
+              productId
             }
-          );
+          });
+          if (productVariant) {
+            await productVariant.update(
+              {
+                ...variant,
+                stockCondition: calculateStockCondition(variant.stockQuantity - productVariant.stockReserved)
+              },
+              {transaction}
+            );
+          } else {
+            await DB.ProductVariant.create(
+              {
+                productId,
+                stockCondition: variant.stockCondition,
+                name: variant.name,
+                productAttributeId: variant.productAttributeId,
+                size: variant.size,
+                price: Number(variant.price),
+                stockQuantity: variant.stockQuantity
+              },
+              {
+                transaction
+              }
+            );
+          }
+          continue;
         }
+        await DB.ProductVariant.create(
+          {
+            productId,
+            stockCondition: variant.stockCondition,
+            name: variant.name,
+            productAttributeId: variant.productAttributeId,
+            size: variant.size,
+            price: Number(variant.price),
+            stockQuantity: variant.stockQuantity
+          },
+          {
+            transaction
+          }
+        );
       }
 
       await DB.ProductVariant.destroy({
@@ -922,6 +942,7 @@ export class ProductService {
         },
         transaction
       });
+
       // Reload updated product with relations
       await product.reload({
         include: [
