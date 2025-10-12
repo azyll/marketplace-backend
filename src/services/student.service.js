@@ -141,7 +141,7 @@ export class StudentService {
 
         // Try to find student + user by student ID
         let student = await DB.Student.findByPk(studentId, {
-          include: [{model: DB.User, as: 'user'}],
+          include: [{model: DB.User, as: 'user', required: true, paranoid: false}],
           transaction
         });
         const level = program.department.level;
@@ -154,6 +154,7 @@ export class StudentService {
           if (student.user) {
             student.user.firstName = firstName;
             student.user.lastName = lastName;
+            student.user.deletedAt = null;
             await student.user.save({transaction});
           }
 
