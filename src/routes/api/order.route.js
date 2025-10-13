@@ -8,7 +8,8 @@ import {
   deleteStudentOrder,
   getOrders,
   getOrder,
-  getAnnualOrders
+  getAnnualOrders,
+  createOrderForStudent
 } from '../../controllers/order.controller.js';
 import {Joi} from 'sequelize-joi';
 import {auth} from '../../middleware/auth.js';
@@ -75,6 +76,34 @@ router.delete(
 
 // Get Order by order id
 router.get('/:orderId', auth(['admin', 'employee', 'student']), getOrder);
+
+// Create Order
+router.post(
+  '/proware/create',
+  auth(['employee', 'admin']),
+  validate({
+    student: Joi.object({
+      firstName: Joi.string().trim(),
+      lastName: Joi.string().trim(),
+      program: Joi.string().uuid().trim().optional(),
+      sex: Joi.string().valid('male', 'female').optional(),
+      studentNumber: Joi.string()
+        .trim()
+        .pattern(/^\d{11}$/)
+        .required()
+    }),
+    orderItems: Joi.array()
+      .items(
+        Joi.object({
+          productVariantId: Joi.string().uuid().required(),
+          quantity: Joi.number().integer().positive().required()
+        })
+      )
+      .min(1)
+      .required()
+  }),
+  createOrderForStudent
+);
 
 // Create Order
 router.post(

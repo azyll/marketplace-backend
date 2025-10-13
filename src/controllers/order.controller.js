@@ -26,6 +26,24 @@ export const createOrder = async (req, res) => {
   }
 };
 
+export const createOrderForStudent = async (req, res) => {
+  const {student, orderItems} = req.body;
+
+  try {
+    const order = await OrderService.createOrderForStudent(student, orderItems);
+    return res.status(200).json({message: 'Order created successfully', data: order});
+  } catch (error) {
+    const message = 'Failed to create an order';
+    if (
+      error instanceof NotFoundException ||
+      error instanceof AlreadyExistException ||
+      error instanceof UnauthorizedException
+    ) {
+      return res.status(error.statusCode).json({message, error: error.message});
+    }
+    return res.status(400).json({message, error: error.message || defaultErrorMessage});
+  }
+};
 export const getOrders = async (req, res) => {
   const query = req.query;
 

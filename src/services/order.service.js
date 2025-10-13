@@ -10,6 +10,8 @@ import {SalesService} from './sales.service.js';
 import {NotificationService} from './notification.service.js';
 import {CartService} from './cart.service.js';
 import {StudentService} from './student.service.js';
+import {UserService} from './user.service.js';
+import {RoleService} from './role.service.js';
 
 const {Order, Student, User, OrderItems, ProductVariant, Product, Program, ProductAttribute, OrderLimit} = DB;
 
@@ -215,6 +217,218 @@ export class OrderService {
       if (orderType == 'cart') {
         await CartService.archiveCart(user.id, variantIds);
       }
+      return order;
+    });
+
+    return orderTransaction;
+  }
+
+  /**
+   * Create order for student
+   * @param {{firstName:string|undefined,lastName:string|undefined,program:string,studentNumber:string,sex:'male'|'female'|undefined}} studentRecord - Student ID
+   * @param {{productVariantId:string, quantity:number} []} orderItems - Order items
+   * @returns {Promise<Order>} Order Data
+   * @throws {NotFoundException}  Student or Product not found
+   */
+  static async createOrderForStudent(studentRecord, orderItems) {
+    let student = await DB.Student.findByPk(Number(studentRecord.studentNumber), {
+      include: [
+        {
+          model: DB.User,
+          as: 'user'
+        }
+      ]
+    });
+
+    if (!student) {
+      if (!studentRecord.firstName) throw new Error('first name is required for new student');
+      if (!studentRecord.lastName) throw new Error('last name is required for new student');
+      if (!studentRecord.program) throw new Error(' program is required for new student');
+      if (!studentRecord.sex) throw new Error('sex is required for new student');
+      if (!studentRecord.studentNumber) throw new Error('student number is required for new student');
+
+      const program = await DB.Program.findByPk(studentRecord.program);
+
+      if (!program) throw new NotFoundException('Program not found');
+
+      const studentRole = await RoleService.getRole('student');
+      if (!studentRole) throw new NotFoundException('Student role not found');
+      const username = (studentRecord.lastName + '.' + String(studentRecord.studentNumber).slice(5)).toLowerCase();
+      const user = await UserService.addUser({
+        firstName: studentRecord.firstName,
+        lastName: studentRecord.lastName,
+        username,
+        password: username,
+        roleId: studentRole.id
+      });
+      student = await StudentService.createStudent(user.id, {
+        programId: program.id,
+        level: program.level,
+        id: Number(studentRecord.studentNumber),
+        sex: studentRecord.sex
+      });
+    }
+
+    // For Proware Office Closed Hours
+    // const now = new Date();
+    // const day = now.getDay();
+    // const hours = now.getHours();
+
+    // const isWeekendWindow = (day === 5 && hours >= 16) || day === 6 || (day === 0 && hours < 13);
+
+    // if (isWeekendWindow) {
+    //   throw new Error(
+    //     'The Proware office is closed on weekends. Orders can only be processed from Sunday 1 PM to Friday at 3 PM.'
+    //   );
+    // }
+    if (!Array.isArray(orderItems) || orderItems.length === 0) {
+      throw new Error('Order items are required');
+    }
+
+    //Get Only the ID
+    const variantIds = orderItems.map((item) => item.productVariantId);
+
+    //Check if the input variants are all valid
+    const productVariants = await ProductVariant.findAll({
+      include: [{model: Product, as: 'product'}],
+      where: {
+        id: {
+          [Op.in]: variantIds
+        }
+      }
+    });
+
+    if (productVariants.length !== variantIds.length) {
+      throw new NotFoundException('Invalid credential, The product not found', 404);
+    }
+
+    //Get Order Limit
+    const orderLimit = await this.getOrderLimit();
+
+    //Check if the orders are all valid
+    for (const orderItem of orderItems) {
+      //Check if the quantity is exceed to the allowed limit
+      if (orderItem.quantity > orderLimit)
+        throw new Error(
+          `One or more order items have a quantity that exceeds the maximum allowed limit of ${orderLimit}.`
+        );
+
+      //Check if valid product variant
+      const productVariant = productVariants.find((variant) => variant.id === orderItem.productVariantId);
+      if (!productVariant) throw new NotFoundException('Product not found', 404);
+
+      //Cannot process order for items that is out of stock
+      if (productVariant.stockCondition === 'out-of-stock')
+        throw new Error('You cannot order this item, due to its currently low in stock');
+      if (productVariant.stockCondition === 'low-stock' && orderItem.quantity > 1) {
+        throw new Error('Only 1 quantity per order for products that is currently low stock');
+      }
+    }
+
+    const status = 'ongoing';
+    const orderItemsWithPrice = [];
+    //Used transaction so when have a over order product all the stock update will be roll back
+    let totalOrder = await sequelize.transaction(async (transaction) => {
+      //For total order
+      let total = 0;
+      const nowAllowedProductNames = [];
+      for (const plainProductVariant of productVariants) {
+        const orderItem = orderItems.find((order) => order.productVariantId === plainProductVariant.id);
+        if (!orderItem) {
+          throw new NotFoundException('A product not found', 404);
+        }
+        /**
+         * @type {{id:string,size:string,name:string,price:number,stockAvailable:string,stockReserved:number,stockCondition:string,product:{name:string},save:({transaction:Transaction}=>Promise<void>)}|null}
+         */
+        const productVariant = await ProductVariant.findByPk(orderItem.productVariantId, {
+          include: [
+            {
+              model: Product,
+              as: 'product'
+            }
+          ],
+          transaction
+        });
+        if (!productVariant) throw new NotFoundException('Invalid credential, The product not found', 404);
+
+        let newStockAvailable = Number(productVariant?.stockAvailable) - Number(orderItem.quantity);
+        if (newStockAvailable < 0) {
+          throw new Error(
+            `You over order the item ${productVariant.product.name} the available stock is ${productVariant?.stockAvailable} and the reserved stock is ${productVariant.stockReserved}`
+          );
+        }
+        productVariant.stockReserved = productVariant.stockReserved + Number(orderItem.quantity);
+        productVariant.stockCondition = calculateStockCondition(newStockAvailable);
+
+        const [studentProductCount, isJustCreated] = await DB.StudentProductCount.findOrCreate({
+          where: {
+            studentId: student.id,
+            productVariantId: productVariant.id
+          },
+          defaults: {
+            studentId: student.id,
+            productVariantId: productVariant.id,
+            count: orderItem.quantity
+          },
+          transaction
+        });
+
+        const productOrderCount =
+          isJustCreated ? studentProductCount.count : studentProductCount.count + orderItem.quantity;
+        studentProductCount.count = productOrderCount;
+        if (productOrderCount > orderLimit) {
+          nowAllowedProductNames.push(
+            `${productVariant.product.name}${productVariant.name === 'N/A' ? ' ' : `-${productVariant.name}-`}${productVariant.size === 'N/A' ? '' : `${productVariant.size}`}`
+          );
+        }
+        await productVariant?.save({
+          transaction
+        });
+        await studentProductCount?.save({
+          transaction
+        });
+        const price = Number(productVariant.price);
+        orderItemsWithPrice.push({...orderItem, price});
+        total += price * orderItem.quantity;
+      }
+      if (nowAllowedProductNames.length > 0) {
+        throw new Error(
+          `The ${nowAllowedProductNames.join(' & ')} exceed to the required order limit of ${orderLimit}, wait the Proware to restock this item to process another order.`
+        );
+      }
+
+      return total;
+    });
+    let orderTransaction = await sequelize.transaction(async (transaction) => {
+      const order = await Order.create(
+        {
+          total: totalOrder || 0,
+          status,
+          studentId: student.id,
+          orderItems: orderItemsWithPrice
+        },
+        {
+          transaction,
+          include: [{model: OrderItems, as: 'orderItems'}]
+        }
+      );
+      await ActivityLogService.createLog(
+        'Order Created Successfully',
+        `A new order (ID: ${order.id}) was created with a total amount of ₱${totalOrder?.toFixed(2) || '0.00'}.`,
+        'order'
+      );
+
+      await NotificationService.createNotification(
+        'New Order Created',
+        `Student ID ${student.id} has placed a new order (Order ID: ${order.id}).`,
+        'order',
+        'employees',
+        {
+          userId: null,
+          departmentId: null
+        }
+      );
+
       return order;
     });
 

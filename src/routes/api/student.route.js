@@ -21,7 +21,8 @@ router.post(
   validate({
     id: Joi.number().required(),
     programId: Joi.string().required(),
-    level: Joi.string().required().valid('shs', 'tertiary')
+    level: Joi.string().required().valid('shs', 'tertiary'),
+    sex: Joi.string().trim().valid('female', 'male').required()
   }),
   createStudent
 );

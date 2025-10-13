@@ -35,6 +35,19 @@ export class RoleService {
   }
 
   /**
+   * Get role
+   * @param {'employee'|'admin'|'student'} systemTag
+   */
+  static async getRole(systemTag) {
+    const role = await Role.findOne({
+      where: {
+        systemTag
+      }
+    });
+    return role;
+  }
+
+  /**
    * Update program
    * @param {string} programId
    * @param {object} newProgram
