@@ -209,6 +209,53 @@ export class SalesService {
     return sales;
   }
 
+  /**
+   *
+   * @param {string} orderId
+   * @throws {NotFoundException} Sales not found
+   */
+  static async getSaleByOrderId(orderId) {
+    const sales = await Sales.findOne({
+      where: {orderId},
+      include: [
+        {
+          model: Order,
+          as: 'order',
+          include: [
+            {
+              model: OrderItems,
+              as: 'orderItems',
+              include: [
+                {
+                  model: ProductVariant,
+                  as: 'productVariant',
+                  include: [{model: Product, as: 'product'}]
+                }
+              ]
+            },
+            {
+              model: Student,
+              as: 'student',
+              include: [
+                {
+                  model: User,
+                  as: 'user'
+                },
+                {
+                  model: Program,
+                  as: 'program'
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    });
+
+    if (!sales) throw new NotFoundException('Sale not found', 404);
+    return sales;
+  }
+
   static async getTotalSalesPerDepartment() {
     return await await DB.Sales.findAll({
       attributes: [

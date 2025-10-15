@@ -312,7 +312,9 @@ export class ProductService {
    *     department?: string,
    *     latest?: boolean,
    *     program?:string,
-   *      paranoid:boolean
+   *      paranoid:boolean,
+   *      stock_condition:'out-of-stock'|'low-stock'|'in-stock',
+   * sort:'DESC'|'ASC'
    *   }} query Query
    *
    *
@@ -396,6 +398,21 @@ export class ProductService {
       whereClause.departmentId = departments.id;
       whereClause.level = departments.level;
     }
+    if (
+      query.stock_condition &&
+      query.stock_condition !== 'in-stock' &&
+      query.stock_condition !== 'low-stock' &&
+      query.stock_condition !== 'out-of-stock'
+    ) {
+      return {
+        data: [],
+        meta: {
+          currentPage: page,
+          itemsPerPage: limit,
+          totalItems: 0
+        }
+      };
+    }
 
     const {count, rows: inventoryData} = await Product.findAndCountAll({
       where: whereClause,
@@ -406,9 +423,9 @@ export class ProductService {
           include: [{model: ProductAttribute, as: 'productAttribute'}],
           as: 'productVariant',
           where:
-            query.sex ?
+            query.stock_condition ?
               {
-                name: {[Op.notILike]: `${query.sex === 'female' ? 'Male' : 'Female'}`}
+                stockCondition: query.stock_condition
               }
             : {}
         },
@@ -428,56 +445,12 @@ export class ProductService {
       offset: (page - 1) * limit,
       limit
     });
-    const formatCurrency = (value) => `₱${value.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
-
-    const result = [];
-
-    for (const product of inventoryData) {
-      const sizeMap = {};
-      let productTotal = 0;
-
-      for (const variant of product.productVariant) {
-        const {size, price, stockQuantity} = variant;
-        const total = price * stockQuantity;
-
-        if (!sizeMap[size]) {
-          sizeMap[size] = {
-            price,
-            quantity: 0,
-            totalValue: 0
-          };
-        }
-
-        sizeMap[size].quantity += stockQuantity;
-        sizeMap[size].totalValue += total;
-
-        productTotal += total;
-      }
-
-      const productOutput = {
-        productName: product.name,
-        variants: [],
-        totalValue: productTotal
-      };
-
-      for (const [size, data] of Object.entries(sizeMap)) {
-        productOutput.variants.push({
-          size,
-          price: formatCurrency(data.price),
-          quantity: data.quantity,
-          total: formatCurrency(data.totalValue)
-        });
-      }
-
-      result.push(productOutput);
-    }
     return {
       data: inventoryData,
       meta: {
         currentPage: page,
         itemsPerPage: limit,
-        totalItems: count,
-        inventoryValue: result
+        totalItems: count
       }
     };
   }

@@ -471,7 +471,7 @@ export class OrderService {
 
     const {rows: orderData, count} = await Order.findAndCountAll({
       distinct: true,
-      subQuery: false, // <-- this is critical for alias search to work!
+      subQuery: false,
       where: whereClause,
       ...(query.limit &&
         query.page && {
@@ -1030,7 +1030,15 @@ export class OrderService {
           },
           {
             model: Student,
-            as: 'student'
+            as: 'student',
+            paranoid: false,
+            include: [
+              {
+                model: User,
+                as: 'user',
+                paranoid: false
+              }
+            ]
           }
         ],
         where: {
@@ -1082,7 +1090,7 @@ export class OrderService {
           'individual',
           {
             departmentId: null,
-            userId: student.user.id
+            userId: order.student.user.id
           }
         );
       }

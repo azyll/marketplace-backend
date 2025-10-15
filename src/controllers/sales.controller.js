@@ -55,6 +55,28 @@ export const getSale = async (req, res) => {
 };
 
 /**
+ *
+ * @param {import("express").Request} req
+ * @param {import("express").Response} res
+ */
+export const getSaleByOrderId = async (req, res) => {
+  const {orderId} = req.params;
+  try {
+    const sales = await SalesService.getSaleByOrderId(orderId);
+    return res.status(200).json({message: 'Sale retrieve successfully', data: sales});
+  } catch (error) {
+    const message = 'Failed to get sale';
+    if (
+      error instanceof NotFoundException ||
+      error instanceof AlreadyExistException ||
+      error instanceof UnauthorizedException
+    ) {
+      return res.status(error.statusCode).json({message, error: error.message});
+    }
+    return res.status(400).json({message, error: error.message || defaultErrorMessage});
+  }
+};
+/**
  *  All orders per month
  * @param {import('express').Request<{studentId:string},{},{}>} req
  * @param {import('express').Response} res
