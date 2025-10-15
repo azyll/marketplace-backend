@@ -13,6 +13,7 @@ import NotificationRoute from './api/notification.route.js';
 import RoleRoute from './api/role.route.js';
 import LogRoute from './api/logs.route.js';
 import ReturnItemRoute from './api/returned.item.route.js';
+import ReportRoute from './api/report.route.js';
 import {auth} from '../middleware/auth.js';
 import {getUserDetails} from '../controllers/user.controller.js';
 
@@ -32,6 +33,7 @@ router.use('/notification', NotificationRoute);
 router.use('/role', RoleRoute);
 router.use('/log', LogRoute);
 router.use('/return-item', ReturnItemRoute);
+router.use('/report', ReportRoute);
 
 // Get Currently loggedin user details
 router.get('/me', auth(['admin', 'student', 'employee']), getUserDetails);

@@ -71,6 +71,7 @@ export class UserService {
         {username: {[Op.iLike]: `%${search}%`}}
       ];
     }
+    whereClause.deletedAt = {[Op.eq]: null};
 
     // Offset  = skip read
     // page * limit
@@ -81,7 +82,6 @@ export class UserService {
       distinct: true,
       subQuery: false,
       include: role,
-      paranoid: false,
       limit,
       offset: limit * (page - 1)
     });
@@ -96,6 +96,49 @@ export class UserService {
     };
   }
 
+  /**
+   * Get All Users Details
+   * @param {QueryParams& {search:string}} query
+   * @returns {Promise<UserResponse>}
+   */
+  static async getArchivedUsers(query) {
+    const page = query.page ?? 1;
+    const limit = query.limit ?? 10;
+    let whereClause = {};
+
+    if (query.search) {
+      const search = query.search.trim();
+      whereClause[Op.or] = [
+        {firstName: {[Op.iLike]: `%${search}%`}},
+        {lastName: {[Op.iLike]: `%${search}%`}},
+        {username: {[Op.iLike]: `%${search}%`}}
+      ];
+    }
+    whereClause.deletedAt = {[Op.not]: null};
+
+    // Offset  = skip read
+    // page * limit
+    // 1 *10, skip first 10
+    // (page -1) we need first 10 in first page
+    const {count, rows: usersData} = await User.findAndCountAll({
+      where: whereClause,
+      distinct: true,
+      paranoid: false,
+      subQuery: false,
+      include: role,
+      limit,
+      offset: limit * (page - 1)
+    });
+
+    return {
+      data: usersData,
+      meta: {
+        currentPage: page,
+        itemsPerPage: limit,
+        totalItems: count
+      }
+    };
+  }
   /**
    * Add User
    * @param {any} data

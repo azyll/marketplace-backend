@@ -51,6 +51,24 @@ export const getAllUsers = async (req, res) => {
     });
   }
 };
+/**
+ * @param {import('express').Request<{},{},{},QueryParams>} req
+ * @param {import('express').Response} res
+ * @returns {Promise<import('express').Response>}
+ */
+export const getAllArchivedUsers = async (req, res) => {
+  try {
+    const query = req.query;
+    const users = await UserService.getArchivedUsers(query);
+
+    return res.status(200).json(users);
+  } catch (err) {
+    return res.status(400).json({
+      message: 'Failed to fetch users',
+      error: err
+    });
+  }
+};
 
 /**
  * Get Currently Logged-in user details

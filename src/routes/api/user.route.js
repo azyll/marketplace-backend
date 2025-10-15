@@ -8,7 +8,8 @@ import {
   restoreUser,
   updatePassword,
   userModulesPermission,
-  getUserDetails
+  getUserDetails,
+  getAllArchivedUsers
 } from '../../controllers/user.controller.js';
 import {validate} from '../../middleware/validation.js';
 import {Joi} from 'sequelize-joi';
@@ -16,10 +17,8 @@ import {auth} from '../../middleware/auth.js';
 
 const router = express.Router();
 
-// Get User by UserId
-router.get('/:userId', auth(['admin', 'student', 'employee']), getUser);
-
 // Get All Users
+router.get('/archive', auth(['admin', 'student']), getAllArchivedUsers);
 router.get('/', auth(['admin', 'student']), getAllUsers);
 
 // Create User
@@ -53,7 +52,8 @@ router.get(
   }),
   userModulesPermission
 );
-
+// Get User by UserId
+router.get('/:userId', auth(['admin', 'student', 'employee']), getUser);
 // Archive User
 router.delete('/:userId', auth(['admin']), archiveUser);
 
