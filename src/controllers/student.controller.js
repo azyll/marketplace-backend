@@ -104,7 +104,7 @@ export const getStudentByUserId = async (req, res) => {
  */
 export const getStudents = async (req, res) => {
   try {
-    const student = await StudentService.getAllStudents();
+    const student = await StudentService.getAllStudents(req.query);
 
     return res.status(200).json(student);
   } catch (err) {
