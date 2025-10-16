@@ -55,7 +55,7 @@ export class UserService {
 
   /**
    * Get All Users Details
-   * @param {QueryParams& {search:string}} query
+   * @param {QueryParams& {search:string,role:'student'| 'admin'| 'employee'}} query
    * @returns {Promise<UserResponse>}
    */
   static async getUsers(query) {
@@ -71,7 +71,19 @@ export class UserService {
         {username: {[Op.iLike]: `%${search}%`}}
       ];
     }
+
     whereClause.deletedAt = {[Op.eq]: null};
+
+    if (query.role && query.role !== 'admin' && query.role !== 'employee' && query.role !== 'student') {
+      return {
+        data: [],
+        meta: {
+          currentPage: page,
+          itemsPerPage: limit,
+          totalItems: 0
+        }
+      };
+    }
 
     // Offset  = skip read
     // page * limit
@@ -81,7 +93,19 @@ export class UserService {
       where: whereClause,
       distinct: true,
       subQuery: false,
-      include: role,
+      include: [
+        {
+          model: DB.Role,
+          attributes: ['name', 'systemTag'],
+          as: 'role',
+          where:
+            query.role ?
+              {
+                systemTag: query.role
+              }
+            : null
+        }
+      ],
       limit,
       offset: limit * (page - 1)
     });
@@ -98,7 +122,7 @@ export class UserService {
 
   /**
    * Get All Users Details
-   * @param {QueryParams& {search:string}} query
+   * @param {QueryParams& {search:string,role:'student'| 'admin'| 'employee'}} query
    * @returns {Promise<UserResponse>}
    */
   static async getArchivedUsers(query) {
@@ -115,6 +139,16 @@ export class UserService {
       ];
     }
     whereClause.deletedAt = {[Op.not]: null};
+    if (query.role && query.role !== 'admin' && query.role !== 'employee' && query.role !== 'student') {
+      return {
+        data: [],
+        meta: {
+          currentPage: page,
+          itemsPerPage: limit,
+          totalItems: 0
+        }
+      };
+    }
 
     // Offset  = skip read
     // page * limit
@@ -125,7 +159,19 @@ export class UserService {
       distinct: true,
       paranoid: false,
       subQuery: false,
-      include: role,
+      include: [
+        {
+          model: DB.Role,
+          attributes: ['name', 'systemTag'],
+          as: 'role',
+          where:
+            query.role ?
+              {
+                systemTag: query.role
+              }
+            : null
+        }
+      ],
       limit,
       offset: limit * (page - 1)
     });
