@@ -42,16 +42,7 @@ router.put(
   updateUser
 );
 
-router.get(
-  '/:userId/module-permission',
-  auth(['admin', 'employee'], {
-    selfOnly: {
-      param: 'userId',
-      roles: ['admin', 'employee']
-    }
-  }),
-  userModulesPermission
-);
+router.get('/:userId/module-permission', auth(['admin', 'employee']), userModulesPermission);
 // Get User by UserId
 router.get('/:userId', auth(['admin', 'student', 'employee']), getUser);
 // Archive User

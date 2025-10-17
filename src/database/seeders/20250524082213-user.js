@@ -36,7 +36,7 @@ export async function up(queryInterface, Sequelize) {
       id: uuid(),
       firstName: 'Alissa',
       lastName: 'Peralta',
-      username: 'alissa.232375',
+      username: 'peralta.232375',
       password,
       createdAt: new Date(2025, 5, 5),
       updatedAt: new Date(),
