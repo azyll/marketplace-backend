@@ -19,6 +19,11 @@ export default (sequelize) => {
   sequelizeJoi(sequelize);
   ModulePermission.init(
     {
+      id: {
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
+        primaryKey: true
+      },
       module: {
         type: DataTypes.ENUM,
         values: ['sales', 'orders', 'inventory'],

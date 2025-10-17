@@ -7,9 +7,9 @@ import {defaultErrorMessage} from '../utils/error-message.js';
 export const createReturnItem = async (req, res) => {
   try {
     await ReturnedItemService.createReturnedItem(req.body);
-    return res.status(200).json({message: 'Program create successfully'});
+    return res.status(200).json({message: 'Return item created successfully'});
   } catch (error) {
-    const message = 'Failed to create program';
+    const message = 'Failed to create return item';
     if (
       error instanceof NotFoundException ||
       error instanceof AlreadyExistException ||
@@ -22,9 +22,9 @@ export const createReturnItem = async (req, res) => {
 };
 
 export const restoreReturnedItems = async (req, res) => {
-  const {returnItemId} = req.params;
+  const {returnId} = req.params;
   try {
-    await ReturnedItemService.restoreReturnedItem(returnItemId);
+    await ReturnedItemService.restoreReturnedItem(returnId);
     return res.status(200).json({message: 'Program deleted successfully'});
   } catch (error) {
     const message = 'Failed to delete program';
@@ -40,11 +40,11 @@ export const restoreReturnedItems = async (req, res) => {
 };
 
 export const updateReturnItemQuantity = async (req, res) => {
-  const {returnItemId} = req.params;
+  const {returnId} = req.params;
   const {quantity} = req.body;
 
   try {
-    await ReturnedItemService.updateReturnedItemQuantity(returnItemId, quantity);
+    await ReturnedItemService.updateReturnedItemQuantity(returnId, quantity);
     return res.status(200).json({message: 'Program update successfully'});
   } catch (error) {
     const message = 'Failed to update program';

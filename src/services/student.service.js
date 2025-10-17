@@ -154,6 +154,8 @@ export class StudentService {
             student.user.firstName = firstName;
             student.user.lastName = lastName;
             student.user.deletedAt = null;
+            const username = (lastName + '.' + String(studentId).slice(4)).toLowerCase();
+            student.user.username = username;
             await student.user.save({transaction});
           }
 
@@ -206,29 +208,22 @@ export class StudentService {
    * @return {Promise<Student[]>}
    */
   static async getAllStudents(filters) {
-    const where = {}
-
+    const where = {};
 
     if (filters.q) {
       const q = filters.q.trim();
       const isNumeric = /^\d+$/.test(q);
 
       where[Op.or] = [
-        sequelize.where(
-          sequelize.literal(`("user"."firstName" || ' ' || "user"."lastName")`),
-          { [Op.iLike]:`%${q}%`}
-        ),
+        sequelize.where(sequelize.literal(`("user"."firstName" || ' ' || "user"."lastName")`), {[Op.iLike]: `%${q}%`}),
         {
-          "$user.username$": { [Op.iLike]:`%${q}%`}
-        },
-      ]
+          '$user.username$': {[Op.iLike]: `%${q}%`}
+        }
+      ];
 
       if (isNumeric) {
         where[Op.or].push(
-          sequelize.where(
-            sequelize.cast(sequelize.col('Students.id'), 'TEXT'),
-            { [Op.iLike]: `%${q}%` }
-          )
+          sequelize.where(sequelize.cast(sequelize.col('Students.id'), 'TEXT'), {[Op.iLike]: `%${q}%`})
         );
       }
     }
@@ -239,13 +234,13 @@ export class StudentService {
         {
           model: DB.User,
           as: 'user',
-          required: false,
+          required: false
         },
         {
           model: DB.Program,
           as: 'program'
         }
-      ],
+      ]
     });
   }
 }

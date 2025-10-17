@@ -27,13 +27,13 @@ router.post(
   createReturnItem
 );
 router.put(
-  '/quantity',
+  '/:returnId',
   auth(['admin', 'employee']),
   validate({
     quantity: Joi.number().integer().min(1).default(1)
   }),
   updateReturnItemQuantity
 );
-router.delete('/', auth(['admin', 'employee']), restoreReturnedItems);
+router.delete('/:returnId', auth(['admin', 'employee']), restoreReturnedItems);
 export default router;
 
