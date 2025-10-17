@@ -6,7 +6,6 @@ import {DB} from '../database/index.js';
 import {Op} from 'sequelize';
 import {AlreadyExistException} from '../exceptions/alreadyExist.js';
 import sequelize from '../database/config/sequelize.js';
-import student from '../database/models/student.js';
 
 const {Student} = DB;
 
@@ -195,18 +194,58 @@ export class StudentService {
       return results;
     });
   }
-  static async getAllStudents() {
+
+  /**
+   * @typedef GetAllStudentFilters
+   * @property {string=} q Query by FullName, Username or Student ID
+   */
+
+  /**
+   *
+   * @param {GetAllStudentFilters} filters
+   * @return {Promise<Student[]>}
+   */
+  static async getAllStudents(filters) {
+    const where = {}
+
+
+    if (filters.q) {
+      const q = filters.q.trim();
+      const isNumeric = /^\d+$/.test(q);
+
+      where[Op.or] = [
+        sequelize.where(
+          sequelize.literal(`("user"."firstName" || ' ' || "user"."lastName")`),
+          { [Op.iLike]:`%${q}%`}
+        ),
+        {
+          "$user.username$": { [Op.iLike]:`%${q}%`}
+        },
+      ]
+
+      if (isNumeric) {
+        where[Op.or].push(
+          sequelize.where(
+            sequelize.cast(sequelize.col('Students.id'), 'TEXT'),
+            { [Op.iLike]: `%${q}%` }
+          )
+        );
+      }
+    }
+
     return DB.Student.findAll({
+      where,
       include: [
         {
           model: DB.User,
-          as: 'user'
+          as: 'user',
+          required: false,
         },
         {
           model: DB.Program,
           as: 'program'
         }
-      ]
+      ],
     });
   }
 }
