@@ -19,6 +19,7 @@ import OrderLimitModel from './models/order-limit.js';
 import ModulePermissionModel from './models/module-permission.js';
 import StudentProductCountModel from './models/student-product-count.js';
 import ReturnedItemsModel from './models/returned-items.js';
+import CarouselAnnouncementImageModel from './models/carousel-announcement-image.js';
 
 export const DB = {
   sequelize,
@@ -40,7 +41,8 @@ export const DB = {
   ModulePermission: ModulePermissionModel(sequelize),
   OrderLimit: OrderLimitModel(sequelize),
   StudentProductCount: StudentProductCountModel(sequelize),
-  ReturnedItems: ReturnedItemsModel(sequelize)
+  ReturnedItems: ReturnedItemsModel(sequelize),
+  CarouselAnnouncementImage: CarouselAnnouncementImageModel(sequelize)
 };
 
 Object.values(DB).forEach((model) => {
