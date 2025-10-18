@@ -6,7 +6,11 @@ const app = express();
 app.use(express.json());
 app.use(
   cors({
-    origin: ['http://localhost:5173', 'https://sti-marketplace.netlify.app', 'https://sti-fairview-proware.vercel.app'],
+    origin: [
+      'http://localhost:5173',
+      'https://sti-fairview-proware.vercel.app',
+      'https://sti-fairview-proware.netlify.app'
+    ],
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization']
     // credentials: true
