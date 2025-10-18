@@ -5,6 +5,7 @@ import {ActivityLogService} from './activity-log.service.js';
 import {calculateStockCondition} from '../utils/stock-helper.js';
 import {ProductService} from './product.service.js';
 import {NotificationService} from './notification.service.js';
+import {cast, col, Op, Sequelize} from 'sequelize';
 
 export class ReturnedItemService {
   static async createReturnedItem({productVariant: productVariantId, reason, quantity = 1}) {
@@ -66,12 +67,16 @@ export class ReturnedItemService {
         include: [
           {
             model: DB.Product,
-            as: 'product'
+            as: 'product',
+            required: true,
+            paranoid: false
           }
         ]
       });
       if (!productVariant) throw new NotFoundException('Product not found');
 
+      // So if we have 3 returnItemQuantity, then we have 10 new quantity,
+      // we add 3 to the stockAvailable, then we subtract the sum of quantity and stockAvailable to the new quantity.
       const newStockAvailable = returnedItem.quantity + productVariant.stockAvailable - quantity;
       if (newStockAvailable <= 0) throw new Error(`We only have ${productVariant.stockAvailable} stock available left`);
 
@@ -89,6 +94,7 @@ export class ReturnedItemService {
       );
     });
   }
+
   static async restoreReturnedItem(returnedItemId) {
     return await DB.sequelize.transaction(async (transaction) => {
       const returnedItem = await DB.ReturnedItems.findByPk(returnedItemId, {
@@ -97,6 +103,7 @@ export class ReturnedItemService {
           {
             model: DB.ProductVariant,
             as: 'productVariant',
+            paranoid: false,
             include: [
               {
                 model: DB.Product,
@@ -117,23 +124,13 @@ export class ReturnedItemService {
         ]
       });
       if (!productVariant) throw new NotFoundException('Product not found');
+      const prevStockQuantity = productVariant.stockQuantity;
       const newStockAvailable = productVariant.stockAvailable + returnedItem.quantity;
       productVariant.stockQuantity = newStockAvailable + productVariant.stockReserved;
+      const stockQuantity = productVariant.stockQuantity;
       productVariant.stockCondition = calculateStockCondition(newStockAvailable);
-      await productVariant.save({transaction});
 
-      await ActivityLogService.createLog(
-        `Returned Item: ${productVariant.product.name}`,
-        `The return record for variant ${productVariant.product.name} - ${productVariant.name} (${productVariant.size}) was deleted. Quantity returned was ${returnedItem.quantity}. Reason for original return: ${returnedItem.reason}.`,
-        'inventory'
-      );
-      //Here --
-
-      let stockQuantity = productVariant.stockQuantity;
-      const newStock = returnedItem.quantity;
-      stockQuantity += newStock;
-
-      if (stockQuantity < 0) {
+      if (productVariant.stockQuantity < 0) {
         throw new Error('Insufficient stock: the resulting quantity cannot be negative. Please enter a valid value.');
       }
       const resetStockValue = 50;
@@ -144,26 +141,12 @@ export class ReturnedItemService {
           },
           {
             where: {
-              productVariantId: variant.id
+              productVariantId: productVariant.id
             },
             transaction
           }
         );
       }
-      await ActivityLogService.createLog(
-        `Stock updated: ${productVariant.product.name} - ${productVariant.name} (${productVariant.size})`,
-        `Stock quantity for "${productVariant.product.name}" (${productVariant.name}, ${productVariant.size}) was updated from ${productVariant.stockQuantity} to ${stockQuantity}.`,
-        'inventory'
-      );
-      productVariant.stockQuantity = stockQuantity;
-      const newStockCondition = stockQuantity - productVariant.stockReserved;
-      productVariant.stockCondition = calculateStockCondition(newStockCondition);
-
-      await productVariant.save({transaction});
-
-      let notificationTitle = '';
-      let notificationMessage = '';
-
       switch (productVariant.stockCondition) {
         case 'out-of-stock':
           notificationTitle = 'Product Out of Stock';
@@ -191,6 +174,19 @@ export class ReturnedItemService {
         notificationMessage,
         productVariant.id
       );
+      await ActivityLogService.createLog(
+        `Stock updated: ${productVariant.product.name} - ${productVariant.name} (${productVariant.size})`,
+        `Stock quantity for "${productVariant.product.name}" (${productVariant.name}, ${productVariant.size}) was updated from ${productVariant.stockQuantity} to ${prevStockQuantity}.`,
+        'inventory'
+      );
+      await productVariant.save({transaction});
+
+      await ActivityLogService.createLog(
+        `Returned Item: ${productVariant.product.name}`,
+        `The return record for variant ${productVariant.product.name} - ${productVariant.name} (${productVariant.size}) was deleted. Quantity returned was ${returnedItem.quantity}. Reason for original return: ${returnedItem.reason}.`,
+        'inventory'
+      );
+      //Here --
 
       // -end
       await returnedItem.destroy({transaction});
@@ -200,7 +196,85 @@ export class ReturnedItemService {
   static async getReturnedItems(query) {
     const page = Number(query.page ?? 1);
     const limit = Number(query.limit ?? 10);
+    let where = {};
+    if (query.q) {
+      const search = query.q.trim();
+      where[Op.or] = [
+        // Match student's first or last name (through associated User)
+        {reason: {[Op.iLike]: `%${search}%`}},
+        {'$productVariant.product.name$': {[Op.iLike]: `%${search}%`}}
+      ];
+    }
+    if (query?.category) {
+      where[Op.and] = [
+        ...(where[Op.and] || []),
+        Sequelize.where(Sequelize.cast(Sequelize.col('productVariant.product.category'), 'TEXT'), {
+          [Op.iLike]: `%${query.category}%`
+        })
+      ];
+    }
+    if (query?.program) {
+      const program = await DB.Program.findOne({
+        where: {
+          [Op.or]: [{acronym: {[Op.iLike]: `%${query.program}%`}}, {name: {[Op.iLike]: `%${query.program}%`}}]
+        },
+        include: [{model: DB.Department, as: 'department'}]
+      });
+
+      if (!program) {
+        return {
+          data: [],
+          meta: {
+            currentPage: page,
+            itemsPerPage: limit,
+            totalItems: 0
+          }
+        };
+      }
+
+      const departments = await DB.Department.findByPk(program.departmentId);
+
+      if (!departments) {
+        return {
+          data: [],
+          meta: {
+            currentPage: page,
+            itemsPerPage: limit,
+            totalItems: 0
+          }
+        };
+      }
+      where[Op.and] = [
+        ...(where[Op.and] || []),
+        Sequelize.where(Sequelize.col('productVariant.product.departmentId'), departments.id),
+        Sequelize.where(Sequelize.col('productVariant.product.level'), departments.level)
+      ];
+    }
+    if (query.department) {
+      const departments = await DB.Department.findOne({
+        where: {
+          [Op.or]: [{name: {[Op.eq]: query.department}}, {acronym: {[Op.eq]: query.department}}]
+        }
+      });
+
+      if (!departments) {
+        return {
+          data: [],
+          meta: {
+            currentPage: page,
+            itemsPerPage: limit,
+            totalItems: 0
+          }
+        };
+      }
+      where[Op.and] = [
+        ...(where[Op.and] || []),
+        Sequelize.where(Sequelize.col('productVariant.product.departmentId'), departments.id),
+        Sequelize.where(Sequelize.col('productVariant.product.level'), departments.level)
+      ];
+    }
     const {count, rows} = await DB.ReturnedItems.findAndCountAll({
+      where,
       include: [
         {
           model: DB.ProductVariant,

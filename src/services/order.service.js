@@ -565,6 +565,10 @@ export class OrderService {
       where,
       include: [
         {
+          model: DB.Sales,
+          as: 'sales'
+        },
+        {
           model: OrderItems,
           as: 'orderItems',
           paranoid: false,
