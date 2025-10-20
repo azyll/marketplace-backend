@@ -8,6 +8,13 @@ import {
   productVariantWithoutGenderButHaveSize,
   productWithNoVariant
 } from '../../utils/product-seeder.helper.js';
+import {ictSeeders} from '../../utils/seeder-helper/ict-helper.js';
+import {shSeeders} from '../../utils/seeder-helper/sh-helper.js';
+import {hmSeeders} from '../../utils/seeder-helper/hm-helper.js';
+import {bmSeeders} from '../../utils/seeder-helper/bm-helper.js';
+import {tmSeeders} from '../../utils/seeder-helper/tm-helper.js';
+import {bacommSeeders} from '../../utils/seeder-helper/bacomm-helper.js';
+import { calculateStockCondition } from '../../utils/stock-helper.js';
 
 export async function up(queryInterface, Sequelize) {
   const createdAt = new Date(2025, 5, 5);
@@ -16,257 +23,14 @@ export async function up(queryInterface, Sequelize) {
   const productAttributes = await DB.ProductAttribute.findAll();
 
   // ICT
-  await DB.Product.create(
-    {
-      name: 'ICT Polo',
-      description: 'Information and Communication Technology Daily Polo Uniform. For Tertiary (BSIT,BSCS, and BSCpE)',
-      image: 'ict.jpg',
-      type: 'upper-wear',
-      category: 'uniform',
-      level: 'tertiary',
-      departmentId: departments[0].id,
-      productVariant: productVariantWithGender('Male', productAttributes[1].id),
-      createdAt,
-      updatedAt
-    },
-    {
-      include: [
-        {
-          model: DB.ProductVariant,
-          as: 'productVariant'
-        }
-      ]
-    }
-  );
-
-  await DB.Product.create(
-    {
-      name: 'ICT Blouse',
-      description: 'Information and Communication Technology Daily Blouse Uniform. For Tertiary (BSIT,BSCS, and BSCpE)',
-      image: 'ict.jpg',
-      type: 'upper-wear',
-      level: 'tertiary',
-      category: 'uniform',
-      departmentId: departments[0].id,
-      productVariant: productVariantWithGender('Female', productAttributes[1].id),
-      createdAt,
-      updatedAt
-    },
-    {
-      include: [
-        {
-          model: DB.ProductVariant,
-          as: 'productVariant'
-        }
-      ]
-    }
-  );
-  await DB.Product.create(
-    {
-      name: 'ICT Pants',
-      description: 'Information and Communication Technology Daily Pants Uniform. For Tertiary (BSIT,BSCS, and BSCpE)',
-      image: 'ict.jpg',
-      type: 'lower-wear',
-      level: 'tertiary',
-      category: 'uniform',
-      departmentId: departments[0].id,
-      productVariant: productVariantWithMaleAndFemale(productAttributes[1].id),
-      createdAt,
-      updatedAt
-    },
-    {
-      include: [
-        {
-          model: DB.ProductVariant,
-          as: 'productVariant'
-        }
-      ]
-    }
-  );
-  await DB.Product.create(
-    {
-      name: 'ICT Skirt',
-      description: 'Information and Communication Technology Daily Skirt Uniform. For Tertiary (BSIT,BSCS,and BSCpE)',
-      image: 'ict.jpg',
-      level: 'tertiary',
-      type: 'lower-wear',
-      category: 'uniform',
-      departmentId: departments[0].id,
-      productVariant: productVariantWithGender('Female', productAttributes[1].id),
-      createdAt,
-      updatedAt
-    },
-    {
-      include: [
-        {
-          model: DB.ProductVariant,
-          as: 'productVariant'
-        }
-      ]
-    }
-  );
-
-  await DB.Product.create(
-    {
-      name: 'ICT Pin',
-      description: 'ICT Pin. For Tertiary (BSIT,BSCS, and BSCpE)',
-      image: 'ict-pin.jpg',
-      level: 'all',
-      type: 'accessory',
-      category: 'proware-item',
-      departmentId: departments[6].id,
-      productVariant: productWithNoVariant(productAttributes[0].id),
-      createdAt,
-      updatedAt
-    },
-    {
-      include: [
-        {
-          model: DB.ProductVariant,
-          as: 'productVariant'
-        }
-      ]
-    }
-  );
+  await ictSeeders();
+  await shSeeders();
+  await hmSeeders();
+  await bmSeeders();
+  await tmSeeders();
+  await bacommSeeders();
 
   //SH
-  await DB.Product.create(
-    {
-      name: 'Senior High Polo',
-      description: 'Senior High School Daily White Polo with Gray Vest Uniform. For Senior High Students',
-      image: 'sh.jpg',
-      level: 'shs',
-      type: 'upper-wear',
-      category: 'uniform',
-      departmentId: departments[5].id,
-      productVariant: productVariantWithGender('Male', productAttributes[1].id),
-      createdAt,
-      updatedAt
-    },
-    {
-      include: [
-        {
-          model: DB.ProductVariant,
-          as: 'productVariant'
-        }
-      ]
-    }
-  );
-
-  await DB.Product.create(
-    {
-      name: 'Senior High Slacks',
-      description: 'Senior High School Daily Dark Blue Slacks. For Senior High Students',
-      image: 'sh.jpg',
-      type: 'lower-wear',
-      level: 'shs',
-      category: 'uniform',
-      departmentId: departments[5].id,
-      productVariant: productVariantWithGender('Male', productAttributes[1].id),
-      createdAt,
-      updatedAt
-    },
-    {
-      include: [
-        {
-          model: DB.ProductVariant,
-          as: 'productVariant'
-        }
-      ]
-    }
-  );
-
-  // Female SH
-
-  await DB.Product.create(
-    {
-      name: 'Senior Blouse',
-      description: 'Senior High School White Blouse with Gray Vest. For Senior High Students',
-      image: 'sh.jpg',
-      level: 'shs',
-      type: 'upper-wear',
-      category: 'uniform',
-      departmentId: departments[5].id,
-      productVariant: productVariantWithGender('Female', productAttributes[1].id),
-      createdAt,
-      updatedAt
-    },
-    {
-      include: [
-        {
-          model: DB.ProductVariant,
-          as: 'productVariant'
-        }
-      ]
-    }
-  );
-  await DB.Product.create(
-    {
-      name: 'Senior Skirt',
-      description: 'Senior High School Dark Blue Pencil-Cut Skirt. For Senior High Students',
-      image: 'sh.jpg',
-      level: 'shs',
-      type: 'lower-wear',
-      category: 'uniform',
-      departmentId: departments[5].id,
-      productVariant: productVariantWithGender('Female', productAttributes[1].id),
-      createdAt,
-      updatedAt
-    },
-    {
-      include: [
-        {
-          model: DB.ProductVariant,
-          as: 'productVariant'
-        }
-      ]
-    }
-  );
-
-  await DB.Product.create(
-    {
-      name: 'Senior Neck Tie',
-      description: 'Senior High School Neck Tie. For Senior High Students',
-      image: 'sh.jpg',
-      type: 'upper-wear',
-      level: 'shs',
-      category: 'uniform',
-      departmentId: departments[5].id,
-      productVariant: productVariantWithGenderButNoSize('Male', productAttributes[0].id),
-      createdAt,
-      updatedAt
-    },
-    {
-      include: [
-        {
-          model: DB.ProductVariant,
-          as: 'productVariant'
-        }
-      ]
-    }
-  );
-  await DB.Product.create(
-    {
-      name: 'Senior School ID Lace',
-      description: 'Senior High School School ID Lace. For Senior High Students',
-      image: 'sh.jpg',
-      level: 'shs',
-      type: 'upper-wear',
-      category: 'uniform',
-      departmentId: departments[5].id,
-      productVariant: productWithNoVariant(productAttributes[0].id),
-      createdAt,
-      updatedAt
-    },
-    {
-      include: [
-        {
-          model: DB.ProductVariant,
-          as: 'productVariant'
-        }
-      ]
-    }
-  );
   await DB.Product.create(
     {
       name: 'Tertiary School ID Lace',
@@ -276,7 +40,18 @@ export async function up(queryInterface, Sequelize) {
       type: 'upper-wear',
       category: 'uniform',
       departmentId: departments[6].id,
-      productVariant: productWithNoVariant(productAttributes[0].id),
+      productVariant: [
+        {
+          name: 'N/A',
+          size: 'N/A',
+          price: 100,
+          stockQuantity: 50,
+          stockCondition: calculateStockCondition(50),
+          productAttributeId: productAttributes[0].id,
+          createdAt: new Date(2025, 5, 5),
+          updatedAt: new Date()
+        }
+      ],
       createdAt,
       updatedAt
     },
@@ -294,398 +69,25 @@ export async function up(queryInterface, Sequelize) {
 
   await DB.Product.create(
     {
-      name: 'BM Pants',
-      description: 'Business & Management Daily Pants Uniform. For Tertiary (BSBA)',
-      image: 'bm.jpg',
-      type: 'lower-wear',
-      level: 'tertiary',
-      category: 'uniform',
-      departmentId: departments[1].id,
-      productVariant: productVariantWithMaleAndFemale(productAttributes[1].id),
-      createdAt,
-      updatedAt
-    },
-    {
-      include: [
-        {
-          model: DB.ProductVariant,
-          as: 'productVariant'
-        }
-      ]
-    }
-  );
-
-  await DB.Product.create(
-    {
-      name: 'BM Female Skirt',
-      description: 'Business & Management Daily Skirt Uniform. For Tertiary (BSBA)',
-      image: 'bm.jpg',
-      level: 'tertiary',
-      type: 'lower-wear',
-      category: 'uniform',
-      departmentId: departments[1].id,
-      productVariant: productVariantWithGender('Female', productAttributes[1].id),
-      createdAt,
-      updatedAt
-    },
-    {
-      include: [
-        {
-          model: DB.ProductVariant,
-          as: 'productVariant'
-        }
-      ]
-    }
-  );
-
-  await DB.Product.create(
-    {
-      name: 'BM Long Sleeve Polo Male',
-      description: 'Business & Management Daily Long Sleeve Polo Uniform Male. For Tertiary (BSBA)',
-      image: 'bm.jpg',
-      type: 'upper-wear',
-      level: 'tertiary',
-      category: 'uniform',
-      departmentId: departments[1].id,
-      productVariant: productVariantWithGender('Male', productAttributes[1].id),
-      createdAt,
-      updatedAt
-    },
-    {
-      include: [
-        {
-          model: DB.ProductVariant,
-          as: 'productVariant'
-        }
-      ]
-    }
-  );
-  await DB.Product.create(
-    {
-      name: 'BM Long Sleeve Blouse Female',
-      description: 'Business & Management Daily Long Sleeve Blouse Uniform Female. For Tertiary (BSBA)',
-      image: 'bm.jpg',
-      level: 'tertiary',
-      type: 'upper-wear',
-      category: 'uniform',
-      departmentId: departments[1].id,
-      productVariant: productVariantWithGender('Female', productAttributes[1].id),
-      createdAt,
-      updatedAt
-    },
-    {
-      include: [
-        {
-          model: DB.ProductVariant,
-          as: 'productVariant'
-        }
-      ]
-    }
-  );
-
-  await DB.Product.create(
-    {
-      name: 'BM Blazer',
-      description: 'Business & Management Daily Blazer Uniform. For Tertiary (BSBA)',
-      image: 'bm.jpg',
-      level: 'tertiary',
-      type: 'upper-wear',
-      category: 'uniform',
-      departmentId: departments[1].id,
-      productVariant: productVariantWithMaleAndFemale(productAttributes[1].id),
-      createdAt,
-      updatedAt
-    },
-    {
-      include: [
-        {
-          model: DB.ProductVariant,
-          as: 'productVariant'
-        }
-      ]
-    }
-  );
-
-  await DB.Product.create(
-    {
-      name: 'BM Red Scarf',
-      description: 'Business & Management Daily Red Scarf Uniform. For Tertiary (BSBA)',
-      image: 'bm.jpg',
-      level: 'tertiary',
-      type: 'upper-wear',
-      category: 'uniform',
-      departmentId: departments[1].id,
-      productVariant: productVariantWithGenderButNoSize('Female', productAttributes[1].id),
-      createdAt,
-      updatedAt
-    },
-    {
-      include: [
-        {
-          model: DB.ProductVariant,
-          as: 'productVariant'
-        }
-      ]
-    }
-  );
-
-  await DB.Product.create(
-    {
-      name: 'BM Red Necktie',
-      description: 'Business & Management Daily Red Necktie Uniform. For Tertiary (BSBA)',
-      image: 'bm.jpg',
-      type: 'upper-wear',
-      level: 'tertiary',
-      category: 'uniform',
-      departmentId: departments[1].id,
-      productVariant: productVariantWithGenderButNoSize('Male', productAttributes[1].id),
-      createdAt,
-      updatedAt
-    },
-    {
-      include: [
-        {
-          model: DB.ProductVariant,
-          as: 'productVariant'
-        }
-      ]
-    }
-  );
-
-  await DB.Product.create(
-    {
-      name: 'BM Pin',
-      description: 'Business & Management Pin. For Tertiary (BSBM)',
+      name: '(Business & Management) Student Pin',
+      description: 'Business & Management. STI Students',
       image: 'bm-pin.jpg',
       level: 'all',
       type: 'accessory',
       category: 'proware-item',
       departmentId: departments[6].id,
-      productVariant: productWithNoVariant(productAttributes[0].id),
-      createdAt,
-      updatedAt
-    },
-    {
-      include: [
+      productVariant: [
         {
-          model: DB.ProductVariant,
-          as: 'productVariant'
+          name: 'N/A',
+          size: 'N/A',
+          price: 75,
+          stockQuantity: 50,
+          stockCondition: calculateStockCondition(50),
+          productAttributeId: productAttributes[0].id,
+          createdAt: new Date(2025, 5, 5),
+          updatedAt: new Date()
         }
-      ]
-    }
-  );
-
-  // TM
-  await DB.Product.create(
-    {
-      name: 'TM Long Sleeve White Polo',
-      description: 'Tourism Management Daily Long Sleeve White Polo Uniform. For Tertiary (BSTM)',
-      image: 'tm.jpg',
-      level: 'tertiary',
-      type: 'upper-wear',
-      category: 'uniform',
-      departmentId: departments[3].id,
-      productVariant: productVariantWithGender('Male', productAttributes[1].id),
-      createdAt,
-      updatedAt
-    },
-    {
-      include: [
-        {
-          model: DB.ProductVariant,
-          as: 'productVariant'
-        }
-      ]
-    }
-  );
-  await DB.Product.create(
-    {
-      name: 'TM Pin',
-      description: 'Tourism Management Pin. For Tertiary (BSTM)',
-      image: 'tm.jpg',
-      level: 'tertiary',
-      type: 'upper-wear',
-      category: 'uniform',
-      departmentId: departments[3].id,
-      productVariant: productWithNoVariant(productAttributes[0].id),
-      createdAt,
-      updatedAt
-    },
-    {
-      include: [
-        {
-          model: DB.ProductVariant,
-          as: 'productVariant'
-        }
-      ]
-    }
-  );
-  await DB.Product.create(
-    {
-      name: 'TM Necktie',
-      description: 'Tourism Management Daily Uniform NeckTie. For Tertiary (BSTM)',
-      image: 'tm.jpg',
-      level: 'tertiary',
-      type: 'upper-wear',
-      category: 'uniform',
-      departmentId: departments[3].id,
-      productVariant: productVariantWithGenderButNoSize('Male', productAttributes[1].id),
-      createdAt,
-      updatedAt
-    },
-    {
-      include: [
-        {
-          model: DB.ProductVariant,
-          as: 'productVariant'
-        }
-      ]
-    }
-  );
-  await DB.Product.create(
-    {
-      name: 'TM Gray Pants',
-      description: 'Tourism Management Daily Gray Pants Uniform. For Tertiary (BSTM)',
-      image: 'tm.jpg',
-      level: 'tertiary',
-      type: 'lower-wear',
-      category: 'uniform',
-      departmentId: departments[3].id,
-      productVariant: productVariantWithGender('Male', productAttributes[1].id),
-      createdAt,
-      updatedAt
-    },
-    {
-      include: [
-        {
-          model: DB.ProductVariant,
-          as: 'productVariant'
-        }
-      ]
-    }
-  );
-  await DB.Product.create(
-    {
-      name: 'TM Blazer',
-      description: 'Tourism Management Daily Blazer Uniform. For Tertiary (BSTM)',
-      image: 'tm.jpg',
-      level: 'tertiary',
-      type: 'upper-wear',
-      category: 'uniform',
-      departmentId: departments[3].id,
-      productVariant: productVariantWithMaleAndFemale(productAttributes[1].id),
-      createdAt,
-      updatedAt
-    },
-    {
-      include: [
-        {
-          model: DB.ProductVariant,
-          as: 'productVariant'
-        }
-      ]
-    }
-  );
-  await DB.Product.create(
-    {
-      name: 'TM Beret',
-      description: 'Tourism Management Daily Uniform Beret. For Tertiary (BSTM)',
-      image: 'tm.jpg',
-      level: 'tertiary',
-      type: 'upper-wear',
-      category: 'uniform',
-      departmentId: departments[3].id,
-      productVariant: productVariantWithGenderButNoSize('Female', productAttributes[1].id),
-      createdAt,
-      updatedAt
-    },
-    {
-      include: [
-        {
-          model: DB.ProductVariant,
-          as: 'productVariant'
-        }
-      ]
-    }
-  );
-  await DB.Product.create(
-    {
-      name: 'TM Yellow Scarf',
-      description: 'Tourism Management Daily Uniform Yellow Scarf. For Tertiary (BSTM)',
-      image: 'tm.jpg',
-      level: 'tertiary',
-      type: 'upper-wear',
-      category: 'uniform',
-      departmentId: departments[3].id,
-      productVariant: productVariantWithGenderButNoSize('Female', productAttributes[1].id),
-      createdAt,
-      updatedAt
-    },
-    {
-      include: [
-        {
-          model: DB.ProductVariant,
-          as: 'productVariant'
-        }
-      ]
-    }
-  );
-  await DB.Product.create(
-    {
-      name: 'TM White Blouse',
-      description: 'Tourism Management Daily White Blouse Uniform. For Tertiary (BSTM)',
-      image: 'tm.jpg',
-      type: 'upper-wear',
-      level: 'tertiary',
-      category: 'uniform',
-      departmentId: departments[3].id,
-      productVariant: productVariantWithGender('Female', productAttributes[1].id),
-      createdAt,
-      updatedAt
-    },
-    {
-      include: [
-        {
-          model: DB.ProductVariant,
-          as: 'productVariant'
-        }
-      ]
-    }
-  );
-  await DB.Product.create(
-    {
-      name: 'TM Gray Skirt',
-      description: 'Tourism Management Daily Gray Skirt Uniform. For Tertiary (BSTM)',
-      image: 'tm.jpg',
-      type: 'lower-wear',
-      level: 'tertiary',
-      category: 'uniform',
-      departmentId: departments[3].id,
-      productVariant: productVariantWithGender('Female', productAttributes[1].id),
-      createdAt,
-      updatedAt
-    },
-    {
-      include: [
-        {
-          model: DB.ProductVariant,
-          as: 'productVariant'
-        }
-      ]
-    }
-  );
-
-  // Arts and Sciences
-  await DB.Product.create(
-    {
-      name: 'Arts and Sciences Long Sleeve Blue Polo',
-      description: 'Arts and Sciences Daily Long Sleeve Blue Polo Uniform. For Tertiary (BACOMM)',
-      image: 'arts-and-sciences.jpg',
-      type: 'upper-wear',
-      level: 'tertiary',
-      category: 'uniform',
-      departmentId: departments[4].id,
-      productVariant: productVariantWithGender('Male', productAttributes[1].id),
+      ],
       createdAt,
       updatedAt
     },
@@ -701,58 +103,25 @@ export async function up(queryInterface, Sequelize) {
 
   await DB.Product.create(
     {
-      name: 'Arts and Sciences Blue Necktie Male',
-      description: 'Arts and Sciences Daily Uniform Blue Necktie. For Tertiary (BACOMM)',
-      image: 'arts-and-sciences.jpg',
-      type: 'upper-wear',
-      level: 'tertiary',
-      category: 'uniform',
-      departmentId: departments[4].id,
-      productVariant: productVariantWithGenderButNoSize('Male', productAttributes[1].id),
-      createdAt,
-      updatedAt
-    },
-    {
-      include: [
+      name: '(Tourism) Student Pin',
+      description: 'Tourism. STI Students',
+      image: 'tourism.jpg',
+      level: 'all',
+      type: 'accessory',
+      category: 'proware-item',
+      departmentId: departments[6].id,
+      productVariant: [
         {
-          model: DB.ProductVariant,
-          as: 'productVariant'
+          name: 'N/A',
+          size: 'N/A',
+          price: 75,
+          stockQuantity: 50,
+          stockCondition: calculateStockCondition(50),
+          productAttributeId: productAttributes[0].id,
+          createdAt: new Date(2025, 5, 5),
+          updatedAt: new Date()
         }
-      ]
-    }
-  );
-  await DB.Product.create(
-    {
-      name: 'Arts and Sciences Pants',
-      description: 'Arts and Sciences Daily Pants Uniform. For Tertiary (BACOMM)',
-      image: 'arts-and-sciences.jpg',
-      type: 'lower-wear',
-      level: 'tertiary',
-      category: 'uniform',
-      departmentId: departments[4].id,
-      productVariant: productVariantWithMaleAndFemale(productAttributes[1].id),
-      createdAt,
-      updatedAt
-    },
-    {
-      include: [
-        {
-          model: DB.ProductVariant,
-          as: 'productVariant'
-        }
-      ]
-    }
-  );
-  await DB.Product.create(
-    {
-      name: 'Arts and Sciences Blazer',
-      description: 'Arts and Sciences Daily Blazer Uniform. For Tertiary (BACOMM)',
-      image: 'arts-and-sciences.jpg',
-      type: 'upper-wear',
-      level: 'tertiary',
-      category: 'uniform',
-      departmentId: departments[4].id,
-      productVariant: productVariantWithMaleAndFemale(productAttributes[1].id),
+      ],
       createdAt,
       updatedAt
     },
@@ -768,14 +137,25 @@ export async function up(queryInterface, Sequelize) {
 
   await DB.Product.create(
     {
-      name: 'Arts and Sciences Blue Scarf',
-      description: 'Arts and Sciences Daily Uniform Blue Scarf. For Tertiary (BACOMM)',
-      image: 'arts-and-sciences.jpg',
-      type: 'upper-wear',
-      level: 'tertiary',
-      category: 'uniform',
-      departmentId: departments[4].id,
-      productVariant: productVariantWithGender('Female', productAttributes[1].id),
+      name: '(Culinary) Student Pin',
+      description: 'Culinary. STI Students',
+      image: 'hm-pin.jpg',
+      level: 'all',
+      type: 'accessory',
+      category: 'proware-item',
+      departmentId: departments[6].id,
+      productVariant: [
+        {
+          name: 'N/A',
+          size: 'N/A',
+          price: 75,
+          stockQuantity: 50,
+          stockCondition: calculateStockCondition(50),
+          productAttributeId: productAttributes[0].id,
+          createdAt: new Date(2025, 5, 5),
+          updatedAt: new Date()
+        }
+      ],
       createdAt,
       updatedAt
     },
@@ -790,14 +170,25 @@ export async function up(queryInterface, Sequelize) {
   );
   await DB.Product.create(
     {
-      name: 'Arts and Sciences Blue Long Sleeve Blouse',
-      description: 'Arts and Sciences Daily Blue Long Sleeve Blouse Uniform. For Tertiary (BACOMM)',
-      image: 'arts-and-sciences.jpg',
-      type: 'upper-wear',
-      level: 'tertiary',
-      category: 'uniform',
-      departmentId: departments[4].id,
-      productVariant: productVariantWithGender('Female', productAttributes[1].id),
+      name: '(Information Technology) Student Pin',
+      description: 'Information Technology. STI Students',
+      image: 'ict-pin.jpg',
+      level: 'all',
+      type: 'accessory',
+      category: 'proware-item',
+      departmentId: departments[6].id,
+      productVariant: [
+        {
+          name: 'N/A',
+          size: 'N/A',
+          price: 75,
+          stockQuantity: 50,
+          stockCondition: calculateStockCondition(50),
+          productAttributeId: productAttributes[0].id,
+          createdAt: new Date(2025, 5, 5),
+          updatedAt: new Date()
+        }
+      ],
       createdAt,
       updatedAt
     },
@@ -812,14 +203,25 @@ export async function up(queryInterface, Sequelize) {
   );
   await DB.Product.create(
     {
-      name: 'Arts and Sciences Skirt',
-      description: 'Arts and Sciences Daily Skirt Uniform. For Tertiary (BACOMM)',
-      image: 'arts-and-sciences.jpg',
-      type: 'lower-wear',
-      level: 'tertiary',
-      category: 'uniform',
-      departmentId: departments[4].id,
-      productVariant: productVariantWithGender('Female', productAttributes[1].id),
+      name: '(Engineering) Student Pin',
+      description: 'Engineering. STI Students',
+      image: 'engineering.jpg',
+      level: 'all',
+      type: 'accessory',
+      category: 'proware-item',
+      departmentId: departments[6].id,
+      productVariant: [
+        {
+          name: 'N/A',
+          size: 'N/A',
+          price: 75,
+          stockQuantity: 50,
+          stockCondition: calculateStockCondition(50),
+          productAttributeId: productAttributes[0].id,
+          createdAt: new Date(2025, 5, 5),
+          updatedAt: new Date()
+        }
+      ],
       createdAt,
       updatedAt
     },
@@ -832,17 +234,171 @@ export async function up(queryInterface, Sequelize) {
       ]
     }
   );
-
   await DB.Product.create(
     {
-      name: 'Arts and Sciences Pin',
-      description: 'Arts and Sciences Pin. For Tertiary (BACOMM)',
+      name: '(Arts & Sciences) Student Pin',
+      description: 'Arts & Sciences. STI Students',
       image: 'arts-and-sciences-pin.jpg',
       level: 'all',
       type: 'accessory',
       category: 'proware-item',
       departmentId: departments[6].id,
-      productVariant: productWithNoVariant(productAttributes[0].id),
+      productVariant: [
+        {
+          name: 'N/A',
+          size: 'N/A',
+          price: 75,
+          stockQuantity: 50,
+          stockCondition: calculateStockCondition(50),
+          productAttributeId: productAttributes[0].id,
+          createdAt: new Date(2025, 5, 5),
+          updatedAt: new Date()
+        }
+      ],
+      createdAt,
+      updatedAt
+    },
+    {
+      include: [
+        {
+          model: DB.ProductVariant,
+          as: 'productVariant'
+        }
+      ]
+    }
+  );
+  await DB.Product.create(
+    {
+      name: 'STI Sticker Set',
+      description: 'STI Sticker Set',
+      image: 'sti-sticker-set.jpg',
+      level: 'all',
+      type: 'accessory',
+      category: 'proware-item',
+      departmentId: departments[6].id,
+      productVariant: [
+        {
+          name: 'N/A',
+          size: 'N/A',
+          price: 25,
+          stockQuantity: 50,
+          stockCondition: calculateStockCondition(50),
+          productAttributeId: productAttributes[0].id,
+          createdAt: new Date(2025, 5, 5),
+          updatedAt: new Date()
+        }
+      ],
+      createdAt,
+      updatedAt
+    },
+    {
+      include: [
+        {
+          model: DB.ProductVariant,
+          as: 'productVariant'
+        }
+      ]
+    }
+  );
+
+  await DB.Product.create(
+    {
+      name: 'ID Lace & Case Holder',
+      description: 'ID Lace & Case Holder',
+      image: 'ict.jpg',
+      level: 'all',
+      type: 'accessory',
+      category: 'proware-item',
+      departmentId: departments[6].id,
+      productVariant: [
+        {
+          name: 'N/A',
+          size: 'N/A',
+          price: 40,
+          stockQuantity: 50,
+          stockCondition: calculateStockCondition(50),
+          productAttributeId: productAttributes[0].id,
+          createdAt: new Date(2025, 5, 5),
+          updatedAt: new Date()
+        }
+      ],
+      createdAt,
+      updatedAt
+    },
+    {
+      include: [
+        {
+          model: DB.ProductVariant,
+          as: 'productVariant'
+        }
+      ]
+    }
+  );
+
+  await DB.Product.create(
+    {
+      name: 'STI Aqua Flask',
+      description: 'STI Aqua Flask Limited Edition',
+      image: 'sti-aqua-flask.png',
+      level: 'all',
+      type: 'accessory',
+      category: 'proware-item',
+      departmentId: departments[6].id,
+      productVariant: [
+        {
+          name: 'Blue',
+          size: 'N/A',
+          price: 25,
+          stockQuantity: 50,
+          stockCondition: calculateStockCondition(50),
+          productAttributeId: productAttributes[2].id,
+          createdAt: new Date(2025, 5, 5),
+          updatedAt: new Date()
+        },
+        {
+          name: 'Yellow',
+          size: 'N/A',
+          price: 25,
+          stockQuantity: 50,
+          stockCondition: calculateStockCondition(50),
+          productAttributeId: productAttributes[2].id,
+          createdAt: new Date(2025, 5, 5),
+          updatedAt: new Date()
+        }
+      ],
+      createdAt,
+      updatedAt
+    },
+    {
+      include: [
+        {
+          model: DB.ProductVariant,
+          as: 'productVariant'
+        }
+      ]
+    }
+  );
+  await DB.Product.create(
+    {
+      name: 'Exam Pen (Box:10 pcs)',
+      description: 'ID Lace & Case Holder',
+      image: 'exam-pen.jpg',
+      level: 'all',
+      type: 'accessory',
+      category: 'proware-item',
+      departmentId: departments[6].id,
+      productVariant: [
+        {
+          name: 'N/A',
+          size: 'N/A',
+          price: 50,
+          stockQuantity: 50,
+          stockCondition: calculateStockCondition(50),
+          productAttributeId: productAttributes[0].id,
+          createdAt: new Date(2025, 5, 5),
+          updatedAt: new Date()
+        }
+      ],
       createdAt,
       updatedAt
     },
@@ -865,7 +421,77 @@ export async function up(queryInterface, Sequelize) {
       level: 'tertiary',
       category: 'uniform',
       departmentId: departments[5].id,
-      productVariant: productVariantWithoutGenderButHaveSize(productAttributes[0].id),
+      productVariant: [
+        {
+          name: 'N/A',
+          size: 'Small',
+          price: 175,
+          stockQuantity: 50,
+          stockCondition: calculateStockCondition(50),
+          productAttributeId: productAttributes[0].id
+        },
+        {
+          name: 'N/A',
+          size: 'Medium',
+          price: 175,
+          stockQuantity: 50,
+          stockCondition: calculateStockCondition(50),
+          productAttributeId: productAttributes[0].id,
+          createdAt: new Date(2025, 5, 5),
+          updatedAt: new Date()
+        },
+        {
+          name: 'N/A',
+          size: 'Large',
+          price: 175,
+          stockQuantity: 50,
+          stockCondition: calculateStockCondition(50),
+          productAttributeId: productAttributes[0].id,
+          createdAt: new Date(2025, 5, 5),
+          updatedAt: new Date()
+        },
+        {
+          name: 'N/A',
+          size: 'Extra Large',
+          price: 175,
+          stockQuantity: 50,
+          stockCondition: calculateStockCondition(50),
+          productAttributeId: productAttributes[0].id,
+          createdAt: new Date(2025, 5, 5),
+          updatedAt: new Date()
+        },
+        {
+          name: 'N/A',
+          size: '2 Extra Large',
+          price: 175,
+          stockQuantity: 50,
+          stockCondition: calculateStockCondition(50),
+          productAttributeId: productAttributes[0].id,
+          createdAt: new Date(2025, 5, 5),
+          updatedAt: new Date()
+        },
+        {
+          name: 'N/A',
+          size: '3 Extra Large',
+          price: 175,
+          stockQuantity: 50,
+          stockCondition: calculateStockCondition(50),
+          productAttributeId: productAttributes[0].id,
+          createdAt: new Date(2025, 5, 5),
+          updatedAt: new Date()
+        },
+
+        {
+          name: 'N/A',
+          size: '5 Extra Large',
+          price: 175,
+          stockQuantity: 50,
+          stockCondition: calculateStockCondition(50),
+          productAttributeId: productAttributes[0].id,
+          createdAt: new Date(2025, 5, 5),
+          updatedAt: new Date()
+        }
+      ],
       createdAt,
       updatedAt
     },
@@ -887,7 +513,86 @@ export async function up(queryInterface, Sequelize) {
       level: 'tertiary',
       category: 'uniform',
       departmentId: departments[6].id,
-      productVariant: productVariantWithoutGenderButHaveSize(productAttributes[0].id),
+      productVariant: [
+        {
+          name: 'N/A',
+          size: 'Small',
+          price: 310,
+          stockQuantity: 50,
+          stockCondition: calculateStockCondition(50),
+          productAttributeId: productAttributes[0].id
+        },
+        {
+          name: 'N/A',
+          size: 'Medium',
+          price: 310,
+          stockQuantity: 50,
+          stockCondition: calculateStockCondition(50),
+          productAttributeId: productAttributes[0].id,
+          createdAt: new Date(2025, 5, 5),
+          updatedAt: new Date()
+        },
+        {
+          name: 'N/A',
+          size: 'Large',
+          price: 310,
+          stockQuantity: 50,
+          stockCondition: calculateStockCondition(50),
+          productAttributeId: productAttributes[0].id,
+          createdAt: new Date(2025, 5, 5),
+          updatedAt: new Date()
+        },
+        {
+          name: 'N/A',
+          size: 'Extra Large',
+          price: 310,
+          stockQuantity: 50,
+          stockCondition: calculateStockCondition(50),
+          productAttributeId: productAttributes[0].id,
+          createdAt: new Date(2025, 5, 5),
+          updatedAt: new Date()
+        },
+        {
+          name: 'N/A',
+          size: '2 Extra Large',
+          price: 310,
+          stockQuantity: 50,
+          stockCondition: calculateStockCondition(50),
+          productAttributeId: productAttributes[0].id,
+          createdAt: new Date(2025, 5, 5),
+          updatedAt: new Date()
+        },
+        {
+          name: 'N/A',
+          size: '3 Extra Large',
+          price: 310,
+          stockQuantity: 50,
+          stockCondition: calculateStockCondition(50),
+          productAttributeId: productAttributes[0].id,
+          createdAt: new Date(2025, 5, 5),
+          updatedAt: new Date()
+        },
+        {
+          name: 'N/A',
+          size: '4 Extra Large',
+          price: 310,
+          stockQuantity: 50,
+          stockCondition: calculateStockCondition(50),
+          productAttributeId: productAttributes[0].id,
+          createdAt: new Date(2025, 5, 5),
+          updatedAt: new Date()
+        },
+        {
+          name: 'N/A',
+          size: '5 Extra Large',
+          price: 310,
+          stockQuantity: 50,
+          stockCondition: calculateStockCondition(50),
+          productAttributeId: productAttributes[0].id,
+          createdAt: new Date(2025, 5, 5),
+          updatedAt: new Date()
+        }
+      ],
       createdAt,
       updatedAt
     },
@@ -903,14 +608,283 @@ export async function up(queryInterface, Sequelize) {
 
   await DB.Product.create(
     {
-      name: '2024 STI Anniversary TShirt',
+      name: '(42nd) STI Anniversary TShirt',
+      description: '2025 STI Anniversary T-Shirt',
+      image: '42-sti-anniv-shirt.jpg',
+      type: 'upper-wear',
+      level: 'all',
+      category: 'proware-item',
+      departmentId: departments[6].id,
+      productVariant: [
+        {
+          name: 'Male',
+          size: 'Small',
+          price: 240,
+          stockQuantity: 50,
+          stockCondition: calculateStockCondition(50),
+          productAttributeId: productAttributes[1].id,
+          createdAt,
+          updatedAt
+        },
+        {
+          name: 'Male',
+          size: 'Medium',
+          price: 240,
+          stockQuantity: 50,
+          stockCondition: calculateStockCondition(50),
+          productAttributeId: productAttributes[1].id,
+          createdAt,
+          updatedAt
+        },
+        {
+          name: 'Male',
+          size: 'Large',
+          price: 240,
+          stockQuantity: 50,
+          stockCondition: calculateStockCondition(50),
+          productAttributeId: productAttributes[1].id,
+          createdAt,
+          updatedAt
+        },
+        {
+          name: 'Male',
+          size: 'Extra Large',
+          price: 240,
+          stockQuantity: 50,
+          stockCondition: calculateStockCondition(50),
+          productAttributeId: productAttributes[1].id,
+          createdAt,
+          updatedAt
+        },
+        {
+          name: 'Male',
+          size: '2 Extra Large',
+          price: 240,
+          stockQuantity: 50,
+          stockCondition: calculateStockCondition(50),
+          productAttributeId: productAttributes[1].id,
+          createdAt,
+          updatedAt
+        },
+        {
+          name: 'Male',
+          size: '3 Extra Large',
+          price: 240,
+          stockQuantity: 50,
+          stockCondition: calculateStockCondition(50),
+          productAttributeId: productAttributes[1].id,
+          createdAt,
+          updatedAt
+        },
+
+        // Female
+        {
+          name: 'Female',
+          size: 'Small',
+          price: 195,
+          stockQuantity: 50,
+          stockCondition: calculateStockCondition(50),
+          productAttributeId: productAttributes[1].id,
+          createdAt,
+          updatedAt
+        },
+        {
+          name: 'Female',
+          size: 'Medium',
+          price: 195,
+          stockQuantity: 50,
+          stockCondition: calculateStockCondition(50),
+          productAttributeId: productAttributes[1].id,
+          createdAt,
+          updatedAt
+        },
+        {
+          name: 'Female',
+          size: 'Large',
+          price: 195,
+          stockQuantity: 50,
+          stockCondition: calculateStockCondition(50),
+          productAttributeId: productAttributes[1].id,
+          createdAt,
+          updatedAt
+        },
+        {
+          name: 'Female',
+          size: 'Extra Large',
+          price: 195,
+          stockQuantity: 50,
+          stockCondition: calculateStockCondition(50),
+          productAttributeId: productAttributes[1].id,
+          createdAt,
+          updatedAt
+        },
+        {
+          name: 'Female',
+          size: '2 Extra Large',
+          price: 200,
+          stockQuantity: 50,
+          stockCondition: calculateStockCondition(50),
+          productAttributeId: productAttributes[1].id,
+          createdAt,
+          updatedAt
+        },
+        {
+          name: 'Female',
+          size: '3 Extra Large',
+          price: 200,
+          stockQuantity: 50,
+          stockCondition: calculateStockCondition(50),
+          productAttributeId: productAttributes[1].id,
+          createdAt,
+          updatedAt
+        }
+      ],
+      createdAt,
+      updatedAt
+    },
+    {
+      include: [
+        {
+          model: DB.ProductVariant,
+          as: 'productVariant'
+        }
+      ]
+    }
+  );
+
+  await DB.Product.create(
+    {
+      name: '(41st) STI Anniversary TShirt',
       description: '2024 STI Anniversary T-Shirt',
       image: 'anniv-shirt-2024.jpg',
       type: 'upper-wear',
       level: 'all',
       category: 'proware-item',
       departmentId: departments[6].id,
-      productVariant: productVariantWithoutGenderButHaveSize(productAttributes[0].id),
+      productVariant: [
+        {
+          name: 'Male',
+          size: 'Small',
+          price: 275,
+          stockQuantity: 50,
+          stockCondition: calculateStockCondition(50),
+          productAttributeId: productAttributes[1].id,
+          createdAt,
+          updatedAt
+        },
+        {
+          name: 'Male',
+          size: 'Medium',
+          price: 275,
+          stockQuantity: 50,
+          stockCondition: calculateStockCondition(50),
+          productAttributeId: productAttributes[1].id,
+          createdAt,
+          updatedAt
+        },
+        {
+          name: 'Male',
+          size: 'Large',
+          price: 275,
+          stockQuantity: 50,
+          stockCondition: calculateStockCondition(50),
+          productAttributeId: productAttributes[1].id,
+          createdAt,
+          updatedAt
+        },
+        {
+          name: 'Male',
+          size: 'Extra Large',
+          price: 275,
+          stockQuantity: 50,
+          stockCondition: calculateStockCondition(50),
+          productAttributeId: productAttributes[1].id,
+          createdAt,
+          updatedAt
+        },
+        {
+          name: 'Male',
+          size: '2 Extra Large',
+          price: 275,
+          stockQuantity: 50,
+          stockCondition: calculateStockCondition(50),
+          productAttributeId: productAttributes[1].id,
+          createdAt,
+          updatedAt
+        },
+        {
+          name: 'Male',
+          size: '3 Extra Large',
+          price: 275,
+          stockQuantity: 50,
+          stockCondition: calculateStockCondition(50),
+          productAttributeId: productAttributes[1].id,
+          createdAt,
+          updatedAt
+        },
+
+        // Female
+        {
+          name: 'Female',
+          size: 'Small',
+          price: 390,
+          stockQuantity: 50,
+          stockCondition: calculateStockCondition(50),
+          productAttributeId: productAttributes[1].id,
+          createdAt,
+          updatedAt
+        },
+        {
+          name: 'Female',
+          size: 'Medium',
+          price: 390,
+          stockQuantity: 50,
+          stockCondition: calculateStockCondition(50),
+          productAttributeId: productAttributes[1].id,
+          createdAt,
+          updatedAt
+        },
+        {
+          name: 'Female',
+          size: 'Large',
+          price: 390,
+          stockQuantity: 50,
+          stockCondition: calculateStockCondition(50),
+          productAttributeId: productAttributes[1].id,
+          createdAt,
+          updatedAt
+        },
+        {
+          name: 'Female',
+          size: 'Extra Large',
+          price: 390,
+          stockQuantity: 50,
+          stockCondition: calculateStockCondition(50),
+          productAttributeId: productAttributes[1].id,
+          createdAt,
+          updatedAt
+        },
+        {
+          name: 'Female',
+          size: '2 Extra Large',
+          price: 390,
+          stockQuantity: 50,
+          stockCondition: calculateStockCondition(50),
+          productAttributeId: productAttributes[1].id,
+          createdAt,
+          updatedAt
+        },
+        {
+          name: 'Female',
+          size: '3 Extra Large',
+          price: 390,
+          stockQuantity: 50,
+          stockCondition: calculateStockCondition(50),
+          productAttributeId: productAttributes[1].id,
+          createdAt,
+          updatedAt
+        }
+      ],
       createdAt,
       updatedAt
     },
@@ -932,7 +906,94 @@ export async function up(queryInterface, Sequelize) {
       level: 'tertiary',
       category: 'uniform',
       departmentId: departments[6].id,
-      productVariant: productVariantWithoutGenderButHaveSize(productAttributes[0].id),
+      productVariant: [
+        {
+          name: 'N/A',
+          size: 'Extra Small',
+          price: 220,
+          stockQuantity: 50,
+          stockCondition: calculateStockCondition(50),
+          productAttributeId: productAttributes[0].id
+        },
+        {
+          name: 'N/A',
+          size: 'Small',
+          price: 220,
+          stockQuantity: 50,
+          stockCondition: calculateStockCondition(50),
+          productAttributeId: productAttributes[0].id
+        },
+        {
+          name: 'N/A',
+          size: 'Medium',
+          price: 220,
+          stockQuantity: 50,
+          stockCondition: calculateStockCondition(50),
+          productAttributeId: productAttributes[0].id,
+          createdAt: new Date(2025, 5, 5),
+          updatedAt: new Date()
+        },
+        {
+          name: 'N/A',
+          size: 'Large',
+          price: 220,
+          stockQuantity: 50,
+          stockCondition: calculateStockCondition(50),
+          productAttributeId: productAttributes[0].id,
+          createdAt: new Date(2025, 5, 5),
+          updatedAt: new Date()
+        },
+        {
+          name: 'N/A',
+          size: 'Extra Large',
+          price: 240,
+          stockQuantity: 50,
+          stockCondition: calculateStockCondition(50),
+          productAttributeId: productAttributes[0].id,
+          createdAt: new Date(2025, 5, 5),
+          updatedAt: new Date()
+        },
+        {
+          name: 'N/A',
+          size: '2 Extra Large',
+          price: 240,
+          stockQuantity: 50,
+          stockCondition: calculateStockCondition(50),
+          productAttributeId: productAttributes[0].id,
+          createdAt: new Date(2025, 5, 5),
+          updatedAt: new Date()
+        },
+        {
+          name: 'N/A',
+          size: '3 Extra Large',
+          price: 250,
+          stockQuantity: 50,
+          stockCondition: calculateStockCondition(50),
+          productAttributeId: productAttributes[0].id,
+          createdAt: new Date(2025, 5, 5),
+          updatedAt: new Date()
+        },
+        {
+          name: 'N/A',
+          size: '4 Extra Large',
+          price: 250,
+          stockQuantity: 50,
+          stockCondition: calculateStockCondition(50),
+          productAttributeId: productAttributes[0].id,
+          createdAt: new Date(2025, 5, 5),
+          updatedAt: new Date()
+        },
+        {
+          name: 'N/A',
+          size: '5 Extra Large',
+          price: 250,
+          stockQuantity: 50,
+          stockCondition: calculateStockCondition(50),
+          productAttributeId: productAttributes[0].id,
+          createdAt: new Date(2025, 5, 5),
+          updatedAt: new Date()
+        }
+      ],
       createdAt,
       updatedAt
     },
@@ -947,14 +1008,156 @@ export async function up(queryInterface, Sequelize) {
   );
   await DB.Product.create(
     {
-      name: 'Tertiary Wash Day Uniform',
+      name: 'Tertiary Wash Day Shirt',
       description: 'Tertiary Wash Day Uniform',
       image: 'washday.png',
       type: 'upper-wear',
       level: 'tertiary',
-      category: 'proware-item',
+      category: 'uniform',
       departmentId: departments[6].id,
-      productVariant: productVariantWithMaleAndFemale(productAttributes[1].id),
+      productVariant: [
+        {
+          name: 'Male',
+          size: 'Small',
+          price: 225,
+          stockQuantity: 50,
+          stockCondition: calculateStockCondition(50),
+          productAttributeId: productAttributes[1].id,
+          createdAt,
+          updatedAt
+        },
+        {
+          name: 'Male',
+          size: 'Medium',
+          price: 225,
+          stockQuantity: 50,
+          stockCondition: calculateStockCondition(50),
+          productAttributeId: productAttributes[1].id,
+          createdAt,
+          updatedAt
+        },
+        {
+          name: 'Male',
+          size: 'Large',
+          price: 225,
+          stockQuantity: 50,
+          stockCondition: calculateStockCondition(50),
+          productAttributeId: productAttributes[1].id,
+          createdAt,
+          updatedAt
+        },
+        {
+          name: 'Male',
+          size: 'Extra Large',
+          price: 225,
+          stockQuantity: 50,
+          stockCondition: calculateStockCondition(50),
+          productAttributeId: productAttributes[1].id,
+          createdAt,
+          updatedAt
+        },
+        {
+          name: 'Male',
+          size: '2 Extra Large',
+          price: 225,
+          stockQuantity: 50,
+          stockCondition: calculateStockCondition(50),
+          productAttributeId: productAttributes[1].id,
+          createdAt,
+          updatedAt
+        },
+        {
+          name: 'Male',
+          size: '3 Extra Large',
+          price: 225,
+          stockQuantity: 50,
+          stockCondition: calculateStockCondition(50),
+          productAttributeId: productAttributes[1].id,
+          createdAt,
+          updatedAt
+        },
+        {
+          name: 'Male',
+          size: '5 Extra Large',
+          price: 245,
+          stockQuantity: 50,
+          stockCondition: calculateStockCondition(50),
+          productAttributeId: productAttributes[1].id,
+          createdAt,
+          updatedAt
+        },
+        // Female
+        {
+          name: 'Female',
+          size: 'Small',
+          price: 225,
+          stockQuantity: 50,
+          stockCondition: calculateStockCondition(50),
+          productAttributeId: productAttributes[1].id,
+          createdAt,
+          updatedAt
+        },
+        {
+          name: 'Female',
+          size: 'Medium',
+          price: 225,
+          stockQuantity: 50,
+          stockCondition: calculateStockCondition(50),
+          productAttributeId: productAttributes[1].id,
+          createdAt,
+          updatedAt
+        },
+        {
+          name: 'Female',
+          size: 'Large',
+          price: 225,
+          stockQuantity: 50,
+          stockCondition: calculateStockCondition(50),
+          productAttributeId: productAttributes[1].id,
+          createdAt,
+          updatedAt
+        },
+        {
+          name: 'Female',
+          size: 'Extra Large',
+          price: 225,
+          stockQuantity: 50,
+          stockCondition: calculateStockCondition(50),
+          productAttributeId: productAttributes[1].id,
+          createdAt,
+          updatedAt
+        },
+        {
+          name: 'Female',
+          size: '2 Extra Large',
+          price: 225,
+          stockQuantity: 50,
+          stockCondition: calculateStockCondition(50),
+          productAttributeId: productAttributes[1].id,
+          createdAt,
+          updatedAt
+        },
+        {
+          name: 'Female',
+          size: '3 Extra Large',
+          price: 225,
+          stockQuantity: 50,
+          stockCondition: calculateStockCondition(50),
+          productAttributeId: productAttributes[1].id,
+          createdAt,
+          updatedAt
+        },
+        {
+          name: 'Female',
+          size: '5 Extra Large',
+          price: 245,
+          stockQuantity: 50,
+          stockCondition: calculateStockCondition(50),
+          productAttributeId: productAttributes[1].id,
+          createdAt,
+          updatedAt
+        }
+      ],
       createdAt,
       updatedAt
     },
@@ -967,244 +1170,158 @@ export async function up(queryInterface, Sequelize) {
       ]
     }
   );
-  // HM
   await DB.Product.create(
     {
-      name: 'HM Long Sleeve White Polo',
-      description: 'Hospitality Management Daily Long Sleeve White Polo Uniform. For Tertiary (BSHM)',
-      image: 'hm.jpg',
-      level: 'tertiary',
+      name: 'Senior High Wash Day Shirt',
+      description: 'Senior High Wash Day Uniform',
+      image: 'washday.png',
       type: 'upper-wear',
+      level: 'shs',
       category: 'uniform',
-      departmentId: departments[2].id,
-      productVariant: productVariantWithGender('Male', productAttributes[1].id),
-      createdAt,
-      updatedAt
-    },
-    {
-      include: [
-        {
-          model: DB.ProductVariant,
-          as: 'productVariant'
-        }
-      ]
-    }
-  );
-  await DB.Product.create(
-    {
-      name: 'HM Pin',
-      description: 'Hotel and Management Pin. For Tertiary (BSTM)',
-      image: 'hm-pin.jpg',
-      level: 'all',
-      type: 'accessory',
-      category: 'proware-item',
       departmentId: departments[6].id,
-      productVariant: productWithNoVariant(productAttributes[0].id),
-      createdAt,
-      updatedAt
-    },
-    {
-      include: [
+      productVariant: [
         {
-          model: DB.ProductVariant,
-          as: 'productVariant'
-        }
-      ]
-    }
-  );
-
-  await DB.Product.create(
-    {
-      name: 'HM Gray Pants',
-      description: 'Hotel and Management Daily Gray Pants Uniform. For Tertiary (BSHM)',
-      image: 'hm.jpg',
-      level: 'tertiary',
-      type: 'lower-wear',
-      category: 'uniform',
-      departmentId: departments[2].id,
-      productVariant: productVariantWithMaleAndFemale(productAttributes[1].id),
-      createdAt,
-      updatedAt
-    },
-    {
-      include: [
+          name: 'Male',
+          size: 'Small',
+          price: 225,
+          stockQuantity: 50,
+          stockCondition: calculateStockCondition(50),
+          productAttributeId: productAttributes[1].id,
+          createdAt,
+          updatedAt
+        },
         {
-          model: DB.ProductVariant,
-          as: 'productVariant'
-        }
-      ]
-    }
-  );
-  await DB.Product.create(
-    {
-      name: 'HM Blazer',
-      description: 'Hotel and Management Daily Blazer Uniform. For Tertiary (BSHM)',
-      image: 'hm.jpg',
-      level: 'tertiary',
-      type: 'upper-wear',
-      category: 'uniform',
-      departmentId: departments[2].id,
-      productVariant: productVariantWithMaleAndFemale(productAttributes[1].id),
-      createdAt,
-      updatedAt
-    },
-    {
-      include: [
+          name: 'Male',
+          size: 'Medium',
+          price: 225,
+          stockQuantity: 50,
+          stockCondition: calculateStockCondition(50),
+          productAttributeId: productAttributes[1].id,
+          createdAt,
+          updatedAt
+        },
         {
-          model: DB.ProductVariant,
-          as: 'productVariant'
-        }
-      ]
-    }
-  );
-
-  await DB.Product.create(
-    {
-      name: 'HM White Blouse',
-      description: 'Hotel and Management Daily White Blouse Uniform. For Tertiary (BSHM)',
-      image: 'hm.jpg',
-      type: 'upper-wear',
-      level: 'tertiary',
-      category: 'uniform',
-      departmentId: departments[2].id,
-      productVariant: productVariantWithGender('Female', productAttributes[1].id),
-      createdAt,
-      updatedAt
-    },
-    {
-      include: [
+          name: 'Male',
+          size: 'Large',
+          price: 225,
+          stockQuantity: 50,
+          stockCondition: calculateStockCondition(50),
+          productAttributeId: productAttributes[1].id,
+          createdAt,
+          updatedAt
+        },
         {
-          model: DB.ProductVariant,
-          as: 'productVariant'
-        }
-      ]
-    }
-  );
-  await DB.Product.create(
-    {
-      name: 'HM Gray Skirt',
-      description: 'Hotel and Management Daily Gray Skirt Uniform. For Tertiary (BSHM)',
-      image: 'hm.jpg',
-      type: 'lower-wear',
-      level: 'tertiary',
-      category: 'uniform',
-      departmentId: departments[2].id,
-      productVariant: productVariantWithGender('Female', productAttributes[1].id),
-      createdAt,
-      updatedAt
-    },
-    {
-      include: [
+          name: 'Male',
+          size: 'Extra Large',
+          price: 225,
+          stockQuantity: 50,
+          stockCondition: calculateStockCondition(50),
+          productAttributeId: productAttributes[1].id,
+          createdAt,
+          updatedAt
+        },
         {
-          model: DB.ProductVariant,
-          as: 'productVariant'
-        }
-      ]
-    }
-  );
-
-  // HM FOOD AND BEVERAGES
-
-  await DB.Product.create(
-    {
-      name: 'HM Vest',
-      description: 'Hotel and Management Daily Vest Uniform. For Tertiary (BSHM)',
-      image: 'hm-f-b.jpg',
-      level: 'tertiary',
-      type: 'upper-wear',
-      category: 'uniform',
-      departmentId: departments[2].id,
-      productVariant: productVariantWithMaleAndFemale(productAttributes[1].id),
-      createdAt,
-      updatedAt
-    },
-    {
-      include: [
+          name: 'Male',
+          size: '2 Extra Large',
+          price: 225,
+          stockQuantity: 50,
+          stockCondition: calculateStockCondition(50),
+          productAttributeId: productAttributes[1].id,
+          createdAt,
+          updatedAt
+        },
         {
-          model: DB.ProductVariant,
-          as: 'productVariant'
-        }
-      ]
-    }
-  );
-
-  await DB.Product.create(
-    {
-      name: 'HM Chefs Polo',
-      description: 'Hotel and Management Chef Polo',
-      image: 'hm-kitchen.jpg',
-      type: 'upper-wear',
-      level: 'tertiary',
-      category: 'uniform',
-      departmentId: departments[2].id,
-      productVariant: productVariantWithoutGenderButHaveSize(productAttributes[0].id),
-      createdAt,
-      updatedAt
-    },
-    {
-      include: [
+          name: 'Male',
+          size: '3 Extra Large',
+          price: 225,
+          stockQuantity: 50,
+          stockCondition: calculateStockCondition(50),
+          productAttributeId: productAttributes[1].id,
+          createdAt,
+          updatedAt
+        },
         {
-          model: DB.ProductVariant,
-          as: 'productVariant'
-        }
-      ]
-    }
-  );
-  await DB.Product.create(
-    {
-      name: 'HM Chefs Pants',
-      description: 'Hotel and Management Chef Pants',
-      image: 'hm-kitchen.jpg',
-      type: 'lower-wear',
-      level: 'tertiary',
-      category: 'uniform',
-      departmentId: departments[2].id,
-      productVariant: productVariantWithoutGenderButHaveSize(productAttributes[0].id),
-      createdAt,
-      updatedAt
-    },
-    {
-      include: [
+          name: 'Male',
+          size: '5 Extra Large',
+          price: 245,
+          stockQuantity: 50,
+          stockCondition: calculateStockCondition(50),
+          productAttributeId: productAttributes[1].id,
+          createdAt,
+          updatedAt
+        },
+        // Female
         {
-          model: DB.ProductVariant,
-          as: 'productVariant'
-        }
-      ]
-    }
-  );
-
-  await DB.Product.create(
-    {
-      name: 'HM Chef Apron',
-      description: 'Hotel and Management Apron. For Tertiary (BSTM)',
-      image: 'hm-kitchen.jpg',
-      level: 'tertiary',
-      type: 'upper-wear',
-      category: 'uniform',
-      departmentId: departments[2].id,
-      productVariant: productWithNoVariant(productAttributes[0].id),
-      createdAt,
-      updatedAt
-    },
-    {
-      include: [
+          name: 'Female',
+          size: 'Small',
+          price: 225,
+          stockQuantity: 50,
+          stockCondition: calculateStockCondition(50),
+          productAttributeId: productAttributes[1].id,
+          createdAt,
+          updatedAt
+        },
         {
-          model: DB.ProductVariant,
-          as: 'productVariant'
+          name: 'Female',
+          size: 'Medium',
+          price: 225,
+          stockQuantity: 50,
+          stockCondition: calculateStockCondition(50),
+          productAttributeId: productAttributes[1].id,
+          createdAt,
+          updatedAt
+        },
+        {
+          name: 'Female',
+          size: 'Large',
+          price: 225,
+          stockQuantity: 50,
+          stockCondition: calculateStockCondition(50),
+          productAttributeId: productAttributes[1].id,
+          createdAt,
+          updatedAt
+        },
+        {
+          name: 'Female',
+          size: 'Extra Large',
+          price: 225,
+          stockQuantity: 50,
+          stockCondition: calculateStockCondition(50),
+          productAttributeId: productAttributes[1].id,
+          createdAt,
+          updatedAt
+        },
+        {
+          name: 'Female',
+          size: '2 Extra Large',
+          price: 225,
+          stockQuantity: 50,
+          stockCondition: calculateStockCondition(50),
+          productAttributeId: productAttributes[1].id,
+          createdAt,
+          updatedAt
+        },
+        {
+          name: 'Female',
+          size: '3 Extra Large',
+          price: 225,
+          stockQuantity: 50,
+          stockCondition: calculateStockCondition(50),
+          productAttributeId: productAttributes[1].id,
+          createdAt,
+          updatedAt
+        },
+        {
+          name: 'Female',
+          size: '3 Extra Large',
+          price: 245,
+          stockQuantity: 50,
+          stockCondition: calculateStockCondition(50),
+          productAttributeId: productAttributes[1].id,
+          createdAt,
+          updatedAt
         }
-      ]
-    }
-  );
-  await DB.Product.create(
-    {
-      name: 'HM Chef Skull Cap',
-      description: 'Hotel and Management Skull Cap. For Tertiary (BSTM)',
-      image: 'hm-kitchen.jpg',
-      level: 'tertiary',
-      type: 'upper-wear',
-      category: 'uniform',
-      departmentId: departments[2].id,
-      productVariant: productWithNoVariant(productAttributes[0].id),
+      ],
       createdAt,
       updatedAt
     },
