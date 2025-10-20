@@ -656,6 +656,32 @@ export class ProductService {
 
       if (product.deletedAt !== null) throw new NotFoundException('Product is already archived');
 
+      const variantIds = product.productVariant.map((variant) => variant.id);
+      const orderUsedByVariants = await DB.Order.findAll({
+        transaction,
+        where: {
+          status: {
+            [Op.notIn]: ['completed', 'cancelled']
+          }
+        },
+        include: [
+          {
+            model: DB.OrderItems,
+            as: 'orderItems',
+            required: true,
+            where: {
+              productVariantId: {
+                [Op.in]: variantIds
+              }
+            }
+          }
+        ]
+      });
+
+      if (orderUsedByVariants.length > 0) {
+        throw new Error(`You cannot delete an item due to it have ${orderUsedByVariants.length} pending order`);
+      }
+
       // Archive the product
       await product.destroy({transaction});
 
@@ -906,6 +932,30 @@ export class ProductService {
           }
         );
         newVariantIds.push(productVariant.id);
+      }
+      const orderUsedByVariants = await DB.Order.findAll({
+        transaction,
+        where: {
+          status: {
+            [Op.notIn]: ['completed', 'cancelled']
+          }
+        },
+        include: [
+          {
+            model: DB.OrderItems,
+            as: 'orderItems',
+            required: true,
+            where: {
+              productVariantId: {
+                [Op.in]: newVariantIds
+              }
+            }
+          }
+        ]
+      });
+
+      if (orderUsedByVariants.length > 0) {
+        throw new Error(`You cannot delete an item due to it have ${orderUsedByVariants.length} pending order`);
       }
 
       await DB.ProductVariant.destroy({

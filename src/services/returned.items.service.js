@@ -30,7 +30,8 @@ export class ReturnedItemService {
         {transaction}
       );
       const newStockAvailable = productVariant.stockAvailable - quantity;
-      if (newStockAvailable <= 0) throw new Error(`We only have ${productVariant.stockAvailable} stock available left`);
+
+      if (newStockAvailable < 0) throw new Error(`We only have ${productVariant.stockAvailable} stock available left`);
 
       productVariant.stockQuantity = newStockAvailable + Number(productVariant.stockReserved);
       productVariant.stockCondition = calculateStockCondition(newStockAvailable);
@@ -78,7 +79,7 @@ export class ReturnedItemService {
       // So if we have 3 returnItemQuantity, then we have 10 new quantity,
       // we add 3 to the stockAvailable, then we subtract the sum of quantity and stockAvailable to the new quantity.
       const newStockAvailable = returnedItem.quantity + productVariant.stockAvailable - quantity;
-      if (newStockAvailable <= 0) throw new Error(`We only have ${productVariant.stockAvailable} stock available left`);
+      if (newStockAvailable < 0) throw new Error(`We only have ${productVariant.stockAvailable} stock available left`);
 
       productVariant.stockQuantity = newStockAvailable + productVariant.stockReserved;
       productVariant.stockCondition = calculateStockCondition(newStockAvailable);

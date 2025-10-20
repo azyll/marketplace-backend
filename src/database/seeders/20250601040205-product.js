@@ -9,7 +9,6 @@ import {
   productWithNoVariant
 } from '../../utils/product-seeder.helper.js';
 
-/** @type {import('sequelize-cli').Migration} */
 export async function up(queryInterface, Sequelize) {
   const createdAt = new Date(2025, 5, 5);
   const updatedAt = new Date(2025, 5, 5);
@@ -504,10 +503,10 @@ export async function up(queryInterface, Sequelize) {
       name: 'TM Pin',
       description: 'Tourism Management Pin. For Tertiary (BSTM)',
       image: 'tm.jpg',
-      level: 'all',
-      type: 'accessory',
-      category: 'proware-item',
-      departmentId: departments[6].id,
+      level: 'tertiary',
+      type: 'upper-wear',
+      category: 'uniform',
+      departmentId: departments[3].id,
       productVariant: productWithNoVariant(productAttributes[0].id),
       createdAt,
       updatedAt
@@ -931,7 +930,7 @@ export async function up(queryInterface, Sequelize) {
       image: 'nstp.jpg',
       type: 'upper-wear',
       level: 'tertiary',
-      category: 'proware-item',
+      category: 'uniform',
       departmentId: departments[6].id,
       productVariant: productVariantWithoutGenderButHaveSize(productAttributes[0].id),
       createdAt,

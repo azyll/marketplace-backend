@@ -14,14 +14,16 @@ export class AuthService {
    * @returns {Promise<string>} jwt token with user data as payload
    */
   static async login(username, password) {
+    const usernameToLower = username.toLowerCase().trim();
+    const passwordToLower = password.toLowerCase().trim();
     const user = await DB.User.scope('withPassword').findOne({
-      where: {username},
+      where: {username: usernameToLower},
       include: [{model: DB.Role, as: 'role'}]
     });
 
     if (!user) throw new UnauthorizedException('Invalid Credentials');
 
-    const isValid = await user.authenticate(password);
+    const isValid = await user.authenticate(passwordToLower);
 
     if (!isValid) throw new UnauthorizedException('Invalid Credentials');
 
