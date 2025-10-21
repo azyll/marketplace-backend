@@ -33,11 +33,11 @@ export const archiveDepartment = async (req, res) => {
 };
 
 export const updateDepartment = async (req, res) => {
-  const {newProgram} = req.body;
+  const {newDepartment} = req.body;
   const {departmentId} = req.params;
 
   try {
-    await DepartmentService.updateDepartment(departmentId, newProgram);
+    await DepartmentService.updateDepartment(departmentId, newDepartment);
     return res.status(200).json({message: 'Department update successful'});
   } catch (error) {
     const message = 'Failed to update department';
@@ -55,8 +55,8 @@ export const updateDepartment = async (req, res) => {
 export const getDepartments = async (req, res) => {
   const query = req.query;
   try {
-    const department = await DepartmentService.getDepartments(query.all);
-    return res.status(200).json({message: 'Department retrieve successful', data: department});
+    const department = await DepartmentService.getDepartments(query.all, req.query);
+    return res.status(200).json({message: 'Department retrieve successful', ...department});
   } catch (error) {
     const message = 'Failed to get departments';
     if (error instanceof NotFoundException || error instanceof UnauthorizedException) {

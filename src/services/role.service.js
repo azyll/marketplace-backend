@@ -1,6 +1,8 @@
 //@ts-check
+import {Op} from 'sequelize';
 import {DB} from '../database/index.js';
 import {AlreadyExistException} from '../exceptions/alreadyExist.js';
+import {NotFoundException} from '../exceptions/notFound.js';
 const {Role} = DB;
 export class RoleService {
   /**
@@ -22,16 +24,40 @@ export class RoleService {
   /**
    * Delete program
    * @throws {NotFoundException}
-   * @param {string} programId
+   * @param {string} roleId
    */
-  static async archiveRole(programId) {}
+  static async archiveRole(roleId) {
+    const role = await DB.Role.findByPk(roleId);
+    if (!role) throw new NotFoundException('Role not found');
+
+    return await role.destroy();
+  }
 
   /**
    * Get all program
    */
-  static async getRoles() {
-    const roles = await Role.findAll();
-    return roles;
+  static async getRoles(query) {
+    const page = Number(query?.page) || 1;
+    const limit = Number(query?.limit) || 10;
+    const whereClause = {};
+    if (query.search) {
+      const searchTerm = query.search.trim();
+
+      whereClause[Op.or] = [{name: {[Op.iLike]: `%${searchTerm}%`}}];
+    }
+    const roles = await Role.findAndCountAll({
+      where: whereClause,
+      offset: (page - 1) * limit,
+      limit
+    });
+    return {
+      data: roles.rows,
+      meta: {
+        currentPage: page,
+        itemsPerPage: limit,
+        totalItems: roles.count
+      }
+    };
   }
 
   /**
@@ -50,10 +76,15 @@ export class RoleService {
   /**
    * Update program
    * @param {string} programId
-   * @param {object} newProgram
+   * @param {object} newRole
    * @throws {NotFoundException}
    * @throws {AlreadyExistException}
    */
-  static async updateRole(programId, newProgram) {}
+  static async updateRole(programId, newRole) {
+    const role = await DB.Program.findByPk(programId);
+    if (!role) throw new NotFoundException('Role not found');
+
+    return await role.update(newRole);
+  }
 }
 

@@ -218,18 +218,28 @@ export class ProductService {
 
     // Direct department filter
     if (query.department) {
+      const isProware = query.department.toLowerCase() === 'proware';
+
+      const departmentNamesToFind = isProware ? ['Proware'] : [query.department, 'Proware'];
+
       const departments = await DB.Department.findAll({
         where: {
-          [Op.or]: [
-            {name: {[Op.eq]: query.department}},
-            {acronym: {[Op.eq]: query.department}},
-            {name: {[Op.eq]: 'Proware'}},
-            {acronym: {[Op.eq]: 'Proware'}}
-          ]
+          [Op.or]: [{name: {[Op.in]: departmentNamesToFind}}, {acronym: {[Op.in]: departmentNamesToFind}}]
         }
       });
 
-      if (departments.length < 2) {
+      // Create a map of department name/acronym to department info
+      const departmentMap = {};
+      departments.forEach((dep) => {
+        departmentMap[dep.name.toLowerCase()] = dep;
+        departmentMap[dep.acronym.toLowerCase()] = dep;
+      });
+
+      // Get the Proware department
+      const prowareDept = departmentMap['proware'];
+
+      // If not enough departments found (either Proware or requested one missing)
+      if (!isProware && (!prowareDept || !departmentMap[query.department.toLowerCase()])) {
         return {
           data: [],
           meta: {
@@ -239,24 +249,25 @@ export class ProductService {
           }
         };
       }
-      const departmentMap = {};
-      departments.forEach((dep) => {
-        const key = query.department?.length > 8 ? dep.name : dep.acronym;
-        departmentMap[key] = {id: dep.id, level: dep.level, acronym: dep.acronym};
-      });
-
-      const isProware = query.department === 'Proware';
-      const prowareId = departmentMap['Proware']?.id || departmentMap['proware']?.id;
 
       if (isProware) {
-        whereClause.departmentId = {[Op.eq]: prowareId};
+        if (!prowareDept) {
+          throw new Error("Department 'Proware' not found");
+        }
+
+        whereClause.departmentId = {[Op.eq]: prowareDept.id};
       } else {
-        const requestedId = departmentMap[query.department].id;
+        const requestedDept = departmentMap[query.department.toLowerCase()];
+        if (!requestedDept) {
+          throw new Error(`Department '${query.department}' not found`);
+        }
 
-        if (!requestedId) throw new Error(`Department '${query.department}' not found`);
-
-        whereClause.departmentId = {[Op.or]: [requestedId, prowareId]};
-        whereClause.level = {[Op.or]: [departmentMap[query.department].level, 'all']};
+        whereClause.departmentId = {
+          [Op.or]: [requestedDept.id, prowareDept.id]
+        };
+        whereClause.level = {
+          [Op.or]: [requestedDept.level, 'all']
+        };
       }
     }
 
@@ -379,13 +390,16 @@ export class ProductService {
 
     // Direct department filter
     if (query.department) {
-      const departments = await DB.Department.findOne({
+      const departmentNamesToFind = [query.department];
+
+      const departments = await DB.Department.findAll({
         where: {
-          [Op.or]: [{name: {[Op.eq]: query.department}}, {acronym: {[Op.eq]: query.department}}]
+          [Op.or]: [{name: {[Op.in]: departmentNamesToFind}}, {acronym: {[Op.in]: departmentNamesToFind}}]
         }
       });
 
-      if (!departments) {
+      // If not enough departments found (either Proware or requested one missing)
+      if (departments.length < 0) {
         return {
           data: [],
           meta: {
@@ -395,8 +409,13 @@ export class ProductService {
           }
         };
       }
-      whereClause.departmentId = departments.id;
-      whereClause.level = departments.level;
+
+      whereClause.departmentId = {
+        [Op.or]: [departments[0].id]
+      };
+      whereClause.level = {
+        [Op.or]: [departments[0].level]
+      };
     }
     if (
       query.stock_condition &&

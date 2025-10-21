@@ -34,28 +34,51 @@ export class DepartmentService {
    * @throws {NotFoundException}
    * @param {string} DepartmentId
    */
-  static async archiveDepartment(DepartmentId) {}
+  static async archiveDepartment(DepartmentId) {
+    const department = await DB.Department.findByPk(DepartmentId);
+    if (!department) throw new NotFoundException('Department not found');
+
+    return await department.destroy();
+  }
 
   /**
    * Get all Department
    */
-  static async getDepartments(all = false) {
+  static async getDepartments(all = false, query) {
     const where = {};
     if (!all) {
       where.name = {
         [Op.not]: 'Proware'
       };
     }
-    const Departments = await Department.findAll({
+    const page = Number(query?.page) || 1;
+    const limit = Number(query?.limit) || 10;
+
+    if (query.search) {
+      const searchTerm = query.search.trim();
+
+      where[Op.or] = [{name: {[Op.iLike]: `%${searchTerm}%`}}, {acronym: {[Op.iLike]: `%${searchTerm}%`}}];
+    }
+    const departments = await Department.findAndCountAll({
       include: [
         {
           model: DB.Program,
           as: 'program'
         }
       ],
-      where
+      distinct: true,
+      where,
+      offset: (page - 1) * limit,
+      limit
     });
-    return Departments;
+    return {
+      data: departments.rows,
+      meta: {
+        currentPage: page,
+        itemsPerPage: limit,
+        totalItems: departments.count
+      }
+    };
   }
 
   /**
@@ -65,7 +88,11 @@ export class DepartmentService {
    * @throws {NotFoundException}
    * @throws {AlreadyExistException}
    */
-  static async updateDepartment(DepartmentId, newDepartment) {}
+  static async updateDepartment(DepartmentId, newDepartment) {
+    const department = await DB.Department.findByPk(DepartmentId);
+    if (!department) throw new NotFoundException('Department not found');
+    return await department.update(newDepartment);
+  }
 
   /**
    * Get a single Department

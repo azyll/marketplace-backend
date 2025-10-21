@@ -17,7 +17,8 @@ router.post(
   '/',
   auth(['admin']),
   validate({
-    name: Joi.string().trim().required()
+    name: Joi.string().trim().required(),
+    acronym: Joi.string().trim().required()
   }),
   createDepartment
 );
@@ -26,8 +27,16 @@ router.get('/', getDepartments);
 // Get Department
 router.get('/:departmentId', auth(['admin', 'employee', 'student']), getDepartment);
 // Update Department
-router.put('/:departmentId', auth(['admin']), updateDepartment);
+router.put(
+  '/:departmentId',
+  auth(['admin']),
+  validate({
+    name: Joi.string().trim().required(),
+    acronym: Joi.string().trim().required()
+  }),
+  updateDepartment
+);
 // Archive Department
-router.delete('/departmentId', auth(['admin']), archiveDepartment);
+router.delete('/:departmentId', auth(['admin']), archiveDepartment);
 
 export default router;

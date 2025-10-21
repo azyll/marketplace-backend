@@ -91,8 +91,8 @@ export const updateProgram = async (req, res) => {
 
 export const getPrograms = async (req, res) => {
   try {
-    const program = await ProgramService.getPrograms();
-    return res.status(200).json({message: 'Program retrieve successfully', data: program});
+    const program = await ProgramService.getPrograms(req.query);
+    return res.status(200).json({message: 'Program retrieve successfully', ...program});
   } catch (error) {
     const message = 'Failed to get programs';
     if (

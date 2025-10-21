@@ -53,11 +53,11 @@ export const archiveRole = async (req, res) => {
  * @returns {Promise<import('express').Response>}
  */
 export const updateRoles = async (req, res) => {
-  const {newProgram} = req.body;
+  const {newRole} = req.body;
   const {programId} = req.params;
 
   try {
-    const program = await RoleService.updateRole(programId, newProgram);
+    const program = await RoleService.updateRole(programId, newRole);
     return res.status(200).json(program);
   } catch (error) {
     const message = 'Failed to update role';
@@ -81,8 +81,8 @@ export const updateRoles = async (req, res) => {
 
 export const getRoles = async (req, res) => {
   try {
-    const program = await RoleService.getRoles();
-    return res.status(200).json({message: 'success', data: program});
+    const program = await RoleService.getRoles(req.query);
+    return res.status(200).json({message: 'success', ...program});
   } catch (error) {
     const message = 'Failed to get roles';
     if (

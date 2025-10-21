@@ -12,7 +12,8 @@ router.post(
   auth(['admin', 'employee', 'student']),
   validate({
     name: Joi.string().trim().required(),
-    departmentId: Joi.string().uuid().trim().required()
+    departmentId: Joi.string().uuid().trim().required(),
+    acronym: Joi.string().trim().required()
   }),
   createProgram
 );
@@ -21,9 +22,18 @@ router.post(
 router.get('/', getPrograms);
 
 // Update Program
-router.put('/', auth(['admin', 'employee', 'student']), updateProgram);
+router.put(
+  '/',
+  auth(['admin', 'employee', 'student']),
+  validate({
+    name: Joi.string().trim().required(),
+    departmentId: Joi.string().uuid().trim().required(),
+    acronym: Joi.string().trim().required()
+  }),
+  updateProgram
+);
 
 // Delete Program
-router.delete('/', auth(['admin', 'employee', 'student']), archiveProgram);
+router.delete('/:programId', auth(['admin', 'employee', 'student']), archiveProgram);
 
 export default router;

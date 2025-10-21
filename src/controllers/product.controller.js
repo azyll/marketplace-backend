@@ -318,14 +318,13 @@ export const createProductAttribute = async (req, res) => {
 export const getCreateProductData = async (req, res) => {
   try {
     const productAttribute = await ProductService.getAttributes();
-    const departments = await DepartmentService.getDepartments(true);
+    const departments = await DepartmentService.getDepartments(true, req.query);
 
     return res.status(200).json({
       message: 'Product creation retrieve successfully',
-      data: {
-        productAttribute,
-        departments
-      }
+
+      productAttribute,
+      departments
     });
   } catch (error) {
     return res.status(404).json({message: 'error', error: error.message});

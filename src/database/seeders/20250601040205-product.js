@@ -14,7 +14,7 @@ import {hmSeeders} from '../../utils/seeder-helper/hm-helper.js';
 import {bmSeeders} from '../../utils/seeder-helper/bm-helper.js';
 import {tmSeeders} from '../../utils/seeder-helper/tm-helper.js';
 import {bacommSeeders} from '../../utils/seeder-helper/bacomm-helper.js';
-import { calculateStockCondition } from '../../utils/stock-helper.js';
+import {calculateStockCondition} from '../../utils/stock-helper.js';
 
 export async function up(queryInterface, Sequelize) {
   const createdAt = new Date(2025, 5, 5);
@@ -69,7 +69,7 @@ export async function up(queryInterface, Sequelize) {
 
   await DB.Product.create(
     {
-      name: '(Business & Management) Student Pin',
+      name: 'Business and Management Student Pin',
       description: 'Business & Management. STI Students',
       image: 'bm-pin.jpg',
       level: 'all',
@@ -103,7 +103,7 @@ export async function up(queryInterface, Sequelize) {
 
   await DB.Product.create(
     {
-      name: '(Tourism) Student Pin',
+      name: 'Tourism Student Pin',
       description: 'Tourism. STI Students',
       image: 'tourism.jpg',
       level: 'all',
@@ -137,7 +137,7 @@ export async function up(queryInterface, Sequelize) {
 
   await DB.Product.create(
     {
-      name: '(Culinary) Student Pin',
+      name: 'Culinary Student Pin',
       description: 'Culinary. STI Students',
       image: 'hm-pin.jpg',
       level: 'all',
@@ -170,7 +170,7 @@ export async function up(queryInterface, Sequelize) {
   );
   await DB.Product.create(
     {
-      name: '(Information Technology) Student Pin',
+      name: 'Information Technology Student Pin',
       description: 'Information Technology. STI Students',
       image: 'ict-pin.jpg',
       level: 'all',
@@ -203,7 +203,7 @@ export async function up(queryInterface, Sequelize) {
   );
   await DB.Product.create(
     {
-      name: '(Engineering) Student Pin',
+      name: 'Engineering Student Pin',
       description: 'Engineering. STI Students',
       image: 'engineering.jpg',
       level: 'all',
@@ -236,7 +236,7 @@ export async function up(queryInterface, Sequelize) {
   );
   await DB.Product.create(
     {
-      name: '(Arts & Sciences) Student Pin',
+      name: 'Arts and Sciences Student Pin',
       description: 'Arts & Sciences. STI Students',
       image: 'arts-and-sciences-pin.jpg',
       level: 'all',
@@ -303,7 +303,7 @@ export async function up(queryInterface, Sequelize) {
 
   await DB.Product.create(
     {
-      name: 'ID Lace & Case Holder',
+      name: 'ID Lace and Case Holder',
       description: 'ID Lace & Case Holder',
       image: 'ict.jpg',
       level: 'all',
@@ -380,7 +380,7 @@ export async function up(queryInterface, Sequelize) {
   );
   await DB.Product.create(
     {
-      name: 'Exam Pen (Box:10 pcs)',
+      name: 'Exam Pen Box 10 pcs',
       description: 'ID Lace & Case Holder',
       image: 'exam-pen.jpg',
       level: 'all',
@@ -608,7 +608,7 @@ export async function up(queryInterface, Sequelize) {
 
   await DB.Product.create(
     {
-      name: '(42nd) STI Anniversary TShirt',
+      name: '42nd STI Anniversary TShirt',
       description: '2025 STI Anniversary T-Shirt',
       image: '42-sti-anniv-shirt.jpg',
       type: 'upper-wear',
@@ -754,7 +754,7 @@ export async function up(queryInterface, Sequelize) {
 
   await DB.Product.create(
     {
-      name: '(41st) STI Anniversary TShirt',
+      name: '41st STI Anniversary TShirt',
       description: '2024 STI Anniversary T-Shirt',
       image: 'anniv-shirt-2024.jpg',
       type: 'upper-wear',

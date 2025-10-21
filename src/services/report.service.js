@@ -311,16 +311,11 @@ export class ReportService {
     if (query.department) {
       const departments = await DB.Department.findAll({
         where: {
-          [Op.or]: [
-            {name: {[Op.eq]: query.department}},
-            {acronym: {[Op.eq]: query.department}},
-            {name: {[Op.eq]: 'Proware'}},
-            {acronym: {[Op.eq]: 'Proware'}}
-          ]
+          [Op.or]: [{name: {[Op.eq]: query.department}}, {acronym: {[Op.eq]: query.department}}]
         }
       });
 
-      if (departments.length < 2) {
+      if (departments.length < 0) {
         return {
           data: [],
           meta: {

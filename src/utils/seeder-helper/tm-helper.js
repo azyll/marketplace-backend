@@ -90,7 +90,7 @@ export async function tmSeeders() {
   );
   await DB.Product.create(
     {
-      name: 'Tourism Management Daily Pin',
+      name: 'Tourism Management Enamel Pin',
       description: 'Tourism Management Pin. For Tertiary (BSTM)',
       image: 'tm.jpg',
       level: 'tertiary',
