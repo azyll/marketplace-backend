@@ -15,9 +15,9 @@ import {defaultErrorMessage} from '../utils/error-message.js';
  * @returns {Promise<import('express').Response>}
  */
 export const createProgram = async (req, res) => {
-  const {name, departmentId} = req.body;
+  const {name, departmentId, acronym} = req.body;
   try {
-    await ProgramService.createProgram(name, departmentId);
+    await ProgramService.createProgram(name, acronym, departmentId);
     return res.status(200).json({message: 'Program create successfully'});
   } catch (error) {
     const message = 'Failed to create program';
@@ -63,11 +63,10 @@ export const archiveProgram = async (req, res) => {
  * @returns {Promise<import('express').Response>}
  */
 export const updateProgram = async (req, res) => {
-  const {newProgram} = req.body;
   const {programId} = req.params;
 
   try {
-    await ProgramService.updateProgram(programId, newProgram);
+    await ProgramService.updateProgram(programId, req.body);
     return res.status(200).json({message: 'Program update successfully'});
   } catch (error) {
     const message = 'Failed to update program';
@@ -93,6 +92,30 @@ export const getPrograms = async (req, res) => {
   try {
     const program = await ProgramService.getPrograms(req.query);
     return res.status(200).json({message: 'Program retrieve successfully', ...program});
+  } catch (error) {
+    const message = 'Failed to get programs';
+    if (
+      error instanceof NotFoundException ||
+      error instanceof AlreadyExistException ||
+      error instanceof UnauthorizedException
+    ) {
+      return res.status(error.statusCode).json({message, error: error.message});
+    }
+    return res.status(400).json({message, error: error.message || defaultErrorMessage});
+  }
+};
+/**
+ * Get program
+ * @param {import('express').Request<{},{},{},QueryParams>} req
+ * @param {import('express').Response} res
+ * @returns {Promise<import('express').Response>}
+ */
+
+export const getProgram = async (req, res) => {
+  const {programId} = req.params;
+  try {
+    const program = await ProgramService.getProgram(programId);
+    return res.status(200).json(program);
   } catch (error) {
     const message = 'Failed to get programs';
     if (

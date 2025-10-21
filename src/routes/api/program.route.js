@@ -1,6 +1,12 @@
 import {Router} from 'express';
 import {Joi} from 'sequelize-joi';
-import {archiveProgram, createProgram, getPrograms, updateProgram} from '../../controllers/program.controller.js';
+import {
+  archiveProgram,
+  createProgram,
+  getProgram,
+  getPrograms,
+  updateProgram
+} from '../../controllers/program.controller.js';
 import {auth} from '../../middleware/auth.js';
 import {validate} from '../../middleware/validation.js';
 
@@ -20,10 +26,11 @@ router.post(
 
 // Get Program
 router.get('/', getPrograms);
+router.get('/:programId', getProgram);
 
 // Update Program
 router.put(
-  '/',
+  '/:programId',
   auth(['admin', 'employee', 'student']),
   validate({
     name: Joi.string().trim().required(),

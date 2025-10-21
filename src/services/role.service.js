@@ -48,7 +48,8 @@ export class RoleService {
     const roles = await Role.findAndCountAll({
       where: whereClause,
       offset: (page - 1) * limit,
-      limit
+      limit,
+      order: [['name', 'ASC']]
     });
     return {
       data: roles.rows,

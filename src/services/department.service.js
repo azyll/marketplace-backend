@@ -12,14 +12,16 @@ const {Department} = DB;
 export class DepartmentService {
   /**
    * Create Department
-   * @param {string} name - Department name
+   * @param {{name:string,acronym:string}} body - Department name
    * @returns {Promise<Department>} data from the database
    * @throws {AlreadyExistException} if the Department is already exists
    */
-  static async createDepartment(name) {
+  static async createDepartment({name, acronym}) {
     const [department, isJustCreated] = await Department.findOrCreate({
-      where: {name},
-      defaults: {name}
+      where: {
+        [Op.or]: [{name: name.trim()}, {acronym: acronym.trim()}]
+      },
+      defaults: {name: name.trim(), acronym: acronym.trim()}
     });
 
     if (!isJustCreated) {
@@ -46,11 +48,7 @@ export class DepartmentService {
    */
   static async getDepartments(all = false, query) {
     const where = {};
-    if (!all) {
-      where.name = {
-        [Op.not]: 'Proware'
-      };
-    }
+
     const page = Number(query?.page) || 1;
     const limit = Number(query?.limit) || 10;
 
@@ -68,8 +66,10 @@ export class DepartmentService {
       ],
       distinct: true,
       where,
+      paranoid: !all,
       offset: (page - 1) * limit,
-      limit
+      limit,
+      order: [['name', 'ASC']]
     });
     return {
       data: departments.rows,

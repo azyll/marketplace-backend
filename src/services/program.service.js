@@ -14,17 +14,22 @@ export class ProgramService {
   /**
    * Create program
    * @param {string} name - program name
+   * @param {string} acronym - program acronym
    * @param {string} departmentId - department Id
    * @returns {Promise<Program>} data from the database
    * @throws {AlreadyExistException} if the program is already exists
    */
-  static async createProgram(name, departmentId) {
+  static async createProgram(name, acronym, departmentId) {
     const department = await Department.findByPk(departmentId);
     if (!department) throw new NotFoundException('Department not found', 404);
     const [program, isJustCreated] = await Program.findOrCreate({
-      where: {name},
+      where: {
+        [Op.or]: [{name}, {acronym}]
+      },
       defaults: {
-        departmentId
+        departmentId,
+        name,
+        acronym
       }
     });
 
@@ -96,7 +101,8 @@ export class ProgramService {
       distinct: true,
       where: whereClause,
       offset: (page - 1) * limit,
-      limit
+      limit,
+      order: [['name', 'ASC']]
     });
     return {
       data: programs.rows,
@@ -118,8 +124,8 @@ export class ProgramService {
   static async updateProgram(programId, newProgram) {
     const program = await DB.Program.findByPk(programId);
     if (!program) throw new NotFoundException('Program not found');
-
-    return await program.update(newProgram)
+    console.log(newProgram);
+    return await program.update(newProgram);
   }
 
   /**
@@ -127,5 +133,10 @@ export class ProgramService {
    * @param {string} programId
    * @throws {NotFoundException}
    */
-  static async getProgram(programId) {}
+  static async getProgram(programId) {
+    const program = await DB.Program.findByPk(programId);
+    if (!program) throw new NotFoundException('Program not found');
+
+    return program;
+  }
 }

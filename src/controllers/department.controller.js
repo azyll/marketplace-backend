@@ -5,9 +5,8 @@ import {DepartmentService} from '../services/department.service.js';
 import {defaultErrorMessage} from '../utils/error-message.js';
 
 export const createDepartment = async (req, res) => {
-  const {name} = req.body;
   try {
-    await DepartmentService.createDepartment(name);
+    await DepartmentService.createDepartment(req.body);
     return res.status(200).json({message: 'Department creation successful'});
   } catch (error) {
     const message = 'Failed to create department';
@@ -33,11 +32,10 @@ export const archiveDepartment = async (req, res) => {
 };
 
 export const updateDepartment = async (req, res) => {
-  const {newDepartment} = req.body;
   const {departmentId} = req.params;
 
   try {
-    await DepartmentService.updateDepartment(departmentId, newDepartment);
+    await DepartmentService.updateDepartment(departmentId, req.body);
     return res.status(200).json({message: 'Department update successful'});
   } catch (error) {
     const message = 'Failed to update department';
@@ -69,7 +67,7 @@ export const getDepartment = async (req, res) => {
   const {departmentId} = req.params;
   try {
     const department = await DepartmentService.getDepartment(departmentId);
-    return res.status(200).json({message: 'Department retrieve successful', data: department});
+    return res.status(200).json(department);
   } catch (error) {
     const message = 'Failed to get departments';
     if (error instanceof NotFoundException || error instanceof UnauthorizedException) {
