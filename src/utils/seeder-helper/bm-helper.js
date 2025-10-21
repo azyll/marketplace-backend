@@ -8,7 +8,7 @@ export async function bmSeeders() {
 
   await DB.Product.create(
     {
-      name: 'Business & Management Daily Pants',
+      name: 'Business and Management Daily Pants',
       description: 'Business & Management Daily Pants Uniform. For Tertiary (BSBA)',
       image: 'bm.jpg',
       type: 'lower-wear',
@@ -153,7 +153,7 @@ export async function bmSeeders() {
 
   await DB.Product.create(
     {
-      name: 'Business & Management Daily Skirt',
+      name: 'Business and Management Daily Skirt',
       description: 'Business & Management Daily Skirt Uniform. For Tertiary (BSBA)',
       image: 'bm.jpg',
       level: 'tertiary',
@@ -237,7 +237,7 @@ export async function bmSeeders() {
 
   await DB.Product.create(
     {
-      name: 'Business & Management Daily Polo',
+      name: 'Business and Management Daily Polo',
       description: 'Business & Management Daily Long Sleeve Polo Uniform Male. For Tertiary (BSBA)',
       image: 'bm.jpg',
       type: 'upper-wear',
@@ -320,7 +320,7 @@ export async function bmSeeders() {
   );
   await DB.Product.create(
     {
-      name: 'Business & Management Daily Blouse',
+      name: 'Business and Management Daily Blouse',
       description: 'Business & Management Daily Long Sleeve Blouse Uniform Female. For Tertiary (BSBA)',
       image: 'bm.jpg',
       level: 'tertiary',
@@ -404,7 +404,7 @@ export async function bmSeeders() {
 
   await DB.Product.create(
     {
-      name: 'Business & Management Daily Blazer',
+      name: 'Business and Management Daily Blazer',
       description: 'Business & Management Daily Blazer Uniform. For Tertiary (BSBA)',
       image: 'bm.jpg',
       level: 'tertiary',
@@ -549,7 +549,7 @@ export async function bmSeeders() {
 
   await DB.Product.create(
     {
-      name: 'Business & Management Daily Scarf',
+      name: 'Business and Management Daily Scarf',
       description: 'Business & Management Daily Red Scarf Uniform. For Tertiary (BSBA)',
       image: 'bm.jpg',
       level: 'tertiary',
@@ -583,7 +583,7 @@ export async function bmSeeders() {
 
   await DB.Product.create(
     {
-      name: 'Business & Management Daily Necktie',
+      name: 'Business and Management Daily Necktie',
       description: 'Business & Management Daily Red Necktie Uniform. For Tertiary (BSBA)',
       image: 'bm.jpg',
       type: 'upper-wear',
