@@ -36,7 +36,7 @@ export const createLog = async (req, res) => {
 export const getLogs = async (req, res) => {
   try {
     const logs = await ActivityLogService.getLogs(req.query);
-    return res.status(200).json({message: 'Log retrieve successfully', data: logs});
+    return res.status(200).json({message: 'Log retrieve successfully', ...logs});
   } catch (error) {
     const message = 'Failed to get activity logs';
     if (error instanceof NotFoundException || error instanceof UnauthorizedException) {

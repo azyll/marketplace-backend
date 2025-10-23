@@ -65,12 +65,27 @@ export class OrderService {
       include: [
         {
           model: Student,
-          as: 'student'
+          as: 'student',
+          include: [
+            {
+              model: Program,
+              as: 'program',
+              include: [
+                {
+                  model: DB.Department,
+                  as: 'department'
+                }
+              ]
+            }
+          ]
         }
       ]
     });
     //If student not found
     if (!user) throw new NotFoundException('Student not found', 404);
+    if (!user.student) throw new NotFoundException('Student not found', 404);
+    if (!user.student.program) throw new NotFoundException('Student program not found', 404);
+    if (!user.student.program.department) throw new NotFoundException('Student department program not found', 404);
 
     const genderAttribute = await ProductAttribute.findOne({
       where: {
@@ -236,6 +251,16 @@ export class OrderService {
         {
           model: DB.User,
           as: 'user'
+        },
+        {
+          model: Program,
+          as: 'program',
+          include: [
+            {
+              model: DB.Department,
+              as: 'department'
+            }
+          ]
         }
       ]
     });
@@ -268,6 +293,10 @@ export class OrderService {
         sex: studentRecord.sex
       });
     }
+
+    if (!student) throw new NotFoundException('Student not found', 404);
+    if (!student.program) throw new NotFoundException('Student program not found', 404);
+    if (!student.program.department) throw new NotFoundException('Student department program not found', 404);
 
     // For Proware Office Closed Hours
     // const now = new Date();
@@ -741,6 +770,39 @@ export class OrderService {
             userId: null
           }
         );
+        for (const orderItem of order.orderItems) {
+          const variant = await ProductVariant.findByPk(orderItem.productVariantId, {
+            transaction,
+            include: [
+              {
+                model: Product,
+                as: 'product'
+              }
+            ]
+          });
+          if (!variant) throw new NotFoundException('Product not found', 404);
+          let notificationTitle = '';
+          let notificationMessage = '';
+
+          switch (variant.stockCondition) {
+            case 'out-of-stock':
+              notificationTitle = 'Product Out of Stock';
+              notificationMessage = `Unfortunately, "${variant.product.name}" (${variant.name}, ${variant.size}) is now out of stock. Stay tuned for restocks!`;
+              break;
+
+            case 'low-stock':
+              notificationTitle = 'Low Stock Alert';
+              notificationMessage = `Hurry! "${variant.product.name}" (${variant.name}, ${variant.size}) is running low. Only ${variant.stockQuantity} left! Grab it before it’s gone.`;
+              break;
+          }
+          if (variant.stockCondition === 'out-of-stock' || variant.stockCondition === 'low-stock') {
+            await NotificationService.createNotificationForInventoryStockUpdate(
+              notificationTitle,
+              notificationMessage,
+              variant.id
+            );
+          }
+        }
       }
       if (newStatus === 'cancelled') {
         //TODO: Failed Revert stocks

@@ -27,7 +27,7 @@ export class ActivityLogService {
   /**
    *
    * @param { QueryParams&{
-   * type?: 'user'| 'system'| 'inventory'| 'sales'| 'order'
+   * type?: 'user'| 'system'| 'inventory'| 'sales'| 'order',search:string
    *   }} query Query
    *
    * @returns
@@ -38,7 +38,11 @@ export class ActivityLogService {
     // ✅ Define allowed enum values
     const where = {};
     const validTypes = ['user', 'system', 'inventory', 'sales', 'order'];
+    if (query.search) {
+      const searchTerm = query.search.trim();
 
+      where[Op.or] = [{title: {[Op.iLike]: `%${searchTerm}%`}}, {content: {[Op.iLike]: `%${searchTerm}%`}}];
+    }
     if (query.type) {
       if (validTypes.includes(query.type)) {
         where.type = query.type;
@@ -53,6 +57,7 @@ export class ActivityLogService {
         };
       }
     }
+
     const {count, rows} = await DB.ActivityLog.findAndCountAll({
       order: [['createdAt', 'DESC']],
       offset: (page - 1) * limit,

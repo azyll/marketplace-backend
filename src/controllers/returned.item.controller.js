@@ -39,6 +39,24 @@ export const restoreReturnedItems = async (req, res) => {
   }
 };
 
+export const archiveReturnItem = async (req, res) => {
+  const {returnItemId} = req.params;
+  try {
+    await ReturnedItemService.archiveReturnItem(returnItemId);
+    return res.status(200).json({message: 'Program deleted successfully'});
+  } catch (error) {
+    const message = 'Failed to delete program';
+    if (
+      error instanceof NotFoundException ||
+      error instanceof AlreadyExistException ||
+      error instanceof UnauthorizedException
+    ) {
+      return res.status(error.statusCode).json({message, error: error.message});
+    }
+    return res.status(400).json({message, error: error.message || defaultErrorMessage});
+  }
+};
+
 export const updateReturnItemQuantity = async (req, res) => {
   const {returnId} = req.params;
   const {quantity} = req.body;
@@ -62,7 +80,7 @@ export const updateReturnItemQuantity = async (req, res) => {
 export const getReturnItems = async (req, res) => {
   try {
     const program = await ReturnedItemService.getReturnedItems(req.query);
-    return res.status(200).json({message: 'Program retrieve successfully', data: program});
+    return res.status(200).json({message: 'Program retrieve successfully', ...program});
   } catch (error) {
     const message = 'Failed to get programs';
     if (

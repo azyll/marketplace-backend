@@ -5,6 +5,7 @@ import {
   createProgram,
   getProgram,
   getPrograms,
+  restoreProgram,
   updateProgram
 } from '../../controllers/program.controller.js';
 import {auth} from '../../middleware/auth.js';
@@ -28,6 +29,8 @@ router.post(
 router.get('/', getPrograms);
 router.get('/:programId', getProgram);
 
+router.put('/:programId/restore', auth(['admin', 'employee', 'student']), restoreProgram);
+
 // Update Program
 router.put(
   '/:programId',
@@ -39,6 +42,7 @@ router.put(
   }),
   updateProgram
 );
+
 
 // Delete Program
 router.delete('/:programId', auth(['admin', 'employee', 'student']), archiveProgram);

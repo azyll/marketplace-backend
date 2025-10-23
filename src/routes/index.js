@@ -32,7 +32,7 @@ router.use('/dashboard', DashboardRoute);
 router.use('/sales', SalesRoute);
 router.use('/notification', NotificationRoute);
 router.use('/role', RoleRoute);
-router.use('/log', LogRoute);
+router.use('/activity-log', LogRoute);
 router.use('/return-item', ReturnItemRoute);
 router.use('/report', ReportRoute);
 router.use('/announcement', CarouselAnnouncementRoute);

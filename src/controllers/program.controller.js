@@ -128,3 +128,20 @@ export const getProgram = async (req, res) => {
     return res.status(400).json({message, error: error.message || defaultErrorMessage});
   }
 };
+
+/**
+ *  Restore product
+ * @param {import('express').Request} req
+ * @param {import('express').Response} res
+ * @returns {Promise<import('express').Response>}
+ */
+export const restoreProgram = async (req, res) => {
+  const {programId} = req.params;
+
+  try {
+    await ProgramService.restoreProgram(programId);
+    return res.status(200).json({message: 'Product update successfully'});
+  } catch (error) {
+    return res.status(404).json({message: 'Failed to restore product', error: error.message || defaultErrorMessage});
+  }
+};

@@ -53,7 +53,7 @@ export const updateDepartment = async (req, res) => {
 export const getDepartments = async (req, res) => {
   const query = req.query;
   try {
-    const department = await DepartmentService.getDepartments(query.all, req.query);
+    const department = await DepartmentService.getDepartments(req.query);
     return res.status(200).json({message: 'Department retrieve successful', ...department});
   } catch (error) {
     const message = 'Failed to get departments';
@@ -74,5 +74,23 @@ export const getDepartment = async (req, res) => {
       return res.status(error.statusCode).json({message, error: error.message});
     }
     return res.status(400).json({message, error: error.message || defaultErrorMessage});
+  }
+};
+
+
+/**
+ *  Restore product
+ * @param {import('express').Request} req
+ * @param {import('express').Response} res
+ * @returns {Promise<import('express').Response>}
+ */
+export const restoreDepartment = async (req, res) => {
+  const {departmentId} = req.params;
+
+  try {
+    await DepartmentService.restoreDepartment(departmentId);
+    return res.status(200).json({message: 'Product update successfully'});
+  } catch (error) {
+    return res.status(404).json({message: 'Failed to restore product', error: error.message || defaultErrorMessage});
   }
 };

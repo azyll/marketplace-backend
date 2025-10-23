@@ -57,6 +57,20 @@ export class ProgramService {
   }
 
   /**
+   * Delete program
+   * @throws {NotFoundException}
+   * @param {string} programId
+   */
+  static async restoreProgram(programId) {
+    const program = await DB.Program.findByPk(programId, {
+      paranoid: false
+    });
+    if (!program) throw new NotFoundException('Program not found');
+
+    return await program.restore();
+  }
+
+  /**
    * Get all program
 
    */
@@ -96,10 +110,28 @@ export class ProgramService {
       };
     }
 
+    let isAll = false;
+
+    if (query.all === 'true') {
+      isAll = true;
+    } else if (query.all === 'false') {
+      isAll = false;
+    }
+    if (query.status === 'archived') {
+      whereClause.deletedAt = {
+        [Op.not]: null
+      };
+    } else if (query.status === 'active') {
+      whereClause.deletedAt = {
+        [Op.is]: null
+      };
+    }
+
     const programs = await Program.findAndCountAll({
       include: [{model: Department, as: 'department', paranoid: false}],
       distinct: true,
       where: whereClause,
+      paranoid: !isAll,
       offset: (page - 1) * limit,
       limit,
       order: [['name', 'ASC']]
@@ -124,7 +156,7 @@ export class ProgramService {
   static async updateProgram(programId, newProgram) {
     const program = await DB.Program.findByPk(programId);
     if (!program) throw new NotFoundException('Program not found');
-    console.log(newProgram);
+
     return await program.update(newProgram);
   }
 
@@ -134,7 +166,9 @@ export class ProgramService {
    * @throws {NotFoundException}
    */
   static async getProgram(programId) {
-    const program = await DB.Program.findByPk(programId);
+    const program = await DB.Program.findByPk(programId, {
+      paranoid: false
+    });
     if (!program) throw new NotFoundException('Program not found');
 
     return program;

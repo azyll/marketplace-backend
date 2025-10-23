@@ -5,7 +5,8 @@ import {
   archiveDepartment,
   getDepartments,
   updateDepartment,
-  getDepartment
+  getDepartment,
+  restoreDepartment
 } from '../../controllers/department.controller.js';
 import {auth} from '../../middleware/auth.js';
 import {validate} from '../../middleware/validation.js';
@@ -27,6 +28,9 @@ router.get('/', getDepartments);
 // Get Department
 router.get('/:departmentId', auth(['admin', 'employee', 'student']), getDepartment);
 // Update Department
+
+router.put('/:departmentId/restore', auth(['admin', 'employee', 'student']), restoreDepartment);
+
 router.put(
   '/:departmentId',
   auth(['admin']),

@@ -1,4 +1,5 @@
 import {
+  archiveReturnItem,
   createReturnItem,
   getReturnItems,
   restoreReturnedItems,
@@ -16,6 +17,7 @@ router.get(
 
   getReturnItems
 );
+router.delete('/:returnItemId', auth(['admin', 'employee']), archiveReturnItem);
 router.post(
   '/',
   auth(['admin', 'employee']),

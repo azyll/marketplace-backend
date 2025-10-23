@@ -10,6 +10,30 @@ import {cast, col, Op, Sequelize} from 'sequelize';
 export class ReturnedItemService {
   static async createReturnedItem({productVariant: productVariantId, reason, quantity = 1}) {
     return await sequelize.transaction(async (transaction) => {
+      const findReturnItem = await DB.ReturnedItems.findOne({
+        transaction,
+        where: {
+          productVariantId,
+          reason
+        },
+        include: [
+          {
+            model: DB.ProductVariant,
+            as: 'productVariant',
+            include: [
+              {
+                model: DB.Product,
+                as: 'product'
+              }
+            ]
+          }
+        ]
+      });
+      if (findReturnItem) {
+        throw new Error(
+          'You have a return item with the item and same reason, Just update the quantity of the return item'
+        );
+      }
       const productVariant = await DB.ProductVariant.findByPk(productVariantId, {
         transaction,
         include: [
@@ -31,7 +55,11 @@ export class ReturnedItemService {
       );
       const newStockAvailable = productVariant.stockAvailable - quantity;
 
-      if (newStockAvailable < 0) throw new Error(`We only have ${productVariant.stockAvailable} stock available left`);
+      if (newStockAvailable < 0) {
+        throw new Error(
+          `We only have ${productVariant.stockAvailable} stock available left, ${productVariant.stockReserved} stocks are reserved.`
+        );
+      }
 
       productVariant.stockQuantity = newStockAvailable + Number(productVariant.stockReserved);
       productVariant.stockCondition = calculateStockCondition(newStockAvailable);
@@ -42,6 +70,27 @@ export class ReturnedItemService {
         `Reason: ${reason}. Available stock was reduced by ${quantity} for the following variant: ${productVariant.product.name} - ${productVariant.name} (${productVariant.size}).`,
         'inventory'
       );
+    });
+  }
+  static async archiveReturnItem(returnedItemId) {
+    return await sequelize.transaction(async (transaction) => {
+      const returnedItem = await DB.ReturnedItems.findByPk(returnedItemId, {
+        transaction,
+        include: [
+          {
+            model: DB.ProductVariant,
+            as: 'productVariant',
+            include: [
+              {
+                model: DB.Product,
+                as: 'product'
+              }
+            ]
+          }
+        ]
+      });
+      if (!returnedItem) throw new NotFoundException('Returned Item not found');
+      return await returnedItem.destroy({transaction});
     });
   }
   static async updateReturnedItemQuantity(returnedItemId, quantity) {
@@ -198,12 +247,13 @@ export class ReturnedItemService {
     const page = Number(query.page ?? 1);
     const limit = Number(query.limit ?? 10);
     let where = {};
-    if (query.q) {
-      const search = query.q.trim();
+    if (query.search) {
+      const search = query.search.trim();
       where[Op.or] = [
         // Match student's first or last name (through associated User)
         {reason: {[Op.iLike]: `%${search}%`}},
-        {'$productVariant.product.name$': {[Op.iLike]: `%${search}%`}}
+        {'$productVariant.product.name$': {[Op.iLike]: `%${search}%`}},
+        {'$productVariant.name$': {[Op.iLike]: `%${search}%`}}
       ];
     }
     if (query?.category) {
@@ -274,37 +324,48 @@ export class ReturnedItemService {
         Sequelize.where(Sequelize.col('productVariant.product.level'), departments.level)
       ];
     }
+
+    if (query.status === 'archived') {
+      where.deletedAt = {
+        [Op.not]: null
+      };
+    } else if (query.status === 'active') {
+      where.deletedAt = {
+        [Op.is]: null
+      };
+    }
     const {count, rows} = await DB.ReturnedItems.findAndCountAll({
       where,
+      paranoid: false,
       include: [
         {
           model: DB.ProductVariant,
           as: 'productVariant',
+          paranoid: false,
           include: [
             {
               model: DB.Product,
               as: 'product',
+              paranoid: false,
               include: [
                 {
                   model: DB.Department,
-                  as: 'department'
+                  as: 'department',
+                  paranoid: false
                 }
               ]
             },
             {
               model: DB.ProductAttribute,
-              as: 'productAttribute'
+              as: 'productAttribute',
+              paranoid: false
             }
           ]
         }
       ],
       limit,
       offset: (page - 1) * limit,
-      order: [
-        ['productVariant', 'product', 'name', 'ASC'],
-        ['productVariant', 'name', 'ASC'],
-        ['productVariant', 'size', 'ASC']
-      ]
+      order: [['createdAt', 'DESC']]
     });
     return {
       data: rows,

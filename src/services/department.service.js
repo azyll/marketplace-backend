@@ -46,7 +46,7 @@ export class DepartmentService {
   /**
    * Get all Department
    */
-  static async getDepartments(all = false, query) {
+  static async getDepartments(query) {
     const where = {};
 
     const page = Number(query?.page) || 1;
@@ -57,6 +57,24 @@ export class DepartmentService {
 
       where[Op.or] = [{name: {[Op.iLike]: `%${searchTerm}%`}}, {acronym: {[Op.iLike]: `%${searchTerm}%`}}];
     }
+
+    let isAll = false;
+
+    if (query.all === 'true') {
+      isAll = true;
+    } else if (query.all === 'false') {
+      isAll = false;
+    }
+    if (query.status === 'archived') {
+      where.deletedAt = {
+        [Op.not]: null
+      };
+    } else if (query.status === 'active') {
+      where.deletedAt = {
+        [Op.is]: null
+      };
+    }
+
     const departments = await Department.findAndCountAll({
       include: [
         {
@@ -66,7 +84,7 @@ export class DepartmentService {
       ],
       distinct: true,
       where,
-      paranoid: !all,
+      paranoid: !isAll,
       offset: (page - 1) * limit,
       limit,
       order: [['name', 'ASC']]
@@ -101,6 +119,7 @@ export class DepartmentService {
    */
   static async getDepartment(DepartmentId) {
     const department = await Department.findByPk(DepartmentId, {
+      paranoid: false,
       include: [
         {
           model: DB.Program,
@@ -109,5 +128,19 @@ export class DepartmentService {
       ]
     });
     return department;
+  }
+
+  /**
+   * Delete program
+   * @throws {NotFoundException}
+   * @param {string} departmentId
+   */
+  static async restoreDepartment(departmentId) {
+    const department = await DB.Department.findByPk(departmentId, {
+      paranoid: false
+    });
+    if (!department) throw new NotFoundException('Department not found');
+
+    return await department.restore();
   }
 }

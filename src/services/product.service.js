@@ -326,6 +326,8 @@ export class ProductService {
    *      paranoid:boolean,
    *      stock_condition:'out-of-stock'|'low-stock'|'in-stock',
    * sort:'DESC'|'ASC'
+   * all:'false'|'true',
+   * status:'archived' |'active'
    *   }} query Query
    *
    *
@@ -432,6 +434,22 @@ export class ProductService {
         }
       };
     }
+    let isAll = false;
+
+    if (query.all === 'true') {
+      isAll = true;
+    } else if (query.all === 'false') {
+      isAll = false;
+    }
+    if (query.status === 'archived') {
+      whereClause.deletedAt = {
+        [Op.not]: null
+      };
+    } else if (query.status === 'active') {
+      whereClause.deletedAt = {
+        [Op.is]: null
+      };
+    }
 
     const {count, rows: inventoryData} = await Product.findAndCountAll({
       where: whereClause,
@@ -454,6 +472,7 @@ export class ProductService {
         }
       ],
       distinct: true,
+      paranoid: !isAll,
       raw: false,
       nest: false,
       order: [
