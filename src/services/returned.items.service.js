@@ -23,7 +23,8 @@ export class ReturnedItemService {
             include: [
               {
                 model: DB.Product,
-                as: 'product'
+                as: 'product',
+                include: [{model: DB.Product, as: 'product'}]
               }
             ]
           }
@@ -101,6 +102,16 @@ export class ReturnedItemService {
         notificationMessage,
         productVariant.id
       );
+      await NotificationService.createNotification(
+        notificationTitle,
+        notificationMessage,
+        'announcement',
+        productVariant.product.department.name === 'Proware' ? 'students' : 'department students',
+        {
+          departmentId,
+          userId: null
+        }
+      );
     });
   }
   static async archiveReturnItem(returnedItemId) {
@@ -150,7 +161,13 @@ export class ReturnedItemService {
             model: DB.Product,
             as: 'product',
             required: true,
-            paranoid: false
+            paranoid: false,
+            include: [
+              {
+                model: DB.Department,
+                as: 'department'
+              }
+            ]
           }
         ]
       });
@@ -204,6 +221,16 @@ export class ReturnedItemService {
         notificationMessage,
         productVariant.id
       );
+      await NotificationService.createNotification(
+        notificationTitle,
+        notificationMessage,
+        'announcement',
+        productVariant.product.department.name === 'Proware' ? 'students' : 'department students',
+        {
+          departmentId,
+          userId: null
+        }
+      );
     });
   }
 
@@ -231,7 +258,13 @@ export class ReturnedItemService {
         include: [
           {
             model: DB.Product,
-            as: 'product'
+            as: 'product',
+            include: [
+              {
+                model: DB.Department,
+                as: 'department'
+              }
+            ]
           }
         ]
       });
@@ -285,6 +318,16 @@ export class ReturnedItemService {
         notificationTitle,
         notificationMessage,
         productVariant.id
+      );
+      await NotificationService.createNotification(
+        notificationTitle,
+        notificationMessage,
+        'announcement',
+        productVariant.product.department.name === 'Proware' ? 'students' : 'department students',
+        {
+          departmentId,
+          userId: null
+        }
       );
       await ActivityLogService.createLog(
         `Stock updated: ${productVariant.product.name} - ${productVariant.name} (${productVariant.size})`,
