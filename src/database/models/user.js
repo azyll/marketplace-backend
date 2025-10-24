@@ -38,10 +38,6 @@ export default (sequelize) => {
         foreignKey: 'userId',
         as: 'notificationReceiver'
       });
-      User.hasMany(models.ModulePermission, {
-        foreignKey: 'userId',
-        as: 'modulePermission'
-      });
     }
   }
   sequelizeJoi(sequelize);

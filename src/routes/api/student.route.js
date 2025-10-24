@@ -13,11 +13,11 @@ import {uploadExcelFile} from '../../middleware/upload-file-formdata.js';
 const router = express.Router();
 
 // Bulk Create Student
-router.post('/bulk', auth(['admin']), uploadExcelFile(), bulkCreateStudents);
+router.post('/bulk', auth(['admin', 'employee']), uploadExcelFile(), bulkCreateStudents);
 // Create Student
 router.post(
   '/:userId',
-  auth(['admin']),
+  auth(['admin', 'employee']),
   validate({
     id: Joi.number().required(),
     programId: Joi.string().required(),

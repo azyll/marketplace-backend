@@ -10,9 +10,9 @@ export default (sequelize) => {
      */
     static associate(models) {
       // define association here
-      ModulePermission.belongsTo(models.User, {
-        foreignKey: 'userId',
-        as: 'user'
+      ModulePermission.belongsTo(models.Role, {
+        foreignKey: 'roleId',
+        as: 'role'
       });
     }
   }
@@ -24,10 +24,10 @@ export default (sequelize) => {
         defaultValue: DataTypes.UUIDV4,
         primaryKey: true
       },
-      module: {
+    module: {
         type: DataTypes.ENUM,
-        values: ['sales', 'orders', 'inventory'],
-        schema: Joi.string().trim().required().valid('sales', 'orders', 'inventory')
+        values: ['sales', 'orders', 'inventory', 'return-items', 'users', 'products'],
+        schema: Joi.string().trim().required().valid('sales', 'orders', 'inventory', 'return-item', 'users', 'products')
       },
       permission: {
         type: DataTypes.ENUM,

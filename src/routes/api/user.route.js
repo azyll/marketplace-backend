@@ -20,7 +20,7 @@ const router = express.Router();
 
 // Get All Users
 router.get('/archive', auth(['admin', 'student']), getAllArchivedUsers);
-router.get('/', auth(['admin', 'student']), getAllUsers);
+router.get('/', auth(['admin', 'student', 'employee']), getAllUsers);
 
 // Create User
 router.post('/', auth(['admin']), addUser);
@@ -45,7 +45,7 @@ router.get('/:userId', auth(['admin', 'student', 'employee']), getUser);
 router.delete('/:userId', auth(['admin']), archiveUser);
 
 // Restore User
-router.post('/:userId/restore', auth(['admin']), restoreUser);
+router.put('/:userId/restore', auth(['admin', 'employee']), restoreUser);
 
 // Update User Password
 router.post(

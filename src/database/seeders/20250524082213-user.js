@@ -74,10 +74,6 @@ export async function up(queryInterface, Sequelize) {
     }
   ]);
 
-  await ModulePermissionService.createModulePermission(users[2].id, 'inventory', 'edit');
-  await ModulePermissionService.createModulePermission(users[2].id, 'orders', 'edit');
-  await ModulePermissionService.createModulePermission(users[2].id, 'sales', 'edit');
-
   const programs = await DB.Program.findAll();
   await queryInterface.bulkInsert(
     'Students',

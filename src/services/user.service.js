@@ -2,6 +2,7 @@
 import {DB} from '../database/index.js';
 import {Op} from 'sequelize';
 import {NotFoundException} from '../exceptions/notFound.js';
+import {AlreadyExistException} from '../exceptions/alreadyExist.js';
 
 const {User, Role} = DB;
 
@@ -29,7 +30,13 @@ export class UserService {
       include: [
         {
           as: 'role',
-          model: DB.Role
+          model: DB.Role,
+          include: [
+            {
+              model: DB.ModulePermission,
+              as: 'modulePermission'
+            }
+          ]
         },
         {
           as: 'student',
@@ -43,7 +50,7 @@ export class UserService {
           ]
         }
       ],
-      where: {id: userId, deletedAt: {[Op.is]: null}}
+      where: {id: userId}
     });
 
     if (!user) throw new NotFoundException('User not found', 404);
@@ -72,18 +79,19 @@ export class UserService {
       ];
     }
 
-    whereClause.deletedAt = {[Op.eq]: null};
-
-    if (query.role && query.role !== 'admin' && query.role !== 'employee' && query.role !== 'student') {
-      return {
-        data: [],
-        meta: {
-          currentPage: page,
-          itemsPerPage: limit,
-          totalItems: 0
-        }
-      };
+    if (query.role) {
+      whereClause.roleId = query.role;
     }
+    // if (query.role && query.role !== 'admin' && query.role !== 'employee' && query.role !== 'student') {
+    //   return {
+    //     data: [],
+    //     meta: {
+    //       currentPage: page,
+    //       itemsPerPage: limit,
+    //       totalItems: 0
+    //     }
+    //   };
+    // }
 
     // Offset  = skip read
     // page * limit
@@ -97,17 +105,12 @@ export class UserService {
         {
           model: DB.Role,
           attributes: ['name', 'systemTag'],
-          as: 'role',
-          where:
-            query.role ?
-              {
-                systemTag: query.role
-              }
-            : null
+          as: 'role'
         }
       ],
       limit,
-      offset: limit * (page - 1)
+      offset: limit * (page - 1),
+      order: [['firstName', 'ASC']]
     });
 
     return {
@@ -191,6 +194,12 @@ export class UserService {
    * @returns {Promise<Omit<any, "password">>}
    */
   static async addUser(data) {
+    const isUser = await User.findOne({
+      where: {
+        username: data.username
+      }
+    });
+    if (isUser) throw new AlreadyExistException('User with the same name already exist');
     const {password, ...user} = (
       await User.create(data, {
         include: role
@@ -270,6 +279,32 @@ export class UserService {
    * @returns {Promise<IUser>}
    */
   static async archiveUser(userId) {
+    const findUser = await User.findByPk(userId, {
+      include: [
+        {
+          model: Role,
+          as: 'role'
+        }
+      ]
+    });
+    if (!findUser || !findUser.role) throw new Error('User not found');
+
+    const userRoleSystemTag = findUser.role.systemTag;
+
+    if (userRoleSystemTag === 'admin') {
+      console.log(findUser.role.id);
+      const userAdmin = await User.findAll({
+        where: {
+          roleId: findUser.role.id,
+          deletedAt: {
+            [Op.eq]: null
+          }
+        }
+      });
+      if (userAdmin.length <= 1) {
+        throw new Error('This account is the currently only admin, you cannot archive this account');
+      }
+    }
     const result = await User.update(
       {deletedAt: new Date()},
       {
@@ -279,6 +314,7 @@ export class UserService {
             [Op.is]: null
           }
         },
+
         returning: DEFAULT_FIELDS
       }
     );

@@ -14,6 +14,10 @@ export default (sequelize) => {
       // Role.hasMany(models.ActivityLog, {
       //   foreignKey: "actorId",
       // });
+      Role.hasMany(models.ModulePermission, {
+        foreignKey: 'roleId',
+        as: 'modulePermission'
+      });
     }
   }
   sequelizeJoi(sequelize);

@@ -20,6 +20,7 @@ export const getUser = async (req, res) => {
 
     return res.status(200).json(user);
   } catch (err) {
+    console.log(err);
     if (err instanceof NotFoundException) {
       return res.status(err.statusCode).json({
         message: 'Failed to fetch user',
@@ -28,7 +29,7 @@ export const getUser = async (req, res) => {
     }
     return res.status(400).json({
       message: 'Failed to fetch user',
-      error: err
+      error: err instanceof Error ? err.message : String(err)
     });
   }
 };
@@ -47,7 +48,7 @@ export const getAllUsers = async (req, res) => {
   } catch (err) {
     return res.status(400).json({
       message: 'Failed to fetch users',
-      error: err
+      error: err instanceof Error ? err.message : String(err)
     });
   }
 };
@@ -65,7 +66,7 @@ export const getAllArchivedUsers = async (req, res) => {
   } catch (err) {
     return res.status(400).json({
       message: 'Failed to fetch users',
-      error: err
+      error: err instanceof Error ? err.message : String(err)
     });
   }
 };
@@ -85,7 +86,7 @@ export const getUserDetails = async (req, res) => {
   } catch (err) {
     return res.status(400).json({
       message: 'Failed to fetch user details',
-      error: err
+      error: err instanceof Error ? err.message : String(err)
     });
   }
 };
@@ -105,7 +106,7 @@ export const addUser = async (req, res) => {
   } catch (err) {
     return res.status(400).json({
       message: 'User creation unsuccessful',
-      error: err
+      error: err instanceof Error ? err.message : String(err)
     });
   }
 };
@@ -127,7 +128,7 @@ export const updateUser = async (req, res) => {
   } catch (err) {
     return res.status(400).json({
       message: 'Failed to edit user',
-      error: err
+      error: err instanceof Error ? err.message : String(err)
     });
   }
 };
@@ -166,9 +167,10 @@ export const archiveUser = async (req, res) => {
 
     return res.status(200).json(user);
   } catch (err) {
+    console.log(err);
     return res.status(400).json({
       message: 'User cannot be deleted',
-      error: err
+      error: err instanceof Error ? err.message : String(err)
     });
   }
 };
