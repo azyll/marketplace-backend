@@ -3,6 +3,7 @@ import {Op} from 'sequelize';
 import {DB} from '../database/index.js';
 import {AlreadyExistException} from '../exceptions/alreadyExist.js';
 import {NotFoundException} from '../exceptions/notFound.js';
+import {ActivityLogService} from './activity-log.service.js';
 const {Role} = DB;
 export class RoleService {
   /**
@@ -252,7 +253,7 @@ export class RoleService {
         await DB.ModulePermission.create(newPerm);
       }
     }
-
+    await ActivityLogService.createLog('A update a role', 'User updated credentials', 'user');
     // Finally, update the role details in the database (name and systemTag)
     return await role.update({
       name: role.name,

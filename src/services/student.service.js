@@ -132,23 +132,19 @@ export class StudentService {
           !lastName ||
           !programAcronym ||
           !gender ||
-          isNaN(studentId) || // Check if studentId is not a valid number
+          isNaN(studentId) ||
           studentId < 1000000000 ||
           studentId > 9999999999
         ) {
-          // Skip incomplete data
           continue;
         }
+        const [day, month, year] = birthdate.split('/').map(Number);
 
-        // Split the date string into parts (MM, DD, YYYY)
-        const [month, day, year] = birthdate.split('/');
+        // Determine the full year: if the year is less than 30, assume it's 2000s; otherwise, it's 1900s
+        const fullYear = year < 30 ? year + 2000 : year + 1900;
 
-        // Ensure the month and day are padded to two digits
-        const paddedMonth = month.padStart(2, '0');
-        const paddedDay = day.padStart(2, '0');
-
-        // Return the formatted number as a string concatenation
-        const formattedBirthdate = `${year}${paddedMonth}${paddedDay}`;
+        // Format the date to YYYYMMDD
+        const formattedDate = `${fullYear}${String(day).padStart(2, '0')}${String(month).padStart(2, '0')}`;
 
         // Find program once per student
         const program = await DB.Program.findOne({
@@ -174,6 +170,7 @@ export class StudentService {
             student.user.firstName = firstName;
             student.user.lastName = lastName;
             student.user.deletedAt = null;
+
             const username = (lastName + '.' + String(studentId).slice(4)).toLowerCase();
             student.user.username = username;
             await student.user.save({transaction});
@@ -184,9 +181,7 @@ export class StudentService {
         } else {
           const username = (lastName + '.' + String(studentId).slice(4)).toLowerCase();
 
-          // Note: NEVER store raw passwords like this in production!
-          // Use proper hashing (e.g. bcrypt) and generate secure passwords or random tokens.
-          const password = `${lastName.toLowerCase()}${formattedBirthdate}`;
+          const password = `${lastName.toLowerCase()}${formattedDate}`;
 
           const createdUser = await DB.User.create(
             {

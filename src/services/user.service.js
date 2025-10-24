@@ -3,6 +3,7 @@ import {DB} from '../database/index.js';
 import {Op} from 'sequelize';
 import {NotFoundException} from '../exceptions/notFound.js';
 import {AlreadyExistException} from '../exceptions/alreadyExist.js';
+import {ActivityLogService} from './activity-log.service.js';
 
 const {User, Role} = DB;
 
@@ -238,7 +239,7 @@ export class UserService {
     const user = result[1][0];
 
     if (count <= 0) throw new NotFoundException('User not found', 404);
-
+    await ActivityLogService.createLog('A user update credentials', 'User updated credentials', 'user');
     return user;
   }
 
@@ -270,6 +271,7 @@ export class UserService {
     if (!user) throw new NotFoundException('User not found');
 
     await user.update({password: username});
+    await ActivityLogService.createLog('A user update credentials', 'User updated credentials', 'user');
     return user;
   }
 
@@ -322,7 +324,7 @@ export class UserService {
     const user = result[1][0];
 
     if (count <= 0) throw new NotFoundException('User not found', 404);
-
+    await ActivityLogService.createLog('A user archived', 'user archived', 'user');
     return user;
   }
 
@@ -385,7 +387,7 @@ export class UserService {
     const updatedUser = result[1][0];
 
     if (count <= 0) throw new NotFoundException('User not found', 404);
-
+    await ActivityLogService.createLog('A user update credentials', 'user update credentials', 'user');
     return updatedUser;
   }
 }
