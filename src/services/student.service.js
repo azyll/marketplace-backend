@@ -124,11 +124,31 @@ export class StudentService {
         const lastName = (newStudent['Last Name'] || '').trim();
         const gender = (newStudent['Gender'] || '').trim().toLowerCase();
         const programAcronym = (newStudent.Program || '').toLowerCase().trim();
+        const birthdate = (newStudent['Birthdate'] || '').toLowerCase().trim();
+        const regex = /^(0[1-9]|1[0-2])\/([0-2][1-9]|3[01])\/\d{4}$/;
 
-        if (!firstName || !lastName || !programAcronym || !gender) {
+        if (
+          !firstName ||
+          !lastName ||
+          !programAcronym ||
+          !gender ||
+          studentId < 1000000000 ||
+          studentId > 9999999999 ||
+          !regex.test(birthdate)
+        ) {
           // Skip incomplete data
           continue;
         }
+
+        // Split the date string into parts (MM, DD, YYYY)
+        const [month, day, year] = birthdate.split('/');
+
+        // Ensure the month and day are padded to two digits
+        const paddedMonth = month.padStart(2, '0');
+        const paddedDay = day.padStart(2, '0');
+
+        // Return the formatted number as a string concatenation
+        const formattedBirthdate = `${year}${paddedMonth}${paddedDay}`;
 
         // Find program once per student
         const program = await DB.Program.findOne({
@@ -166,7 +186,7 @@ export class StudentService {
 
           // Note: NEVER store raw passwords like this in production!
           // Use proper hashing (e.g. bcrypt) and generate secure passwords or random tokens.
-          const password = 'password';
+          const password = `${lastName.toLowerCase()}${formattedBirthdate}`;
 
           const createdUser = await DB.User.create(
             {
