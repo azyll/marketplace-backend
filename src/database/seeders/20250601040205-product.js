@@ -30,41 +30,7 @@ export async function up(queryInterface, Sequelize) {
   await tmSeeders();
   await bacommSeeders();
 
-  //SH
-  await DB.Product.create(
-    {
-      name: 'Tertiary School ID Lace',
-      description: 'Tertiary School ID Lace. For Tertiary Students',
-      image: 'products/id-lace.png',
-      level: 'tertiary',
-      type: 'upper-wear',
-      category: 'uniform',
-      departmentId: departments[6].id,
-      productVariant: [
-        {
-          name: 'N/A',
-          size: 'N/A',
-          price: 100,
-          stockQuantity: 50,
-          stockCondition: calculateStockCondition(50),
-          productAttributeId: productAttributes[0].id,
-          createdAt: new Date(2025, 5, 5),
-          updatedAt: new Date()
-        }
-      ],
-      createdAt,
-      updatedAt
-    },
-    {
-      include: [
-        {
-          model: DB.ProductVariant,
-          as: 'productVariant'
-        }
-      ]
-    }
-  );
-
+  
   // BM
 
   await DB.Product.create(

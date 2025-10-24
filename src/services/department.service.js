@@ -40,7 +40,7 @@ export class DepartmentService {
     const department = await DB.Department.findByPk(DepartmentId);
 
     if (!department) throw new NotFoundException('Department not found');
-    const db = await DB.Program.findOne({where: {departmentId: department.id}, transaction});
+    const db = await DB.Program.findOne({where: {departmentId: department.id}});
     if (db)
       throw new Error(`Cannot archive department ${department.name} because it is associated with an active program.`);
     return await department.destroy();

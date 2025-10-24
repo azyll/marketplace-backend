@@ -614,5 +614,106 @@ export async function bmSeeders() {
       ]
     }
   );
+
+  await DB.Product.create(
+    {
+      name: 'Business and Management Blazer Fabric Special Size',
+      description: 'Blazer Fabric Special Size For Daily Uniform',
+      image: 'products/blazer.png',
+      level: 'tertiary',
+      type: 'non-wearable',
+      category: 'fabric',
+      departmentId: departments[1].id,
+      productVariant: [
+        {
+          name: 'N/A',
+          size: '2.5 Yards',
+          price: 740,
+          stockQuantity: 50,
+          stockCondition: calculateStockCondition(50),
+          productAttributeId: productAttributes[0].id,
+          createdAt: new Date(2025, 5, 5),
+          updatedAt: new Date()
+        }
+      ],
+      createdAt,
+      updatedAt
+    },
+    {
+      include: [
+        {
+          model: DB.ProductVariant,
+          as: 'productVariant'
+        }
+      ]
+    }
+  );
+  await DB.Product.create(
+    {
+      name: 'Business and Management Polo and Blouse Fabric Special Size',
+      description: 'Polo and Blouse Fabric Special Size For Daily Uniform',
+      image: 'products/bm-polo.png',
+      level: 'tertiary',
+      type: 'non-wearable',
+      category: 'fabric',
+      departmentId: departments[1].id,
+      productVariant: [
+        {
+          name: 'N/A',
+          size: '2.5 Yards',
+          price: 400,
+          stockQuantity: 50,
+          stockCondition: calculateStockCondition(50),
+          productAttributeId: productAttributes[0].id,
+          createdAt: new Date(2025, 5, 5),
+          updatedAt: new Date()
+        }
+      ],
+      createdAt,
+      updatedAt
+    },
+    {
+      include: [
+        {
+          model: DB.ProductVariant,
+          as: 'productVariant'
+        }
+      ]
+    }
+  );
+
+  await DB.Product.create(
+    {
+      name: ' Business and Management Pants Fabric Special Size',
+      description: 'Pants Fabric Special Size For ICT Daily Uniform',
+      image: 'products/pants.png',
+      level: 'tertiary',
+      type: 'non-wearable',
+      category: 'fabric',
+      departmentId: departments[1].id,
+      productVariant: [
+        {
+          name: 'N/A',
+          size: '2.5 Yards',
+          price: 260,
+          stockQuantity: 50,
+          stockCondition: calculateStockCondition(50),
+          productAttributeId: productAttributes[0].id,
+          createdAt: new Date(2025, 5, 5),
+          updatedAt: new Date()
+        }
+      ],
+      createdAt,
+      updatedAt
+    },
+    {
+      include: [
+        {
+          model: DB.ProductVariant,
+          as: 'productVariant'
+        }
+      ]
+    }
+  );
 }
 

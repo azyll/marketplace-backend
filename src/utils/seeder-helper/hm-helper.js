@@ -945,7 +945,7 @@ export async function hmSeeders() {
   );
   await DB.Product.create(
     {
-      name: 'Hotel and Management  Chef Skull Cap',
+      name: 'Hotel and Management Chef Skull Cap',
       description: 'Hotel and Management Skull Cap. For Tertiary (BSTM)',
       image: 'products/hm-skull-cap.png',
       level: 'tertiary',
@@ -960,6 +960,206 @@ export async function hmSeeders() {
           stockQuantity: 50,
           stockCondition: calculateStockCondition(50),
           productAttributeId: productAttributes[0].id
+        }
+      ],
+      createdAt,
+      updatedAt
+    },
+    {
+      include: [
+        {
+          model: DB.ProductVariant,
+          as: 'productVariant'
+        }
+      ]
+    }
+  );
+
+  await DB.Product.create(
+    {
+      name: 'Hotel and Management Blazer Fabric Special Size',
+      description: 'Hotel and Management Blazer Fabric Special Size For Daily Uniform',
+      image: 'products/blazer.png',
+      level: 'tertiary',
+      type: 'non-wearable',
+      category: 'fabric',
+      departmentId: departments[2].id,
+      productVariant: [
+        {
+          name: 'N/A',
+          size: '2.5 Yards',
+          price: 740,
+          stockQuantity: 50,
+          stockCondition: calculateStockCondition(50),
+          productAttributeId: productAttributes[0].id,
+          createdAt: new Date(2025, 5, 5),
+          updatedAt: new Date()
+        }
+      ],
+      createdAt,
+      updatedAt
+    },
+    {
+      include: [
+        {
+          model: DB.ProductVariant,
+          as: 'productVariant'
+        }
+      ]
+    }
+  );
+  await DB.Product.create(
+    {
+      name: 'Hotel and Management Polo and Blouse Fabric Special Size',
+      description: 'Polo and Blouse Fabric Special Size For Daily Uniform',
+      image: 'products/tm-polo.png',
+      level: 'tertiary',
+      type: 'non-wearable',
+      category: 'fabric',
+      departmentId: departments[2].id,
+      productVariant: [
+        {
+          name: 'N/A',
+          size: '2.5 Yards',
+          price: 410,
+          stockQuantity: 50,
+          stockCondition: calculateStockCondition(50),
+          productAttributeId: productAttributes[0].id,
+          createdAt: new Date(2025, 5, 5),
+          updatedAt: new Date()
+        }
+      ],
+      createdAt,
+      updatedAt
+    },
+    {
+      include: [
+        {
+          model: DB.ProductVariant,
+          as: 'productVariant'
+        }
+      ]
+    }
+  );
+
+  await DB.Product.create(
+    {
+      name: 'Hotel and Management Pants Fabric Special Size',
+      description: 'Pants Fabric Special Size For ICT Daily Uniform',
+      image: 'products/pants.png',
+      level: 'tertiary',
+      type: 'non-wearable',
+      category: 'fabric',
+      departmentId: departments[2].id,
+      productVariant: [
+        {
+          name: 'N/A',
+          size: '2.5 Yards',
+          price: 260,
+          stockQuantity: 50,
+          stockCondition: calculateStockCondition(50),
+          productAttributeId: productAttributes[0].id,
+          createdAt: new Date(2025, 5, 5),
+          updatedAt: new Date()
+        }
+      ],
+      createdAt,
+      updatedAt
+    },
+    {
+      include: [
+        {
+          model: DB.ProductVariant,
+          as: 'productVariant'
+        }
+      ]
+    }
+  );
+  await DB.Product.create(
+    {
+      name: 'Hotel and Management Vest Fabric Special Size',
+      description: 'Vest Fabric Special Size For ICT Daily Uniform',
+      image: 'products/hm-vest.png',
+      level: 'tertiary',
+      type: 'non-wearable',
+      category: 'fabric',
+      departmentId: departments[2].id,
+      productVariant: [
+        {
+          name: 'N/A',
+          size: '2.5 Yards',
+          price: 310,
+          stockQuantity: 50,
+          stockCondition: calculateStockCondition(50),
+          productAttributeId: productAttributes[0].id,
+          createdAt: new Date(2025, 5, 5),
+          updatedAt: new Date()
+        }
+      ],
+      createdAt,
+      updatedAt
+    },
+    {
+      include: [
+        {
+          model: DB.ProductVariant,
+          as: 'productVariant'
+        }
+      ]
+    }
+  );
+  await DB.Product.create(
+    {
+      name: 'Hotel and Management Chef Polo Fabric Special Size',
+      description: 'Chef Polo Fabric Special Size For ICT Daily Uniform',
+      image: 'products/hm-chef-polo.png',
+      level: 'tertiary',
+      type: 'non-wearable',
+      category: 'fabric',
+      departmentId: departments[2].id,
+      productVariant: [
+        {
+          name: 'N/A',
+          size: '2.5 Yards',
+          price: 470,
+          stockQuantity: 50,
+          stockCondition: calculateStockCondition(50),
+          productAttributeId: productAttributes[0].id,
+          createdAt: new Date(2025, 5, 5),
+          updatedAt: new Date()
+        }
+      ],
+      createdAt,
+      updatedAt
+    },
+    {
+      include: [
+        {
+          model: DB.ProductVariant,
+          as: 'productVariant'
+        }
+      ]
+    }
+  );
+  await DB.Product.create(
+    {
+      name: 'Hotel and Management Chef Pants Fabric Special Size',
+      description: 'Chef Pants Fabric Special Size For ICT Daily Uniform',
+      image: 'products/hm-chef-pants.png',
+      level: 'tertiary',
+      type: 'non-wearable',
+      category: 'fabric',
+      departmentId: departments[2].id,
+      productVariant: [
+        {
+          name: 'N/A',
+          size: '2.5 Yards',
+          price: 400,
+          stockQuantity: 50,
+          stockCondition: calculateStockCondition(50),
+          productAttributeId: productAttributes[0].id,
+          createdAt: new Date(2025, 5, 5),
+          updatedAt: new Date()
         }
       ],
       createdAt,

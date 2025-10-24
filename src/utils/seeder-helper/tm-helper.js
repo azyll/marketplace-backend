@@ -583,5 +583,138 @@ export async function tmSeeders() {
       ]
     }
   );
+
+  await DB.Product.create(
+    {
+      name: 'Tourism Management Blazer Fabric Special Size ',
+      description: 'Blazer Fabric Special Size For Daily Uniform',
+      image: 'products/tm-fabric.png',
+      level: 'tertiary',
+      type: 'non-wearable',
+      category: 'fabric',
+      departmentId: departments[3].id,
+      productVariant: [
+        {
+          name: 'N/A',
+          size: '2.5 Yards',
+          price: 400,
+          stockQuantity: 50,
+          stockCondition: calculateStockCondition(50),
+          productAttributeId: productAttributes[0].id,
+          createdAt: new Date(2025, 5, 5),
+          updatedAt: new Date()
+        }
+      ],
+      createdAt,
+      updatedAt
+    },
+    {
+      include: [
+        {
+          model: DB.ProductVariant,
+          as: 'productVariant'
+        }
+      ]
+    }
+  );
+  await DB.Product.create(
+    {
+      name: 'Tourism Management Polo Fabric Special Size',
+      description: 'Polo Fabric Special Size For Daily Uniform',
+      image: 'products/tm-fabric.png',
+      level: 'tertiary',
+      type: 'non-wearable',
+      category: 'fabric',
+      departmentId: departments[3].id,
+      productVariant: [
+        {
+          name: 'N/A',
+          size: '2.5 Yards',
+          price: 295,
+          stockQuantity: 50,
+          stockCondition: calculateStockCondition(50),
+          productAttributeId: productAttributes[0].id,
+          createdAt: new Date(2025, 5, 5),
+          updatedAt: new Date()
+        }
+      ],
+      createdAt,
+      updatedAt
+    },
+    {
+      include: [
+        {
+          model: DB.ProductVariant,
+          as: 'productVariant'
+        }
+      ]
+    }
+  );
+  await DB.Product.create(
+    {
+      name: 'Tourism Management Blouse Fabric Special Size',
+      description: 'Blouse Fabric Special Size For Daily Uniform',
+      image: 'products/tm-fabric.png',
+      level: 'tertiary',
+      type: 'non-wearable',
+      category: 'fabric',
+      departmentId: departments[3].id,
+      productVariant: [
+        {
+          name: 'N/A',
+          size: '2.5 Yards',
+          price: 295,
+          stockQuantity: 50,
+          stockCondition: calculateStockCondition(50),
+          productAttributeId: productAttributes[0].id,
+          createdAt: new Date(2025, 5, 5),
+          updatedAt: new Date()
+        }
+      ],
+      createdAt,
+      updatedAt
+    },
+    {
+      include: [
+        {
+          model: DB.ProductVariant,
+          as: 'productVariant'
+        }
+      ]
+    }
+  );
+  await DB.Product.create(
+    {
+      name: 'Tourism Management Pants Fabric Special Size',
+      description: 'Pants Fabric Special Size For ICT Daily Uniform',
+      image: 'products/tm-fabric.png',
+      level: 'tertiary',
+      type: 'non-wearable',
+      category: 'fabric',
+      departmentId: departments[3].id,
+      productVariant: [
+        {
+          name: 'N/A',
+          size: '2.5 Yards',
+          price: 455,
+          stockQuantity: 50,
+          stockCondition: calculateStockCondition(50),
+          productAttributeId: productAttributes[0].id,
+          createdAt: new Date(2025, 5, 5),
+          updatedAt: new Date()
+        }
+      ],
+      createdAt,
+      updatedAt
+    },
+    {
+      include: [
+        {
+          model: DB.ProductVariant,
+          as: 'productVariant'
+        }
+      ]
+    }
+  );
 }
 

@@ -710,7 +710,7 @@ export class ProductService {
             where: {
               productVariantId: {
                 [Op.in]: variantIds
-              }
+            }
             }
           }
         ]

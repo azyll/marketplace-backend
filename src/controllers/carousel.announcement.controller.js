@@ -13,9 +13,9 @@ export async function createCarouselAnnouncement(req, res) {
 }
 export async function getCarouselAnnouncement(req, res) {
   try {
-    const carouselImages = await CarouselAnnouncementImageService.getCarouselAnnouncement();
+    const carouselImages = await CarouselAnnouncementImageService.getCarouselAnnouncement(req.query);
 
-    return res.status(200).json({data: carouselImages});
+    return res.status(200).json({...carouselImages});
   } catch (error) {
     const message = 'Failed retrieve carousel announcement images';
 

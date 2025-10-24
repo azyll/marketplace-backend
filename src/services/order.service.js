@@ -733,6 +733,18 @@ export class OrderService {
 
       if (newStatus === order.status) throw new Error('The order status and the new status is the same');
 
+      if (newStatus === 'confirmed') {
+        await NotificationService.createNotification(
+          'Order Status Updated',
+          `Student ID ${student.id} marked order #${order.id} (Total: ₱${order.total.toFixed(2)}) as "${newStatus}".`,
+          'order',
+          'individual',
+          {
+            departmentId: null,
+            userId: student.user.id
+          }
+        );
+      }
       if (newStatus === 'completed') {
         for (const orderItem of order.orderItems) {
           const variant = await ProductVariant.findByPk(orderItem.productVariantId, {transaction});

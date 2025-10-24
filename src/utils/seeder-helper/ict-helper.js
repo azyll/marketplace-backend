@@ -400,5 +400,72 @@ export async function ictSeeders() {
       ]
     }
   );
+
+  await DB.Product.create(
+    {
+      name: 'ICT Polo and Blouse Fabric Special Size ',
+      description: 'Polo and Blouse Fabric Special Size For ICT Daily Uniform',
+      image: 'products/ict-polo.png',
+      level: 'tertiary',
+      type: 'non-wearable',
+      category: 'fabric',
+      departmentId: departments[0].id,
+      productVariant: [
+        {
+          name: 'N/A',
+          size: '2.5 Yards',
+          price: 390,
+          stockQuantity: 50,
+          stockCondition: calculateStockCondition(50),
+          productAttributeId: productAttributes[0].id,
+          createdAt: new Date(2025, 5, 5),
+          updatedAt: new Date()
+        }
+      ],
+      createdAt,
+      updatedAt
+    },
+    {
+      include: [
+        {
+          model: DB.ProductVariant,
+          as: 'productVariant'
+        }
+      ]
+    }
+  );
+  await DB.Product.create(
+    {
+      name: 'ICT Pants Fabric Special Size',
+      description: 'Pants Fabric Special Size For ICT Daily Uniform',
+      image: 'products/pants.png',
+      level: 'tertiary',
+      type: 'non-wearable',
+      category: 'fabric',
+      departmentId: departments[0].id,
+      productVariant: [
+        {
+          name: 'N/A',
+          size: '2.5 Yards',
+          price: 260,
+          stockQuantity: 50,
+          stockCondition: calculateStockCondition(50),
+          productAttributeId: productAttributes[0].id,
+          createdAt: new Date(2025, 5, 5),
+          updatedAt: new Date()
+        }
+      ],
+      createdAt,
+      updatedAt
+    },
+    {
+      include: [
+        {
+          model: DB.ProductVariant,
+          as: 'productVariant'
+        }
+      ]
+    }
+  );
 }
 

@@ -27,9 +27,45 @@ export class CarouselAnnouncementImageService {
       return await announcementImage.restore({transaction});
     });
   }
-  static async getCarouselAnnouncement() {
-    const carouselAnnouncementImages = await DB.CarouselAnnouncementImage.findAll();
-    return carouselAnnouncementImages;
+  static async getCarouselAnnouncement(query) {
+    const where = {};
+
+    const page = Number(query?.page) || 1;
+    const limit = Number(query?.limit) || 10;
+
+    let isAll = false;
+
+    if (query.all === 'true') {
+      isAll = true;
+    } else if (query.all === 'false') {
+      isAll = false;
+    }
+    if (query.status === 'archived') {
+      where.deletedAt = {
+        [Op.not]: null
+      };
+    } else if (query.status === 'active') {
+      where.deletedAt = {
+        [Op.is]: null
+      };
+    }
+
+    const carouselAnnouncementImages = await DB.CarouselAnnouncementImage.findAndCountAll({
+      distinct: true,
+      where,
+      paranoid: !isAll,
+      offset: (page - 1) * limit,
+      limit,
+      order: [['createdAt', 'DESC']]
+    });
+    return {
+      data: carouselAnnouncementImages.rows,
+      meta: {
+        currentPage: page,
+        itemsPerPage: limit,
+        totalItems: carouselAnnouncementImages.count
+      }
+    };
   }
   static async getArchivedCarouselAnnouncement() {
     const carouselAnnouncementImages = await DB.CarouselAnnouncementImage.findAll({

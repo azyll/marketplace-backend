@@ -426,7 +426,7 @@ export async function shSeeders() {
     {
       name: 'Senior High Daily Neck Tie',
       description: 'Senior High School Neck Tie. For Senior High Students',
-      image: 'products/shs-neck-tie.png',
+      image: 'sh.jpg',
       type: 'upper-wear',
       level: 'shs',
       category: 'uniform',
@@ -455,25 +455,26 @@ export async function shSeeders() {
       ]
     }
   );
+
   await DB.Product.create(
     {
-      name: 'Senior School ID Lace',
-      description: 'Senior High School School ID Lace. For Senior High Students',
-      image: 'products/id-lace.png',
-      level: 'shs',
-      type: 'upper-wear',
-      category: 'uniform',
+      name: 'Senior High Pants Fabric Special Size',
+      description: 'Senior High Pants Fabric Special Size For Daily Uniform',
+      image: 'products/shs-pants.png',
+      level: 'tertiary',
+      type: 'non-wearable',
+      category: 'fabric',
       departmentId: departments[5].id,
       productVariant: [
         {
           name: 'N/A',
-          size: 'N/A',
-          price: 100,
+          size: '2.5 Yards',
+          price: 420,
           stockQuantity: 50,
           stockCondition: calculateStockCondition(50),
           productAttributeId: productAttributes[0].id,
-          createdAt,
-          updatedAt
+          createdAt: new Date(2025, 5, 5),
+          updatedAt: new Date()
         }
       ],
       createdAt,
