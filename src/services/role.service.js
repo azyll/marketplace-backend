@@ -17,7 +17,7 @@ export class RoleService {
       where: {systemTag}
     });
     if (findRole && systemTag !== 'employee') {
-      throw new Error('We have already role for this tag please use that');
+      throw new AlreadyExistException('A role has already been assigned to this tag. Please use the existing role.');
     }
 
     // First, check if the role already exists
