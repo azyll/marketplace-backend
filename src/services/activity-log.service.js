@@ -13,16 +13,35 @@ export class ActivityLogService {
    *
    * @param {String} title
    * @param {String} content
-   * @param {TLog} type
+   * @param {TLog | 'product'} type
    * @returns
    */
-  static async createLog(title, content, type) {
-    const log = await DB.ActivityLog.create({
-      title,
-      content,
-      type
-    });
-    return log;
+  static async createLog(title, content, type, id, options = {}) {
+    try {
+      let fields = {
+        title,
+        content,
+        type
+      };
+      if (type === 'inventory') {
+        fields.productId = id;
+      }
+      if (type === 'order') {
+        fields.orderId = id;
+      }
+      if (type === 'sales') {
+        fields.salesId = id;
+      }
+      if (type === 'product') {
+        fields.type = 'system';
+        fields.productId = id;
+      }
+
+      const log = await DB.ActivityLog.create(fields, {transaction: options.transaction});
+      return log;
+    } catch (error) {
+      console.log(error, 'error');
+    }
   }
   /**
    *
@@ -62,7 +81,25 @@ export class ActivityLogService {
       order: [['createdAt', 'DESC']],
       offset: (page - 1) * limit,
       where,
-      limit
+      limit,
+      include: [
+        {
+          model: DB.Product,
+          as: 'product'
+        },
+        {
+          model: DB.Order,
+          as: 'order'
+        },
+        {
+          model: DB.Sales,
+          as: 'sales'
+        },
+        {
+          model: DB.User,
+          as: 'user'
+        }
+      ]
     });
     return {
       data: rows,

@@ -128,7 +128,7 @@ export class OrderService {
     const status = 'ongoing';
     const orderItemsWithPrice = [];
     //Used transaction so when have a over order product all the stock update will be roll back
-    let totalOrder = await sequelize.transaction(async (transaction) => {
+    let orderTransaction = await sequelize.transaction(async (transaction) => {
       //For total order
       let total = 0;
       const nowAllowedProductNames = [];
@@ -197,12 +197,9 @@ export class OrderService {
         );
       }
 
-      return total;
-    });
-    let orderTransaction = await sequelize.transaction(async (transaction) => {
       const order = await Order.create(
         {
-          total: totalOrder || 0,
+          total: total || 0,
           status,
           studentId: user.student.id,
           orderItems: orderItemsWithPrice
@@ -212,22 +209,40 @@ export class OrderService {
           include: [{model: OrderItems, as: 'orderItems'}]
         }
       );
-      await ActivityLogService.createLog(
-        'Order Created Successfully',
-        `A new order (ID: ${order.id}) was created with a total amount of ₱${totalOrder?.toFixed(2) || '0.00'}.`,
-        'order'
-      );
+      let fields = {
+        title: 'Order Created Successfully',
+        content: `A new order (ID: ${order.id}) was created with a total amount of ₱${total?.toFixed(2) || '0.00'}.`,
+        type: 'order',
+        orderId: order.id
+      };
+      await DB.ActivityLog.create(fields, {transaction});
 
-      await NotificationService.createNotification(
-        'New Order Created',
-        `Student ID ${user.student.id} has placed a new order (Order ID: ${order.id}).`,
-        'order',
-        'employees',
+      const notification = await DB.Notification.create(
         {
-          userId: null,
-          departmentId: null
-        }
+          title: 'New Order Created',
+          message: `Student ID ${user.student.id} has placed a new order (Order ID: ${order.id}).`,
+          type: 'order',
+          orderId: order.id
+        },
+        {transaction}
       );
+      const employees = await User.findAll({
+        include: [
+          {
+            model: DB.Role,
+            where: {
+              systemTag: 'employee'
+            },
+            as: 'role',
+            required: true
+          }
+        ],
+        transaction
+      });
+
+      for (const employee of employees) {
+        await DB.NotificationReceiver.create({notificationId: notification.id, userId: employee.id}, {transaction});
+      }
 
       if (orderType == 'cart') {
         await CartService.archiveCart(user.id, variantIds);
@@ -441,22 +456,41 @@ export class OrderService {
           include: [{model: OrderItems, as: 'orderItems'}]
         }
       );
-      await ActivityLogService.createLog(
-        'Order Created Successfully',
-        `A new order (ID: ${order.id}) was created with a total amount of ₱${totalOrder?.toFixed(2) || '0.00'}.`,
-        'order'
-      );
 
-      await NotificationService.createNotification(
-        'New Order Created',
-        `Student ID ${student.id} has placed a new order (Order ID: ${order.id}).`,
-        'order',
-        'employees',
+      let fields = {
+        title: 'Order Created Successfully',
+        content: `A new order (ID: ${order.id}) was created with a total amount of ₱${totalOrder?.toFixed(2) || '0.00'}.`,
+        type: 'order',
+        orderId: order.id
+      };
+      await DB.ActivityLog.create(fields, {transaction});
+
+      const notification = await DB.Notification.create(
         {
-          userId: null,
-          departmentId: null
-        }
+          title: 'New Order Created',
+          message: `Student ID ${user.student.id} has placed a new order (Order ID: ${order.id}).`,
+          type: 'order',
+          orderId: order.id
+        },
+        {transaction}
       );
+      const employees = await User.findAll({
+        include: [
+          {
+            model: DB.Role,
+            where: {
+              systemTag: 'employee'
+            },
+            as: 'role',
+            required: true
+          }
+        ],
+        transaction
+      });
+
+      for (const employee of employees) {
+        await DB.NotificationReceiver.create({notificationId: notification.id, userId: employee.id}, {transaction});
+      }
 
       return order;
     });
@@ -743,33 +777,33 @@ export class OrderService {
           await variant.save({transaction});
         }
 
-        await SalesService.createSales({
+        const newSales = await SalesService.createSales({
           orderId,
           total: order.total,
           oracleInvoice
         });
 
-        await NotificationService.createNotification(
-          'Order Status Updated',
-          `Student ID ${student.id} marked order #${order.id} (Total: ₱${order.total.toFixed(2)}) as "${newStatus}".`,
-          'order',
-          'individual',
-          {
-            departmentId: null,
-            userId: student.user.id
-          }
-        );
+        let fields = {
+          title: `New Sale recorded: Total ${order.total}, Oracle Invoice #${oracleInvoice}`,
+          content:
+            `For Order Number: ${order.id}\n` +
+            `Total amount: ${order.total}\n` +
+            `Oracle Invoice Number: ${oracleInvoice}`,
+          type: 'sales',
+          salesId: newSales.id
+        };
+        await DB.ActivityLog.create(fields, {transaction});
 
-        await NotificationService.createNotification(
-          'New Sale Recorded',
-          `Student ID ${student.id} has created a new sale.`,
-          'sale',
-          'employees',
+        const notification = await DB.Notification.create(
           {
-            departmentId: null,
-            userId: null
-          }
+            title: 'Order Status Updated',
+            message: `Student ID ${student.id} marked order #${order.id} (Total: ₱${order.total.toFixed(2)}) as "${newStatus}".`,
+            type: 'order'
+          },
+          {transaction}
         );
+        await DB.NotificationReceiver.create({notificationId: notification.id, userId: student.user.id}, {transaction});
+
         for (const orderItem of order.orderItems) {
           const variant = await ProductVariant.findByPk(orderItem.productVariantId, {
             transaction,
@@ -796,10 +830,24 @@ export class OrderService {
               break;
           }
           if (variant.stockCondition === 'out-of-stock' || variant.stockCondition === 'low-stock') {
+            const notification = await DB.Notification.create(
+              {
+                title: notificationTitle,
+                message: notificationMessage,
+                type: 'announcement'
+              },
+              {transaction}
+            );
+            await DB.NotificationReceiver.create(
+              {notificationId: notification.id, userId: student.user.id},
+              {transaction}
+            );
+
             await NotificationService.createNotificationForInventoryStockUpdate(
               notificationTitle,
               notificationMessage,
-              variant.id
+              variant.id,
+              variant.productId
             );
           }
         }
@@ -827,11 +875,14 @@ export class OrderService {
           await studentProductCount?.save({transaction});
         }
       }
-      await ActivityLogService.createLog(
-        `Order #${order.id} status updated to "${newStatus}"`,
-        `Order #${order.id} status was changed to "${newStatus}".`,
-        'order'
-      );
+
+      let fields = {
+        title: `Order #${order.id} status updated to "${newStatus}"`,
+        content: `Order #${order.id} status was changed to "${newStatus}".`,
+        type: 'order',
+        orderId: order.id
+      };
+      await DB.ActivityLog.create(fields, {transaction});
 
       order.status = newStatus;
       await order.save({transaction});
@@ -981,7 +1032,8 @@ export class OrderService {
       await ActivityLogService.createLog(
         'Order Updated Successfully',
         `Order #${orderId} was updated with new items. Total amount is now ₱${totalUpdatedOrder?.toFixed(2) || '0.00'}.`,
-        'order'
+        'order',
+        order.id
       );
 
       // Send notification to student
@@ -998,7 +1050,8 @@ export class OrderService {
         {
           departmentId: null,
           userId: order.student.userId
-        }
+        },
+        order.id
       );
     });
 
@@ -1157,14 +1210,16 @@ export class OrderService {
           {
             departmentId: null,
             userId: order.student.user.id
-          }
+          },
+          order.id
         );
       }
       if (orders.length > 0) {
         await ActivityLogService.createLog(
           `${orders.length} orders marked as cancelled after exceeding the 24-hour limit.`,
           'Bulk order status updated to "cancelled".',
-          'order'
+          'order',
+          order.id
         );
       }
     });

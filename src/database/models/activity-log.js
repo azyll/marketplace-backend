@@ -10,6 +10,35 @@ export default (sequelize) => {
      */
     static associate(models) {
       // define association here
+
+      ActivityLog.belongsTo(models.Product, {
+        foreignKey: {
+          name: 'productId',
+          allowNull: true
+        },
+        as: 'product'
+      });
+      ActivityLog.belongsTo(models.Sales, {
+        foreignKey: {
+          name: 'salesId',
+          allowNull: true
+        },
+        as: 'sales'
+      });
+      ActivityLog.belongsTo(models.Order, {
+        foreignKey: {
+          name: 'orderId',
+          allowNull: true
+        },
+        as: 'order'
+      });
+      ActivityLog.belongsTo(models.User, {
+        foreignKey: {
+          name: 'userId',
+          allowNull: true
+        },
+        as: 'user'
+      });
     }
   }
   sequelizeJoi(sequelize);

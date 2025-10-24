@@ -18,6 +18,27 @@ export default (sequelize) => {
         },
         as: 'notificationReceiver'
       });
+      Notification.belongsTo(models.Product, {
+        foreignKey: {
+          name: 'productId',
+          allowNull: true
+        },
+        as: 'product'
+      });
+      Notification.belongsTo(models.Sales, {
+        foreignKey: {
+          name: 'salesId',
+          allowNull: true
+        },
+        as: 'sales'
+      });
+      Notification.belongsTo(models.Order, {
+        foreignKey: {
+          name: 'orderId',
+          allowNull: true
+        },
+        as: 'order'
+      });
     }
   }
   sequelizeJoi(sequelize);

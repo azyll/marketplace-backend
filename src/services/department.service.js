@@ -1,8 +1,9 @@
 // @ts-check
-import {Op} from 'sequelize';
+import {Op, Transaction} from 'sequelize';
 import {DB} from '../database/index.js';
 import {AlreadyExistException} from '../exceptions/alreadyExist.js';
 import {NotFoundException} from '../exceptions/notFound.js';
+import sequelize from '../database/config/sequelize.js';
 
 const {Department} = DB;
 
@@ -13,22 +14,31 @@ export class DepartmentService {
   /**
    * Create Department
    * @param {{name:string,acronym:string}} body - Department name
-   * @returns {Promise<Department>} data from the database
+  
    * @throws {AlreadyExistException} if the Department is already exists
    */
   static async createDepartment({name, acronym}) {
-    const [department, isJustCreated] = await Department.findOrCreate({
-      where: {
-        [Op.or]: [{name: name.trim()}, {acronym: acronym.trim()}]
-      },
-      defaults: {name: name.trim(), acronym: acronym.trim()}
+    return await sequelize.transaction(async (transaction) => {
+      const [department, isJustCreated] = await Department.findOrCreate({
+        where: {
+          [Op.or]: [{name: name.trim()}, {acronym: acronym.trim()}]
+        },
+        defaults: {name: name.trim(), acronym: acronym.trim()},
+        transaction
+      });
+
+      if (!isJustCreated) {
+        throw new AlreadyExistException('This Department is already exists');
+      }
+      let fields = {
+        title: `A new department was added ${department.name}`,
+        content: `New Department ${department.name} ${department.acronym}`,
+        type: 'system'
+      };
+      await DB.ActivityLog.create(fields, {transaction: transaction});
+
+      return department;
     });
-
-    if (!isJustCreated) {
-      throw new AlreadyExistException('This Department is already exists');
-    }
-
-    return department;
   }
 
   /**
@@ -37,10 +47,24 @@ export class DepartmentService {
    * @param {string} DepartmentId
    */
   static async archiveDepartment(DepartmentId) {
-    const department = await DB.Department.findByPk(DepartmentId);
-    if (!department) throw new NotFoundException('Department not found');
+    return await sequelize.transaction(async (transaction) => {
+      const department = await DB.Department.findByPk(DepartmentId, {transaction});
+      if (!department) throw new NotFoundException('Department not found');
 
-    return await department.destroy();
+      const db = await DB.Program.findOne({where: {departmentId: department.id}, transaction});
+      if (db)
+        throw new Error(
+          `Cannot archive department ${department.name} because it is associated with an active program.`
+        );
+
+      let fields = {
+        title: `A department was put to archived ${department.name}`,
+        content: `Department put to archived ${department.name} ${department.acronym}`,
+        type: 'system'
+      };
+      await DB.ActivityLog.create(fields, {transaction: transaction});
+      return await department.destroy({transaction});
+    });
   }
 
   /**
@@ -107,9 +131,18 @@ export class DepartmentService {
    * @throws {AlreadyExistException}
    */
   static async updateDepartment(DepartmentId, newDepartment) {
-    const department = await DB.Department.findByPk(DepartmentId);
-    if (!department) throw new NotFoundException('Department not found');
-    return await department.update(newDepartment);
+    return await sequelize.transaction(async (transaction) => {
+      const department = await DB.Department.findByPk(DepartmentId, {transaction});
+      if (!department) throw new NotFoundException('Department not found');
+
+      let fields = {
+        title: `A department was updated ${department.name}`,
+        content: `Department was updated ${department.name} ${department.acronym}`,
+        type: 'system'
+      };
+      await DB.ActivityLog.create(fields, {transaction: transaction});
+      return await department.update(newDepartment, {transaction});
+    });
   }
 
   /**
@@ -136,11 +169,19 @@ export class DepartmentService {
    * @param {string} departmentId
    */
   static async restoreDepartment(departmentId) {
-    const department = await DB.Department.findByPk(departmentId, {
-      paranoid: false
+    return await sequelize.transaction(async (transaction) => {
+      const department = await DB.Department.findByPk(departmentId, {
+        paranoid: false,
+        transaction
+      });
+      if (!department) throw new NotFoundException('Department not found');
+      let fields = {
+        title: `A department was put to active ${department.name}`,
+        content: `Department was put to active ${department.name} ${department.acronym}`,
+        type: 'system'
+      };
+      await DB.ActivityLog.create(fields, {transaction: transaction});
+      return await department.restore({transaction});
     });
-    if (!department) throw new NotFoundException('Department not found');
-
-    return await department.restore();
   }
 }

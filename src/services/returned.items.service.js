@@ -68,7 +68,8 @@ export class ReturnedItemService {
       await ActivityLogService.createLog(
         `Product Returned: ${productVariant.product.name} (Quantity: ${quantity})`,
         `Reason: ${reason}. Available stock was reduced by ${quantity} for the following variant: ${productVariant.product.name} - ${productVariant.name} (${productVariant.size}).`,
-        'inventory'
+        'inventory',
+        productVariant.productId
       );
     });
   }
@@ -140,7 +141,8 @@ export class ReturnedItemService {
       await ActivityLogService.createLog(
         `Returned Item Quantity Updated: ${productVariant.product.name}`,
         `The return quantity for variant ${productVariant.product.name} - ${productVariant.name} (${productVariant.size}) was updated to ${quantity}. Reason: ${returnedItem.reason}.`,
-        'inventory'
+        'inventory',
+        productVariant.productId
       );
     });
   }
@@ -227,14 +229,16 @@ export class ReturnedItemService {
       await ActivityLogService.createLog(
         `Stock updated: ${productVariant.product.name} - ${productVariant.name} (${productVariant.size})`,
         `Stock quantity for "${productVariant.product.name}" (${productVariant.name}, ${productVariant.size}) was updated from ${productVariant.stockQuantity} to ${prevStockQuantity}.`,
-        'inventory'
+        'inventory',
+        productVariant.productId
       );
       await productVariant.save({transaction});
 
       await ActivityLogService.createLog(
         `Returned Item: ${productVariant.product.name}`,
         `The return record for variant ${productVariant.product.name} - ${productVariant.name} (${productVariant.size}) was deleted. Quantity returned was ${returnedItem.quantity}. Reason for original return: ${returnedItem.reason}.`,
-        'inventory'
+        'inventory',
+        productVariant.productId
       );
       //Here --
 

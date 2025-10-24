@@ -218,6 +218,7 @@ export const updateProductStock = async (req, res) => {
     await ProductService.updateProductStock(productVariantId, newStockQuantity, action);
     return res.status(200).json({message: 'Product stock update successfully'});
   } catch (error) {
+    console.log(error);
     const message = 'Failed to update product stock';
     if (
       error instanceof NotFoundException ||

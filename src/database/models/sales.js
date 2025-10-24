@@ -21,6 +21,13 @@ export default (sequelize) => {
         },
         as: 'order'
       });
+      Sales.hasMany(models.ActivityLog, {
+        foreignKey: {
+          name: 'salesId',
+          allowNull: true
+        },
+        as: 'activityLog'
+      });
     }
   }
   sequelizeJoi(sequelize);

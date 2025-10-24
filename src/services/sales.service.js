@@ -32,13 +32,19 @@ export class SalesService {
         transaction
       });
       if (!isNewSales) throw new AlreadyExistException('The Oracle Invoice You Input is already existing', 409);
-      await ActivityLogService.createLog(
-        `New Sale recorded: Total ${sales.total}, Oracle Invoice #${sales.oracleInvoice}`,
-        `For Order Number: ${order.id}\n` +
-          `Total amount: ${sales.total}\n` +
-          `Oracle Invoice Number: ${sales.oracleInvoice}`,
-        'sales'
-      );
+
+      if (!sales) {
+        throw new Error('Sales record could not be created');
+      }
+
+      // await ActivityLogService.createLog(
+      //   `New Sale recorded: Total ${sales.total}, Oracle Invoice #${sales.oracleInvoice}`,
+      //   `For Order Number: ${order.id}\n` +
+      //     `Total amount: ${sales.total}\n` +
+      //     `Oracle Invoice Number: ${sales.oracleInvoice}`,
+      //   'sales',
+      //   sales.id
+      // );
       return sales;
     });
   }

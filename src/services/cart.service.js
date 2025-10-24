@@ -68,6 +68,13 @@ export class CartService {
       }
 
       cartItem.quantity = newQuantity;
+
+      let fields = {
+        title: 'A user added item to its cart',
+        content: 'New item to cart',
+        type: 'user'
+      };
+      await DB.ActivityLog.create(fields, {transaction: transaction});
       await cartItem.save({transaction});
 
       return cartItem;
@@ -126,53 +133,69 @@ export class CartService {
   }
 
   static async addCartItemQuantity(studentId, cartItemId) {
-    const student = await User.findByPk(studentId, {
-      include: [
-        {
-          model: Student,
-          as: 'student'
-        }
-      ]
+    return await sequelize.transaction(async (transaction) => {
+      const student = await User.findByPk(studentId, {
+        include: [
+          {
+            model: Student,
+            as: 'student'
+          }
+        ]
+      });
+      if (!student) throw new NotFoundException('Student not found', 404);
+
+      const orderLimit = await OrderService.getOrderLimit();
+      const cartItem = await Cart.findByPk(cartItemId, {transaction});
+
+      if (!cartItem) throw new NotFoundException('Cart item not found', 404);
+
+      const newQuantity = cartItem.quantity + 1;
+
+      if (newQuantity > orderLimit) {
+        throw new Error('Failed to add to cart quantity: exceeds order limit');
+      }
+      cartItem.quantity = newQuantity;
+
+      let fields = {
+        title: 'A user added quantity to its cart',
+        content: 'New item quantity to cart',
+        type: 'user'
+      };
+      await DB.ActivityLog.create(fields, {transaction: transaction});
+      return await cartItem.save({transaction});
     });
-    if (!student) throw new NotFoundException('Student not found', 404);
-
-    const orderLimit = await OrderService.getOrderLimit();
-    const cartItem = await Cart.findByPk(cartItemId);
-
-    if (!cartItem) throw new NotFoundException('Cart item not found', 404);
-
-    const newQuantity = cartItem.quantity + 1;
-
-    if (newQuantity > orderLimit) {
-      throw new Error('Failed to add to cart quantity: exceeds order limit');
-    }
-    cartItem.quantity = newQuantity;
-
-    return await cartItem.save();
   }
 
   static async deductCartItemQuantity(studentId, cartItemId) {
-    const student = await User.findByPk(studentId, {
-      include: [
-        {
-          model: Student,
-          as: 'student'
-        }
-      ]
+    return await sequelize.transaction(async (transaction) => {
+      const student = await User.findByPk(studentId, {
+        include: [
+          {
+            model: Student,
+            as: 'student'
+          }
+        ],
+        transaction
+      });
+      if (!student) throw new NotFoundException('Student not found', 404);
+
+      const cartItem = await Cart.findByPk(cartItemId, {transaction});
+
+      if (!cartItem) throw new NotFoundException('Cart item not found', 404);
+
+      const newQuantity = cartItem.quantity - 1;
+      if (newQuantity < 1) {
+        throw new Error('Failed to deduct to cart quantity: quantity too low, you can remove the cart item ');
+      }
+      cartItem.quantity = newQuantity;
+      let fields = {
+        title: 'A user deduct quantity to its cart',
+        content: 'New item quantity to cart',
+        type: 'user'
+      };
+      await DB.ActivityLog.create(fields, {transaction: transaction});
+      return await cartItem.save({transaction});
     });
-    if (!student) throw new NotFoundException('Student not found', 404);
-
-    const cartItem = await Cart.findByPk(cartItemId);
-
-    if (!cartItem) throw new NotFoundException('Cart item not found', 404);
-
-    const newQuantity = cartItem.quantity - 1;
-    if (newQuantity < 1) {
-      throw new Error('Failed to deduct to cart quantity: quantity too low, you can remove the cart item ');
-    }
-    cartItem.quantity = newQuantity;
-
-    return await cartItem.save();
   }
   //Student ID: Number, CarIds:Number
   /**
@@ -181,36 +204,46 @@ export class CartService {
    * @param {string[]} productVariantIds
    */
   static async archiveCart(studentId, productVariantIds) {
-    const student = await User.findByPk(studentId, {
-      include: [
-        {
-          model: Student,
-          as: 'student'
-        }
-      ]
-    });
-    if (!student) throw new NotFoundException('Student not found', 404);
+    return await sequelize.transaction(async (transaction) => {
+      const student = await User.findByPk(studentId, {
+        include: [
+          {
+            model: Student,
+            as: 'student'
+          }
+        ],
+        transaction
+      });
+      if (!student) throw new NotFoundException('Student not found', 404);
 
-    const productVariants = await Cart.findAll({
-      where: {
-        productVariantId: {
-          [Op.in]: productVariantIds
+      const productVariants = await Cart.findAll({
+        where: {
+          productVariantId: {
+            [Op.in]: productVariantIds
+          },
+          studentId: student.student.id
         },
-        studentId: student.student.id
-      }
-    });
+        transaction
+      });
 
-    if (productVariants.length !== productVariantIds.length) throw new NotFoundException('Cart item not found');
+      if (productVariants.length !== productVariantIds.length) throw new NotFoundException('Cart item not found');
 
-    const cart = await Cart.destroy({
-      where: {
-        productVariantId: {
-          [Op.in]: productVariantIds
+      const cart = await Cart.destroy({
+        where: {
+          productVariantId: {
+            [Op.in]: productVariantIds
+          },
+          studentId: student.student.id
         },
-        studentId: student.student.id
-      }
+        transaction
+      });
+      let fields = {
+        title: 'A user delete a item to its cart',
+        content: 'Delete cart item ',
+        type: 'user'
+      };
+      await DB.ActivityLog.create(fields, {transaction: transaction});
+      return cart;
     });
-
-    return cart;
   }
 }

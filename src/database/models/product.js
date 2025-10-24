@@ -17,6 +17,13 @@ export default (sequelize) => {
         },
         as: 'productVariant'
       });
+      Product.hasMany(models.ActivityLog, {
+        foreignKey: {
+          name: 'productId',
+          allowNull: true
+        },
+        as: 'activityLog'
+      });
       Product.belongsTo(models.Department, {
         foreignKey: {
           name: 'departmentId',

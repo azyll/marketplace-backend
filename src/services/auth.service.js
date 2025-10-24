@@ -2,6 +2,7 @@
 import {UnauthorizedException} from '../exceptions/unauthorized.js';
 import jwt from 'jsonwebtoken';
 import {DB} from '../database/index.js';
+import sequelize from '../database/config/sequelize.js';
 
 const JWT_SECRET = process.env.JWT_SECRET;
 const JWT_EXPIRED = process.env.JWT_EXPIRED ?? '1d';
@@ -14,21 +15,30 @@ export class AuthService {
    * @returns {Promise<string>} jwt token with user data as payload
    */
   static async login(username, password) {
-    const usernameToLower = username.toLowerCase().trim();
-    const passwordToLower = password.toLowerCase().trim();
-    const user = await DB.User.scope('withPassword').findOne({
-      where: {username: usernameToLower},
-      include: [{model: DB.Role, as: 'role'}]
-    });
+    return await sequelize.transaction(async (transaction) => {
+      const usernameToLower = username.toLowerCase().trim();
+      const passwordToLower = password.toLowerCase().trim();
+      const user = await DB.User.scope('withPassword').findOne({
+        where: {username: usernameToLower},
+        include: [{model: DB.Role, as: 'role'}],
+        transaction
+      });
 
-    if (!user) throw new UnauthorizedException('Invalid Credentials');
+      if (!user) throw new UnauthorizedException('Invalid Credentials');
 
-    const isValid = await user.authenticate(passwordToLower);
+      const isValid = await user.authenticate(passwordToLower);
 
-    if (!isValid) throw new UnauthorizedException('Invalid Credentials');
+      if (!isValid) throw new UnauthorizedException('Invalid Credentials');
+      let fields = {
+        title: 'A user logged in',
+        content: 'user login',
+        type: 'user'
+      };
+      await DB.ActivityLog.create(fields, {transaction: transaction});
 
-    return jwt.sign({id: user.id, username: user.username, roleSystemTag: user.role.systemTag}, JWT_SECRET, {
-      expiresIn: JWT_EXPIRED
+      return jwt.sign({id: user.id, username: user.username, roleSystemTag: user.role.systemTag}, JWT_SECRET, {
+        expiresIn: JWT_EXPIRED
+      });
     });
   }
   /**

@@ -52,7 +52,12 @@ export class ProgramService {
   static async archiveProgram(programId) {
     const program = await DB.Program.findByPk(programId);
     if (!program) throw new NotFoundException('Program not found');
-
+    const student = await DB.Student.findOne({where: {programId}});
+    if (student) {
+      throw new Error(
+        `Cannot archive program ${program.name} because it is associated with an active students.`
+      );
+    }
     return await program.destroy();
   }
 

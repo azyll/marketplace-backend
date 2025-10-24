@@ -16,102 +16,115 @@ export class NotificationService {
    * @param {'order'|'sale'|'announcement'|'n/a'} type
    * @param {'all'|'employees'|'students'|'department students'|'individual'} audience
    * @param {{departmentId:string|null,userId:string|null}} receiver
+   * @param {string} id
    * @throws {NotFoundException} Department pass is not found
    */
-  static async createNotification(title, message, type, audience, receiver) {
-    const notificationTransaction = sequelize.transaction(async (transaction) => {
-      const notification = await Notification.create({title, message, type}, {transaction});
-      switch (audience) {
-        case 'employees':
-          const employees = await User.findAll({
-            include: [
-              {
-                model: Role,
-                where: {
-                  systemTag: 'employee'
-                },
-                as: 'role',
-                required: true
-              }
-            ],
-            transaction
-          });
+  static async createNotification(title, message, type, audience, receiver, id, options = {}) {
+    let fields = {title, message, type};
 
-          for (const employee of employees) {
-            await NotificationReceiver.create({notificationId: notification.id, userId: employee.id}, {transaction});
-          }
-          break;
-        case 'students':
-          const students = await User.findAll({
-            include: [
-              {
-                model: Role,
-                where: {
-                  systemTag: 'student'
-                },
-                as: 'role',
-                required: true
-              }
-            ],
-            transaction
-          });
-
-          for (const student of students) {
-            await NotificationReceiver.create({notificationId: notification.id, userId: student.id}, {transaction});
-          }
-
-          break;
-        case 'department students':
-          const department = await Department.findByPk(receiver.departmentId || '');
-          if (!department) throw new NotFoundException('Department not found', 404);
-          const studentsWithDepartment = await User.findAll({
-            include: [
-              {
-                model: Role,
-                where: {
-                  systemTag: 'student'
-                },
-                as: 'role',
-                required: true
+    if (type === 'announcement') {
+      fields.productId = id;
+    }
+    if (type === 'order') {
+      fields.orderId = id;
+    }
+    if (type === 'sale') {
+      fields.salesId = id;
+    }
+    const transaction = options.transaction;
+    // const notificationTransaction = sequelize.transaction(async (transaction) => {
+    const notification = await Notification.create(fields, {transaction});
+    switch (audience) {
+      case 'employees':
+        const employees = await User.findAll({
+          include: [
+            {
+              model: Role,
+              where: {
+                systemTag: 'employee'
               },
-              {
-                model: Student,
-                include: [
-                  {
-                    model: Program,
-                    as: 'program',
-                    include: [
-                      {
-                        model: Department,
-                        as: 'department',
-                        where: {
-                          id: receiver.departmentId
-                        },
-                        required: true
-                      }
-                    ],
-                    required: true
-                  }
-                ],
-                required: true,
-                as: 'student'
-              }
-            ],
-            transaction
-          });
-          for (const student of studentsWithDepartment) {
-            await NotificationReceiver.create({notificationId: notification.id, userId: student.id}, {transaction});
-          }
-          break;
-        case 'individual':
-          await NotificationReceiver.create({notificationId: notification.id, userId: receiver.userId}, {transaction});
-          break;
-        case 'all':
-          await NotificationReceiver.create({notificationId: notification.id, userId: null}, {transaction});
-          break;
-      }
-      return notification;
-    });
+              as: 'role',
+              required: true
+            }
+          ],
+          transaction
+        });
+
+        for (const employee of employees) {
+          await NotificationReceiver.create({notificationId: notification.id, userId: employee.id}, {transaction});
+        }
+        break;
+      case 'students':
+        const students = await User.findAll({
+          include: [
+            {
+              model: Role,
+              where: {
+                systemTag: 'student'
+              },
+              as: 'role',
+              required: true
+            }
+          ],
+          transaction
+        });
+
+        for (const student of students) {
+          await NotificationReceiver.create({notificationId: notification.id, userId: student.id}, {transaction});
+        }
+
+        break;
+      case 'department students':
+        const department = await Department.findByPk(receiver.departmentId || '');
+        if (!department) throw new NotFoundException('Department not found', 404);
+        const studentsWithDepartment = await User.findAll({
+          include: [
+            {
+              model: Role,
+              where: {
+                systemTag: 'student'
+              },
+              as: 'role',
+              required: true
+            },
+            {
+              model: Student,
+              include: [
+                {
+                  model: Program,
+                  as: 'program',
+                  include: [
+                    {
+                      model: Department,
+                      as: 'department',
+                      where: {
+                        id: receiver.departmentId
+                      },
+                      required: true
+                    }
+                  ],
+                  required: true
+                }
+              ],
+              required: true,
+              as: 'student'
+            }
+          ],
+          transaction
+        });
+        for (const student of studentsWithDepartment) {
+          await NotificationReceiver.create({notificationId: notification.id, userId: student.id}, {transaction});
+        }
+        break;
+      case 'individual':
+        await NotificationReceiver.create({notificationId: notification.id, userId: receiver.userId}, {transaction});
+        break;
+      case 'all':
+        await NotificationReceiver.create({notificationId: notification.id, userId: null}, {transaction});
+        break;
+    }
+    return notification;
+    // });
     return notificationTransaction;
   }
 
@@ -121,10 +134,10 @@ export class NotificationService {
    * @param {string} message
    * @param {string} productVariantId
    */
-  static async createNotificationForInventoryStockUpdate(title, message, productVariantId) {
+  static async createNotificationForInventoryStockUpdate(title, message, productVariantId, productId) {
     const notificationTransaction = sequelize.transaction(async (transaction) => {
       const notification = await Notification.create(
-        {title, message, type: 'announcement', audience: 'students'},
+        {title, message, type: 'announcement', audience: 'students', productId},
         {transaction}
       );
 
@@ -137,6 +150,39 @@ export class NotificationService {
               productVariantId
             }
           },
+          {
+            model: User,
+            as: 'user'
+          }
+        ]
+      });
+
+      if (!studentsHaveProductVariantInCart) {
+        return notification;
+      }
+      for (const student of studentsHaveProductVariantInCart) {
+        await NotificationReceiver.create({notificationId: notification.id, userId: student.user.id}, {transaction});
+      }
+    });
+
+    return notificationTransaction;
+  }
+
+  /**
+   *
+   * @param {string} title
+   * @param {string} message
+   * @param {string} productId
+   */
+  static async createNotificationForInventoryStockUpdateForProwareItems(title, message, productId) {
+    const notificationTransaction = sequelize.transaction(async (transaction) => {
+      const notification = await Notification.create(
+        {title, message, type: 'announcement', audience: 'students', productId},
+        {transaction}
+      );
+
+      const studentsHaveProductVariantInCart = await Student.findAll({
+        include: [
           {
             model: User,
             as: 'user'
@@ -172,6 +218,18 @@ export class NotificationService {
 
     const {count, rows: notifications} = await Notification.findAndCountAll({
       include: [
+        {
+          model: DB.Product,
+          as: 'product'
+        },
+        {
+          model: DB.Order,
+          as: 'order'
+        },
+        {
+          model: DB.Sales,
+          as: 'sales'
+        },
         {
           model: NotificationReceiver,
           as: 'notificationReceiver',

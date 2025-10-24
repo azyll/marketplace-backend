@@ -108,7 +108,8 @@ export class ProductService {
         {
           departmentId: departmentId,
           userId: null
-        }
+        },
+        product.id
       );
 
       await ActivityLogService.createLog(
@@ -119,7 +120,8 @@ export class ProductService {
               `•  ${variant.productAttribute.name} ${variant.name} (${variant.size}) - Price: ${variant.price}, Stock: ${variant.stockAvailable}`
           )
           .join('\n')}`,
-        'system'
+        'product',
+        product.id
       );
       return product;
     });
@@ -737,7 +739,8 @@ export class ProductService {
         {
           departmentId: product.departmentId,
           userId: null
-        }
+        },
+        product.id
       );
 
       // Log the archive activity
@@ -749,7 +752,8 @@ export class ProductService {
               `• ${variant.name} (${variant.size}) - Price: ${variant.price}, Stock: ${variant.stockAvailable}`
           )
           .join('\n')}`,
-        'system'
+        'product',
+        product.id
       );
 
       return product;
@@ -798,7 +802,8 @@ export class ProductService {
         {
           departmentId: product.departmentId,
           userId: null
-        }
+        },
+        product.id
       );
 
       // Log the restore action
@@ -810,7 +815,8 @@ export class ProductService {
               `• ${variant.name} (${variant.size}) - Price: ${variant.price}, Stock: ${variant.stockAvailable}`
           )
           .join('\n')}`,
-        'system'
+        'product',
+        product.id
       );
 
       return product;
@@ -1041,13 +1047,15 @@ export class ProductService {
         {
           departmentId,
           userId: null
-        }
+        },
+        product.id
       );
 
       await ActivityLogService.createLog(
         `Product updated: ${product.name}`,
         `The product "${product.name}" in the ${department.name} department was updated. ${variantText}`,
-        'system'
+        'product',
+        product.id
       );
 
       return product;
@@ -1117,7 +1125,8 @@ export class ProductService {
       await ActivityLogService.createLog(
         `Stock updated: ${variant.product.name} - ${variant.name} (${variant.size})`,
         `Stock quantity for "${variant.product.name}" (${variant.name}, ${variant.size}) was updated from ${variant.stockQuantity} to ${stockQuantity}.`,
-        'inventory'
+        'inventory',
+        variant.productId
       );
       variant.stockQuantity = stockQuantity;
       const newStockCondition = stockQuantity - variant.stockReserved;
@@ -1150,11 +1159,20 @@ export class ProductService {
           break;
       }
 
-      await NotificationService.createNotificationForInventoryStockUpdate(
-        notificationTitle,
-        notificationMessage,
-        variant.id
-      );
+      if (variant.product.department.name === 'Proware') {
+        await NotificationService.createNotificationForInventoryStockUpdateForProwareItems(
+          notificationTitle,
+          notificationMessage,
+          variant.productId
+        );
+      } else {
+        await NotificationService.createNotificationForInventoryStockUpdate(
+          notificationTitle,
+          notificationMessage,
+          variant.id,
+          variant.productId
+        );
+      }
     });
 
     return variant;
