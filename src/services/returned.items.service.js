@@ -99,7 +99,7 @@ export class ReturnedItemService {
       await NotificationService.createNotificationForInventoryStockUpdate(
         notificationTitle,
         notificationMessage,
-        variant.id
+        productVariant.id
       );
     });
   }
@@ -202,7 +202,7 @@ export class ReturnedItemService {
       await NotificationService.createNotificationForInventoryStockUpdate(
         notificationTitle,
         notificationMessage,
-        variant.id
+        productVariant.id
       );
     });
   }
