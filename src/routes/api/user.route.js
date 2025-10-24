@@ -9,7 +9,8 @@ import {
   updatePassword,
   userModulesPermission,
   getUserDetails,
-  getAllArchivedUsers
+  getAllArchivedUsers,
+  userResetPassword
 } from '../../controllers/user.controller.js';
 import {validate} from '../../middleware/validation.js';
 import {Joi} from 'sequelize-joi';
@@ -25,21 +26,16 @@ router.get('/', auth(['admin', 'student']), getAllUsers);
 router.post('/', auth(['admin']), addUser);
 
 // Update User
+
 router.put(
-  '/:userId',
-  auth(['admin', 'student', 'employee'], {
-    selfOnly: {
-      param: 'userId',
-      roles: ['employee', 'student']
-    }
-  }),
+  '/password',
   validate({
-    firstName: Joi.string().required(),
-    lastName: Joi.string().required(),
-    username: Joi.string().required(),
-    password: Joi.string().required()
+    firstName: Joi.string().optional(),
+    lastName: Joi.string().optional(),
+    username: Joi.string().optional(),
+    programId: Joi.string().optional()
   }),
-  updateUser
+  userResetPassword
 );
 
 router.get('/:userId/module-permission', auth(['admin', 'employee']), userModulesPermission);
@@ -65,6 +61,23 @@ router.post(
     oldPassword: Joi.string().required()
   }),
   updatePassword
+);
+
+router.put(
+  '/:userId',
+  auth(['admin', 'student', 'employee'], {
+    selfOnly: {
+      param: 'userId',
+      roles: ['employee', 'student']
+    }
+  }),
+  validate({
+    firstName: Joi.string().optional(),
+    lastName: Joi.string().optional(),
+    username: Joi.string().optional(),
+    password: Joi.string().optional()
+  }),
+  updateUser
 );
 
 export default router;

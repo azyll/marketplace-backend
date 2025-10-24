@@ -133,6 +133,27 @@ export const updateUser = async (req, res) => {
 };
 
 /**
+ * @param {import('express').Request<{userId:string},{},{firstName:string,lastName:string,username:string,password:string}>} req
+ * @param {import('express').Response} res
+ * @returns {Promise<import('express').Response>}
+ */
+export const userResetPassword = async (req, res) => {
+  try {
+    const payload = req.body;
+    console.log(payload);
+
+    const newUser = await UserService.userResetPassword(payload);
+
+    return res.status(200).json(newUser);
+  } catch (err) {
+    return res.status(400).json({
+      message: 'Failed to edit user',
+      error: err instanceof Error ? err.message : String(err)
+    });
+  }
+};
+
+/**
  * @param {import('express').Request} req
  * @param {import('express').Response} res
  * @returns {Promise<import('express').Response>}

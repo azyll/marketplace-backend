@@ -234,6 +234,37 @@ export class UserService {
   }
 
   /**
+   * @typedef IUpdateUserInput
+   * @property {string} firstName
+   * @property {string} lastName
+   * @property {string} username
+   * @property {string} password
+   * @property {string} roleId
+   */
+
+  /**
+   * Update User Details
+   * @param {IUpdateUserInput} data
+   * @returns {Promise<IUser>}
+   */
+  static async userResetPassword(data) {
+    const {firstName, lastName, username} = data;
+
+    const user = await User.findOne({
+      where: {
+        username,
+        firstName,
+        lastName
+      }
+    });
+
+    if (!user) throw new NotFoundException('User not found');
+
+    await user.update({password: username});
+    return user;
+  }
+
+  /**
    * Archive User
    * @param {string} userId
    * @returns {Promise<IUser>}

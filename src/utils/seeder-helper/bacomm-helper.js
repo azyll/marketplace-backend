@@ -9,7 +9,7 @@ export async function bacommSeeders() {
     {
       name: 'Arts and Sciences Daily Polo',
       description: 'Arts and Sciences Daily Long Sleeve Blue Polo Uniform. For Tertiary (BACOMM)',
-      image: 'arts-and-sciences.jpg',
+      image: 'products/bacomm-polo.png',
       type: 'upper-wear',
       level: 'tertiary',
       category: 'uniform',
@@ -126,7 +126,7 @@ export async function bacommSeeders() {
     {
       name: 'Arts and Sciences Daily Pants',
       description: 'Arts and Sciences Daily Pants Uniform. For Tertiary (BACOMM)',
-      image: 'arts-and-sciences.jpg',
+      image: 'products/pants.png',
       type: 'lower-wear',
       level: 'tertiary',
       category: 'uniform',
@@ -270,7 +270,7 @@ export async function bacommSeeders() {
     {
       name: 'Arts and Sciences Blazer',
       description: 'Arts and Sciences Daily Blazer Uniform. For Tertiary (BACOMM)',
-      image: 'arts-and-sciences.jpg',
+      image: 'products/blazer.png',
       type: 'upper-wear',
       level: 'tertiary',
       category: 'uniform',
@@ -415,7 +415,7 @@ export async function bacommSeeders() {
     {
       name: 'Arts and Sciences Scarf',
       description: 'Arts and Sciences Daily Uniform Blue Scarf. For Tertiary (BACOMM)',
-      image: 'arts-and-sciences.jpg',
+      image: 'products/bacomm-scarf.png',
       type: 'upper-wear',
       level: 'tertiary',
       category: 'uniform',
@@ -448,7 +448,7 @@ export async function bacommSeeders() {
     {
       name: 'Arts and Sciences Daily Blouse',
       description: 'Arts and Sciences Daily Blue Long Sleeve Blouse Uniform. For Tertiary (BACOMM)',
-      image: 'arts-and-sciences.jpg',
+      image: 'products/bacomm-blouse.png',
       type: 'upper-wear',
       level: 'tertiary',
       category: 'uniform',
@@ -531,7 +531,7 @@ export async function bacommSeeders() {
     {
       name: 'Arts and Sciences Daily Skirt',
       description: 'Arts and Sciences Daily Skirt Uniform. For Tertiary (BACOMM)',
-      image: 'arts-and-sciences.jpg',
+      image: 'products/bacomm-skirt.png',
       type: 'lower-wear',
       level: 'tertiary',
       category: 'uniform',

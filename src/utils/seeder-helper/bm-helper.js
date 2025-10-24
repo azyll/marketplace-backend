@@ -10,7 +10,7 @@ export async function bmSeeders() {
     {
       name: 'Business and Management Daily Pants',
       description: 'Business & Management Daily Pants Uniform. For Tertiary (BSBA)',
-      image: 'bm.jpg',
+      image: 'products/pants.png',
       type: 'lower-wear',
       level: 'tertiary',
       category: 'uniform',
@@ -155,7 +155,7 @@ export async function bmSeeders() {
     {
       name: 'Business and Management Daily Skirt',
       description: 'Business & Management Daily Skirt Uniform. For Tertiary (BSBA)',
-      image: 'bm.jpg',
+      image: 'products/skirt.png',
       level: 'tertiary',
       type: 'lower-wear',
       category: 'uniform',
@@ -239,7 +239,7 @@ export async function bmSeeders() {
     {
       name: 'Business and Management Daily Polo',
       description: 'Business & Management Daily Long Sleeve Polo Uniform Male. For Tertiary (BSBA)',
-      image: 'bm.jpg',
+      image: 'products/bm-polo.png',
       type: 'upper-wear',
       level: 'tertiary',
       category: 'uniform',
@@ -322,7 +322,7 @@ export async function bmSeeders() {
     {
       name: 'Business and Management Daily Blouse',
       description: 'Business & Management Daily Long Sleeve Blouse Uniform Female. For Tertiary (BSBA)',
-      image: 'bm.jpg',
+      image: 'products/bm-blouse.png',
       level: 'tertiary',
       type: 'upper-wear',
       category: 'uniform',
@@ -406,7 +406,7 @@ export async function bmSeeders() {
     {
       name: 'Business and Management Daily Blazer',
       description: 'Business & Management Daily Blazer Uniform. For Tertiary (BSBA)',
-      image: 'bm.jpg',
+      image: 'products/blazer.png',
       level: 'tertiary',
       type: 'upper-wear',
       category: 'uniform',
@@ -551,7 +551,7 @@ export async function bmSeeders() {
     {
       name: 'Business and Management Daily Scarf',
       description: 'Business & Management Daily Red Scarf Uniform. For Tertiary (BSBA)',
-      image: 'bm.jpg',
+      image: 'products/bm-scarf.png',
       level: 'tertiary',
       type: 'upper-wear',
       category: 'uniform',
@@ -585,7 +585,7 @@ export async function bmSeeders() {
     {
       name: 'Business and Management Daily Necktie',
       description: 'Business & Management Daily Red Necktie Uniform. For Tertiary (BSBA)',
-      image: 'bm.jpg',
+      image: 'products/bm-necktie.png',
       type: 'upper-wear',
       level: 'tertiary',
       category: 'uniform',

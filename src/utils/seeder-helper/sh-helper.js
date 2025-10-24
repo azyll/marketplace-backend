@@ -9,7 +9,7 @@ export async function shSeeders() {
     {
       name: 'Senior High Daily Polo',
       description: 'Senior High School Daily White Polo with Gray Vest Uniform. For Senior High Students',
-      image: 'sh.jpg',
+      image: 'products/shs-polo.png',
       level: 'shs',
       type: 'upper-wear',
       category: 'uniform',
@@ -133,7 +133,7 @@ export async function shSeeders() {
     {
       name: 'Senior High Daily Pants',
       description: 'Senior High School Daily Dark Blue Pants. For Senior High Students',
-      image: 'sh.jpg',
+      image: 'products/shs-pants.png',
       type: 'lower-wear',
       level: 'shs',
       category: 'uniform',
@@ -219,7 +219,7 @@ export async function shSeeders() {
     {
       name: 'Senior High Daily Blouse',
       description: 'Senior High School White Blouse with Gray Vest. For Senior High Students',
-      image: 'sh.jpg',
+      image: 'products/shs-blouse.png',
       level: 'shs',
       type: 'upper-wear',
       category: 'uniform',
@@ -342,7 +342,7 @@ export async function shSeeders() {
     {
       name: 'Senior High Daily Skirt',
       description: 'Senior High School Dark Blue Pencil-Cut Skirt. For Senior High Students',
-      image: 'sh.jpg',
+      image: 'products/shs-skirt.png',
       level: 'shs',
       type: 'lower-wear',
       category: 'uniform',
@@ -426,7 +426,7 @@ export async function shSeeders() {
     {
       name: 'Senior High Daily Neck Tie',
       description: 'Senior High School Neck Tie. For Senior High Students',
-      image: 'sh.jpg',
+      image: 'products/shs-neck-tie.png',
       type: 'upper-wear',
       level: 'shs',
       category: 'uniform',
@@ -459,7 +459,7 @@ export async function shSeeders() {
     {
       name: 'Senior School ID Lace',
       description: 'Senior High School School ID Lace. For Senior High Students',
-      image: 'sh.jpg',
+      image: 'products/id-lace.png',
       level: 'shs',
       type: 'upper-wear',
       category: 'uniform',

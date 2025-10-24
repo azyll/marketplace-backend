@@ -35,7 +35,7 @@ export async function up(queryInterface, Sequelize) {
     {
       name: 'Tertiary School ID Lace',
       description: 'Tertiary School ID Lace. For Tertiary Students',
-      image: 'ict.jpg',
+      image: 'products/id-lace.png',
       level: 'tertiary',
       type: 'upper-wear',
       category: 'uniform',
@@ -305,7 +305,7 @@ export async function up(queryInterface, Sequelize) {
     {
       name: 'ID Lace and Case Holder',
       description: 'ID Lace & Case Holder',
-      image: 'ict.jpg',
+      image: 'products/id-lace.png',
       level: 'all',
       type: 'accessory',
       category: 'proware-item',
@@ -382,7 +382,7 @@ export async function up(queryInterface, Sequelize) {
     {
       name: 'Exam Pen Box 10 pcs',
       description: 'ID Lace & Case Holder',
-      image: 'exam-pen.jpg',
+      image: 'products/exam-pen.png',
       level: 'all',
       type: 'accessory',
       category: 'proware-item',
@@ -416,7 +416,7 @@ export async function up(queryInterface, Sequelize) {
     {
       name: 'Tertiary PE Uniform TShirt',
       description: 'Physical Education T-Shirt Uniform  For Tertiary',
-      image: 'tertiary-pe.jpg',
+      image: 'products/tertiary-pe-shirt.png',
       type: 'upper-wear',
       level: 'tertiary',
       category: 'uniform',
@@ -508,7 +508,7 @@ export async function up(queryInterface, Sequelize) {
     {
       name: 'Tertiary PE Uniform Pants',
       description: 'Physical Education Pants Uniform For Tertiary',
-      image: 'tertiary-pe.jpg',
+      image: 'products/tertiary-pe-pants.png',
       type: 'lower-wear',
       level: 'tertiary',
       category: 'uniform',
@@ -901,7 +901,7 @@ export async function up(queryInterface, Sequelize) {
     {
       name: 'Tertiary NSTP Uniform',
       description: 'Tertiary National Service Training Program Uniform',
-      image: 'nstp.jpg',
+      image: 'products/nstp-shirt.png',
       type: 'upper-wear',
       level: 'tertiary',
       category: 'uniform',
@@ -1010,7 +1010,7 @@ export async function up(queryInterface, Sequelize) {
     {
       name: 'Tertiary Wash Day Shirt',
       description: 'Tertiary Wash Day Uniform',
-      image: 'washday.png',
+      image: 'products/tertiary-washday.png',
       type: 'upper-wear',
       level: 'tertiary',
       category: 'uniform',
@@ -1174,7 +1174,7 @@ export async function up(queryInterface, Sequelize) {
     {
       name: 'Senior High Wash Day Shirt',
       description: 'Senior High Wash Day Uniform',
-      image: 'washday.png',
+      image: 'products/shs-washday.png',
       type: 'upper-wear',
       level: 'shs',
       category: 'uniform',

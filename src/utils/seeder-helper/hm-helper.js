@@ -10,7 +10,7 @@ export async function hmSeeders() {
     {
       name: 'Hotel and Management Daily Polo',
       description: 'Hospitality Management Daily Long Sleeve White Polo Uniform. For Tertiary (BSHM)',
-      image: 'hm.jpg',
+      image: 'products/hm-polo.png',
       level: 'tertiary',
       type: 'upper-wear',
       category: 'uniform',
@@ -94,7 +94,7 @@ export async function hmSeeders() {
     {
       name: 'Hotel and Management Daily Pants',
       description: 'Hotel and Management Daily Gray Pants Uniform. For Tertiary (BSHM)',
-      image: 'hm.jpg',
+      image: 'products/pants.png',
       level: 'tertiary',
       type: 'lower-wear',
       category: 'uniform',
@@ -238,7 +238,7 @@ export async function hmSeeders() {
     {
       name: 'Hotel and Management Blazer',
       description: 'Hotel and Management Daily Blazer Uniform. For Tertiary (BSHM)',
-      image: 'hm.jpg',
+      image: 'products/blazer.png',
       level: 'tertiary',
       type: 'upper-wear',
       category: 'uniform',
@@ -383,7 +383,7 @@ export async function hmSeeders() {
     {
       name: 'Hotel and Management Daily Blouse',
       description: 'Hotel and Management Daily White Blouse Uniform. For Tertiary (BSHM)',
-      image: 'hm.jpg',
+      image: 'products/hm-blouse.png',
       type: 'upper-wear',
       level: 'tertiary',
       category: 'uniform',
@@ -466,7 +466,7 @@ export async function hmSeeders() {
     {
       name: 'Hotel and Management Daily Skirt',
       description: 'Hotel and Management Daily Gray Skirt Uniform. For Tertiary (BSHM)',
-      image: 'hm.jpg',
+      image: 'products/hm-skirt.png',
       type: 'lower-wear',
       level: 'tertiary',
       category: 'uniform',
@@ -552,7 +552,7 @@ export async function hmSeeders() {
     {
       name: 'Hotel and Management Vest',
       description: 'Hotel and Management Daily Vest Uniform. For Tertiary (BSHM)',
-      image: 'hm-f-b.jpg',
+      image: 'products/hm-vest.png',
       level: 'tertiary',
       type: 'upper-wear',
       category: 'uniform',
@@ -697,7 +697,7 @@ export async function hmSeeders() {
     {
       name: 'Hotel and Management Chefs Polo',
       description: 'Hotel and Management Chef Polo',
-      image: 'hm-kitchen.jpg',
+      image: 'products/hm-chef-polo.png',
       type: 'upper-wear',
       level: 'tertiary',
       category: 'uniform',
@@ -806,7 +806,7 @@ export async function hmSeeders() {
     {
       name: 'Hotel and Management  Chefs Pants',
       description: 'Hotel and Management Chef Pants',
-      image: 'hm-kitchen.jpg',
+      image: 'products/hm-chef-pants.png',
       type: 'lower-wear',
       level: 'tertiary',
       category: 'uniform',
@@ -916,7 +916,7 @@ export async function hmSeeders() {
     {
       name: 'Hotel and Management Chef Apron',
       description: 'Hotel and Management Apron. For Tertiary (BSTM)',
-      image: 'hm-kitchen.jpg',
+      image: 'products/hm-apron.png',
       level: 'tertiary',
       type: 'upper-wear',
       category: 'uniform',
@@ -947,7 +947,7 @@ export async function hmSeeders() {
     {
       name: 'Hotel and Management  Chef Skull Cap',
       description: 'Hotel and Management Skull Cap. For Tertiary (BSTM)',
-      image: 'hm-kitchen.jpg',
+      image: 'products/hm-skull-cap.png',
       level: 'tertiary',
       type: 'upper-wear',
       category: 'uniform',

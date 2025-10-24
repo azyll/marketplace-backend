@@ -9,7 +9,7 @@ export async function tmSeeders() {
     {
       name: 'Tourism Management Daily Polo',
       description: 'Tourism Management Daily Long Sleeve White Polo Uniform. For Tertiary (BSTM)',
-      image: 'tm.jpg',
+      image: 'products/tm-polo.png',
       level: 'tertiary',
       type: 'upper-wear',
       category: 'uniform',
@@ -92,7 +92,7 @@ export async function tmSeeders() {
     {
       name: 'Tourism Management Enamel Pin',
       description: 'Tourism Management Pin. For Tertiary (BSTM)',
-      image: 'tm.jpg',
+      image: 'products/tm-pin.png',
       level: 'tertiary',
       type: 'upper-wear',
       category: 'uniform',
@@ -125,7 +125,7 @@ export async function tmSeeders() {
     {
       name: 'Tourism Management Daily Necktie',
       description: 'Tourism Management Daily Uniform NeckTie. For Tertiary (BSTM)',
-      image: 'tm.jpg',
+      image: 'products/tm-necktie.png',
       level: 'tertiary',
       type: 'upper-wear',
       category: 'uniform',
@@ -158,7 +158,7 @@ export async function tmSeeders() {
     {
       name: 'Tourism Management Daily Cloth Pants',
       description: 'Tourism Management Daily Gray Pants Uniform. For Tertiary (BSTM)',
-      image: 'tm.jpg',
+      image: 'products/pants.png',
       level: 'tertiary',
       type: 'lower-wear',
       category: 'uniform',
@@ -231,7 +231,7 @@ export async function tmSeeders() {
     {
       name: 'Tourism Management Daily Blazer',
       description: 'Tourism Management Daily Blazer Uniform. For Tertiary (BSTM)',
-      image: 'tm.jpg',
+      image: 'products/blazer.png',
       level: 'tertiary',
       type: 'upper-wear',
       category: 'uniform',
@@ -355,7 +355,7 @@ export async function tmSeeders() {
     {
       name: 'Tourism Management Beret',
       description: 'Tourism Management Daily Uniform Beret. For Tertiary (BSTM)',
-      image: 'tm.jpg',
+      image: 'products/tm-beret.png',
       level: 'tertiary',
       type: 'upper-wear',
       category: 'uniform',
@@ -388,7 +388,7 @@ export async function tmSeeders() {
     {
       name: 'Tourism Management Scarf',
       description: 'Tourism Management Daily Uniform Yellow Scarf. For Tertiary (BSTM)',
-      image: 'tm.jpg',
+      image: 'products/tm-scarf.png',
       level: 'tertiary',
       type: 'upper-wear',
       category: 'uniform',
@@ -421,7 +421,7 @@ export async function tmSeeders() {
     {
       name: 'Tourism Management Daily Blouse',
       description: 'Tourism Management Daily White Blouse Uniform. For Tertiary (BSTM)',
-      image: 'tm.jpg',
+      image: 'products/tm-blouse.png',
       type: 'upper-wear',
       level: 'tertiary',
       category: 'uniform',
@@ -504,7 +504,7 @@ export async function tmSeeders() {
     {
       name: 'Tourism Management Daily Skirt',
       description: 'Tourism Management Daily Gray Skirt Uniform. For Tertiary (BSTM)',
-      image: 'tm.jpg',
+      image: 'products/tm-skirt.png',
       type: 'lower-wear',
       level: 'tertiary',
       category: 'uniform',

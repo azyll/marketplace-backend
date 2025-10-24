@@ -9,7 +9,7 @@ export async function ictSeeders() {
     {
       name: 'ICT Daily Polo',
       description: 'Information and Communication Technology Daily Polo Uniform. For Tertiary (BSIT,BSCS, and BSCpE)',
-      image: 'ict.jpg',
+      image: 'products/ict-polo.png',
       type: 'upper-wear',
       category: 'uniform',
       level: 'tertiary',
@@ -94,7 +94,7 @@ export async function ictSeeders() {
       name: 'ICT Daily Blouse',
       description:
         'Information and Communication Technology Daily Blouse Uniform. For Tertiary (BSIT,BSCS, and BSCpE) Female Students',
-      image: 'ict.jpg',
+      image: 'products/ict-blouse.png',
       type: 'upper-wear',
       level: 'tertiary',
       category: 'uniform',
@@ -177,7 +177,7 @@ export async function ictSeeders() {
     {
       name: 'ICT Daily Pants',
       description: 'Information and Communication Technology Daily Pants Uniform. For Tertiary (BSIT,BSCS, and BSCpE)',
-      image: 'ict.jpg',
+      image: 'products/ict-pants.png',
       type: 'lower-wear',
       level: 'tertiary',
       category: 'uniform',
@@ -321,7 +321,7 @@ export async function ictSeeders() {
     {
       name: 'ICT Daily Skirt',
       description: 'Information and Communication Technology Daily Skirt Uniform. For Tertiary (BSIT,BSCS,and BSCpE)',
-      image: 'ict.jpg',
+      image: 'products/skirt.png',
       level: 'tertiary',
       type: 'lower-wear',
       category: 'uniform',
