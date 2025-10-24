@@ -184,6 +184,13 @@ export class RoleService {
    */
   static async updateRole(roleId, newRole) {
     // Fetch the role along with its current module permissions
+
+    const findRole = await DB.Role.findOne({
+      where: {systemTag: newRole.systemTag}
+    });
+    if (findRole && newRole.systemTag !== 'employee') {
+      throw new AlreadyExistException('A role has already been assigned to this tag. Please use the existing role.');
+    }
     const role = await DB.Role.findByPk(roleId, {
       include: [
         {

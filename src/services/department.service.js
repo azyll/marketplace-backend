@@ -43,6 +43,10 @@ export class DepartmentService {
     const db = await DB.Program.findOne({where: {departmentId: department.id}});
     if (db)
       throw new Error(`Cannot archive department ${department.name} because it is associated with an active program.`);
+
+    const dbProduct = await DB.Product.findOne({where: {departmentId: department.id}});
+    if (dbProduct)
+      throw new Error(`Cannot archive department ${department.name} because it is associated with an active product.`);
     return await department.destroy();
   }
 

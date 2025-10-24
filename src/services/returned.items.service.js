@@ -70,6 +70,37 @@ export class ReturnedItemService {
         `Reason: ${reason}. Available stock was reduced by ${quantity} for the following variant: ${productVariant.product.name} - ${productVariant.name} (${productVariant.size}).`,
         'inventory'
       );
+
+      let notificationTitle = '';
+      let notificationMessage = '';
+
+      switch (productVariant.stockCondition) {
+        case 'out-of-stock':
+          notificationTitle = 'Product Out of Stock';
+          notificationMessage = `Unfortunately, "${productVariant.product.name}" (${productVariant.name}, ${productVariant.size}) is now out of stock. Stay tuned for restocks!`;
+          break;
+
+        case 'low-stock':
+          notificationTitle = 'Low Stock Alert';
+          notificationMessage = `Hurry! "${productVariant.product.name}" (${productVariant.name}, ${productVariant.size}) is running low. Only ${newStockAvailable} left! Grab it before it’s gone.`;
+          break;
+
+        case 'in-stock':
+          notificationTitle = 'Product Restocked';
+          notificationMessage = `Good news! "${productVariant.product.name}" (${productVariant.name}, ${productVariant.size}) is back in stock. Available quantity: ${newStockAvailable}.`;
+          break;
+
+        default:
+          notificationTitle = 'Product Stock Update';
+          notificationMessage = `"${productVariant.product.name}" (${productVariant.name}, ${productVariant.size}) stock has been updated. Current stock: ${newStockAvailable}.`;
+          break;
+      }
+
+      await NotificationService.createNotificationForInventoryStockUpdate(
+        notificationTitle,
+        notificationMessage,
+        variant.id
+      );
     });
   }
   static async archiveReturnItem(returnedItemId) {
@@ -141,6 +172,37 @@ export class ReturnedItemService {
         `Returned Item Quantity Updated: ${productVariant.product.name}`,
         `The return quantity for variant ${productVariant.product.name} - ${productVariant.name} (${productVariant.size}) was updated to ${quantity}. Reason: ${returnedItem.reason}.`,
         'inventory'
+      );
+
+      let notificationTitle = '';
+      let notificationMessage = '';
+
+      switch (productVariant.stockCondition) {
+        case 'out-of-stock':
+          notificationTitle = 'Product Out of Stock';
+          notificationMessage = `Unfortunately, "${productVariant.product.name}" (${productVariant.name}, ${productVariant.size}) is now out of stock. Stay tuned for restocks!`;
+          break;
+
+        case 'low-stock':
+          notificationTitle = 'Low Stock Alert';
+          notificationMessage = `Hurry! "${productVariant.product.name}" (${productVariant.name}, ${productVariant.size}) is running low. Only ${newStockAvailable} left! Grab it before it’s gone.`;
+          break;
+
+        case 'in-stock':
+          notificationTitle = 'Product Restocked';
+          notificationMessage = `Good news! "${productVariant.product.name}" (${productVariant.name}, ${productVariant.size}) is back in stock. Available quantity: ${newStockAvailable}.`;
+          break;
+
+        default:
+          notificationTitle = 'Product Stock Update';
+          notificationMessage = `"${productVariant.product.name}" (${productVariant.name}, ${productVariant.size}) stock has been updated. Current stock: ${newStockAvailable}.`;
+          break;
+      }
+
+      await NotificationService.createNotificationForInventoryStockUpdate(
+        notificationTitle,
+        notificationMessage,
+        variant.id
       );
     });
   }
