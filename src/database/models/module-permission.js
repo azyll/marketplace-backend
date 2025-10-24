@@ -24,10 +24,13 @@ export default (sequelize) => {
         defaultValue: DataTypes.UUIDV4,
         primaryKey: true
       },
-    module: {
+      module: {
         type: DataTypes.ENUM,
         values: ['sales', 'orders', 'inventory', 'return-items', 'users', 'products'],
-        schema: Joi.string().trim().required().valid('sales', 'orders', 'inventory', 'return-item', 'users', 'products')
+        schema: Joi.string()
+          .trim()
+          .required()
+          .valid('sales', 'orders', 'inventory', 'return-items', 'users', 'products')
       },
       permission: {
         type: DataTypes.ENUM,

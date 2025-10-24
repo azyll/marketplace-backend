@@ -6,6 +6,7 @@ import {DB} from '../database/index.js';
 import {Op} from 'sequelize';
 import {AlreadyExistException} from '../exceptions/alreadyExist.js';
 import sequelize from '../database/config/sequelize.js';
+import {ActivityLogService} from './activity-log.service.js';
 
 const {Student} = DB;
 
@@ -124,17 +125,16 @@ export class StudentService {
         const lastName = (newStudent['Last Name'] || '').trim();
         const gender = (newStudent['Gender'] || '').trim().toLowerCase();
         const programAcronym = (newStudent.Program || '').toLowerCase().trim();
-        const birthdate = (newStudent['Birthdate'] || '').toLowerCase().trim();
-        const regex = /^(0[1-9]|1[0-2])\/([0-2][1-9]|3[01])\/\d{4}$/;
+        const birthdate = (newStudent['Birthdate'] || '').toLowerCase();
 
         if (
           !firstName ||
           !lastName ||
           !programAcronym ||
           !gender ||
+          isNaN(studentId) || // Check if studentId is not a valid number
           studentId < 1000000000 ||
-          studentId > 9999999999 ||
-          !regex.test(birthdate)
+          studentId > 9999999999
         ) {
           // Skip incomplete data
           continue;
@@ -212,6 +212,7 @@ export class StudentService {
           results.push(createdUser.student);
         }
       }
+      await ActivityLogService.createLog('A bulk create student used', `${results.length} students created`, 'user');
 
       return results;
     });
