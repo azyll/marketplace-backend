@@ -20,7 +20,7 @@ router.post('/', auth(['admin', 'employee']), uploadCarouselImageFormData(), cre
 router.delete('/:id', auth(['admin', 'employee']), deleteCarouselAnnouncement);
 router.put('/:id', auth(['admin', 'employee']), restoreCarouselAnnouncement);
 router.get('/archived', auth(['admin', 'employee', 'student']), getArchivedCarouselAnnouncement);
-router.get('/', auth(['admin', 'employee', 'student']), getCarouselAnnouncement);
+router.get('/', getCarouselAnnouncement);
 
 export default router;
 
