@@ -5,9 +5,19 @@ import {NotFoundException} from '../exceptions/notFound.js';
 export class CarouselAnnouncementImageService {
   static async addCarouselAnnouncement(announcement) {
     return await DB.sequelize.transaction(async (transaction) => {
-      return await DB.CarouselAnnouncementImage.create({
-        image: announcement.image
+      return await DB.CarouselAnnouncementImage.create(announcement, {
+        transaction
       });
+    });
+  }
+  static async updateAnnouncementCarousel(announcementId, announcement) {
+    return await DB.sequelize.transaction(async (transaction) => {
+      const announcement = await DB.CarouselAnnouncementImage.findByPk(announcementId, {
+        transaction
+      });
+
+      await announcement.update(announcement, {transaction});
+      return announcement;
     });
   }
   static async removeCarouselAnnouncement(id) {
@@ -55,6 +65,12 @@ export class CarouselAnnouncementImageService {
       where,
       paranoid: !isAll,
       offset: (page - 1) * limit,
+      include: [
+        {
+          model: DB.Product,
+          as: 'product'
+        }
+      ],
       limit,
       order: [['createdAt', 'DESC']]
     });

@@ -6,7 +6,15 @@ import {v4 as uuid} from 'uuid';
 
 export default (sequelize) => {
   class CarouselAnnouncementImage extends Model {
-    static associate(models) {}
+    static associate(models) {
+      CarouselAnnouncementImage.belongsTo(models.Product, {
+        foreignKey: {
+          name: 'productId',
+          allowNull: true
+        },
+        as: 'product'
+      });
+    }
   }
   sequelizeJoi(sequelize);
   CarouselAnnouncementImage.init(
@@ -15,6 +23,16 @@ export default (sequelize) => {
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
         primaryKey: true
+      },
+      title: {
+        allowNull: true,
+        type: DataTypes.TEXT,
+        schema: Joi.string().trim().optional()
+      },
+      message: {
+        allowNull: true,
+        type: DataTypes.TEXT,
+        schema: Joi.string().trim().optional()
       },
       image: {
         type: DataTypes.TEXT,

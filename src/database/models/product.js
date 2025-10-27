@@ -17,6 +17,13 @@ export default (sequelize) => {
         },
         as: 'productVariant'
       });
+      Product.hasMany(models.ProductVariant, {
+        foreignKey: {
+          name: 'productId',
+          allowNull: false
+        },
+        as: 'carouselAnnouncementImage'
+      });
       Product.belongsTo(models.Department, {
         foreignKey: {
           name: 'departmentId',
