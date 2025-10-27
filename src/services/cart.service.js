@@ -93,7 +93,7 @@ export class CartService {
     if (!user) throw new NotFoundException('Student not found');
 
     const page = Number(query?.page) || 1;
-    const limit = Number(query?.limit) || 10;
+    const limit = Number(query?.limit) || 100;
     const {count, rows: cartItems} = await Cart.findAndCountAll({
       where: {
         studentId: Number(user.student.id)
