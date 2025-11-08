@@ -37,7 +37,7 @@ router.get(
 // Update Order Status
 router.put(
   '/status/:userId',
-  auth(['admin', 'employee']),
+  auth(['admin', 'employee', 'student']),
   validate({
     orderId: Joi.string().required(),
     newStatus: Joi.string().required().trim().valid('completed', 'ongoing', 'cancelled', 'confirmed'),
