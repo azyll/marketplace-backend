@@ -156,9 +156,10 @@ export class ReportService {
       let filterTo = new Date(new Date(query?.to).setHours(23, 59, 59, 999));
       whereClause.createdAt = {[Op.between]: [filterFrom, filterTo]};
     }
-    if (query?.status) {
+    if (query?.status && query.status !== 'all') {
       whereClause.status = query.status;
     }
+
     if (query.search) {
       const search = query.search.trim();
       whereClause[Op.or] = [
@@ -309,13 +310,13 @@ export class ReportService {
 
     // Direct department filter
     if (query.department) {
-      const departments = await DB.Department.findAll({
+      const departments = await DB.Department.findOne({
         where: {
           [Op.or]: [{name: {[Op.eq]: query.department}}, {acronym: {[Op.eq]: query.department}}]
         }
       });
 
-      if (departments.length < 0) {
+      if (!departments) {
         return {
           data: [],
           meta: {
@@ -323,25 +324,8 @@ export class ReportService {
           }
         };
       }
-      const departmentMap = {};
-      departments.forEach((dep) => {
-        const key = query.department?.length > 8 ? dep.name : dep.acronym;
-        departmentMap[key] = {id: dep.id, level: dep.level, acronym: dep.acronym};
-      });
-
-      const isProware = query.department === 'Proware';
-      const prowareId = departmentMap['Proware']?.id || departmentMap['proware']?.id;
-
-      if (isProware) {
-        whereClause.departmentId = {[Op.eq]: prowareId};
-      } else {
-        const requestedId = departmentMap[query.department].id;
-
-        if (!requestedId) throw new Error(`Department '${query.department}' not found`);
-
-        whereClause.departmentId = {[Op.or]: [requestedId, prowareId]};
-        whereClause.level = {[Op.or]: [departmentMap[query.department].level, 'all']};
-      }
+      whereClause.departmentId = departments.id;
+      whereClause.level = departments.level;
     }
 
     const {count, rows: productData} = await Product.findAndCountAll({

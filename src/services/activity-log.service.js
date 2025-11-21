@@ -57,7 +57,24 @@ export class ActivityLogService {
         };
       }
     }
+    const {from, to} = query;
+    if (from && to) {
+      // Date range
+      where.createdAt = {
+        [Op.gte]: new Date(from),
+        [Op.lt]: new Date(new Date(to).setDate(new Date(to).getDate() + 1)) // add 1 day to make end inclusive
+      };
+    } else if (from) {
+      // Single date
+      const day = new Date(from);
+      const nextDay = new Date(day);
+      nextDay.setDate(day.getDate() + 1);
 
+      where.createdAt = {
+        [Op.gte]: day,
+        [Op.lt]: nextDay
+      };
+    }
     const {count, rows} = await DB.ActivityLog.findAndCountAll({
       order: [['createdAt', 'DESC']],
       offset: (page - 1) * limit,

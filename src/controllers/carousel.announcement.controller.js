@@ -22,6 +22,17 @@ export async function getCarouselAnnouncement(req, res) {
     return res.status(400).json({message, error: error.message || defaultErrorMessage});
   }
 }
+export async function getCarouselAnnouncementById(req, res) {
+  try {
+    const carouselImage = await CarouselAnnouncementImageService.getCarouselAnnouncementById(req.params.id);
+
+    return res.status(200).json(carouselImage);
+  } catch (error) {
+    const message = 'Failed retrieve carousel announcement images';
+
+    return res.status(400).json({message, error: error.message || defaultErrorMessage});
+  }
+}
 export async function getArchivedCarouselAnnouncement(req, res) {
   try {
     const carouselImages = await CarouselAnnouncementImageService.getArchivedCarouselAnnouncement();
@@ -51,6 +62,19 @@ export async function restoreCarouselAnnouncement(req, res) {
     const {id} = req.params;
 
     const removeCarouselAnnouncement = await CarouselAnnouncementImageService.restoreCarouselAnnouncement(id);
+
+    return res.status(200).json(removeCarouselAnnouncement);
+  } catch (error) {
+    const message = 'Failed to delete carousel announcement images';
+
+    return res.status(400).json({message, error: error.message || defaultErrorMessage});
+  }
+}
+export async function updateAnnouncementCarousel(req, res) {
+  try {
+    const {id} = req.params;
+
+    const removeCarouselAnnouncement = await CarouselAnnouncementImageService.updateAnnouncementCarousel(id, req.body);
 
     return res.status(200).json(removeCarouselAnnouncement);
   } catch (error) {

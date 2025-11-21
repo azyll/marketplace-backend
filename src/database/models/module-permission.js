@@ -26,11 +26,37 @@ export default (sequelize) => {
       },
       module: {
         type: DataTypes.ENUM,
-        values: ['sales', 'orders', 'inventory', 'return-items', 'users', 'products'],
+        values: [
+          'users',
+          'roles',
+          'departments',
+          'programs',
+          'products',
+          'orders',
+          'sales',
+          'inventory',
+          'return-items',
+          'announcement-carousel',
+          'activity-logs',
+          'reports'
+        ],
         schema: Joi.string()
           .trim()
           .required()
-          .valid('sales', 'orders', 'inventory', 'return-items', 'users', 'products')
+          .valid(
+            'users',
+            'roles',
+            'departments',
+            'programs',
+            'products',
+            'orders',
+            'sales',
+            'inventory',
+            'return-items',
+            'announcement-carousel',
+            'activity-logs',
+            'reports'
+          )
       },
       permission: {
         type: DataTypes.ENUM,

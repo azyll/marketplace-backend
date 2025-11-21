@@ -27,12 +27,12 @@ export default (sequelize) => {
       title: {
         allowNull: true,
         type: DataTypes.TEXT,
-        schema: Joi.string().trim().optional()
+        schema: Joi.string().trim().required()
       },
       message: {
         allowNull: true,
         type: DataTypes.TEXT,
-        schema: Joi.string().trim().optional()
+        schema: Joi.string().trim().allow(null).optional()
       },
       image: {
         type: DataTypes.TEXT,
