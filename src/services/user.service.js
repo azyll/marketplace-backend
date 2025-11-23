@@ -101,7 +101,7 @@ export class UserService {
     const {count, rows: usersData} = await User.findAndCountAll({
       where: whereClause,
       distinct: true,
-      subQuery: false,
+
       include: [
         {
           model: DB.Role,
@@ -162,7 +162,7 @@ export class UserService {
       where: whereClause,
       distinct: true,
       paranoid: false,
-      subQuery: false,
+
       include: [
         {
           model: DB.Role,

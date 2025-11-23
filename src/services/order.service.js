@@ -500,13 +500,10 @@ export class OrderService {
 
     const {rows: orderData, count} = await Order.findAndCountAll({
       distinct: true,
-      subQuery: false,
+
       where: whereClause,
-      ...(query.limit &&
-        query.page && {
-          offset: (page - 1) * limit,
-          limit
-        }),
+      offset: (page - 1) * limit,
+      limit,
       include: [
         {
           model: OrderItems,
@@ -543,6 +540,7 @@ export class OrderService {
       ],
       order: [['createdAt', 'DESC']]
     });
+    console.log(page, limit, orderData.length, whereClause);
 
     return {
       data: orderData,

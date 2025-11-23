@@ -61,7 +61,6 @@ export class ReportService {
       where,
       order: [['createdAt', 'DESC']],
 
-      subQuery: false, // <-- this is critical for alias search to work!
       include: [
         {
           model: Order,
@@ -106,7 +105,7 @@ export class ReportService {
       distinct: true,
       where,
       order: [['createdAt', 'DESC']],
-      subQuery: false, // <-- this is critical for alias search to work!
+
       include: [
         {
           model: Order,
@@ -177,7 +176,7 @@ export class ReportService {
 
     const {rows: orderData, count} = await Order.findAndCountAll({
       distinct: true,
-      subQuery: false,
+
       where: whereClause,
       include: [
         {

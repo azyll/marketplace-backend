@@ -91,7 +91,7 @@ export class SalesService {
       order: [['createdAt', 'DESC']],
       offset: (page - 1) * limit,
       limit,
-      subQuery: false, // <-- this is critical for alias search to work!
+
       include: [
         {
           model: Order,
@@ -123,7 +123,7 @@ export class SalesService {
       distinct: true,
       where,
       order: [['createdAt', 'DESC']],
-      subQuery: false, // <-- this is critical for alias search to work!
+
       include: [
         {
           model: Order,
