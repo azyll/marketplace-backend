@@ -728,7 +728,7 @@ export class OrderService {
       });
       if (!student) throw new NotFoundException('Student not found', 404);
 
-      if (newStatus === order.status) throw new Error('The order status and the new status is the same');
+      if (newStatus === order.status) return order;
 
       if (newStatus === 'confirmed') {
         await NotificationService.createNotification(
