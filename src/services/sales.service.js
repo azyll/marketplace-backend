@@ -96,6 +96,7 @@ export class SalesService {
         {
           model: Order,
           as: 'order',
+          required: true,
           include: [
             {
               model: OrderItems,
@@ -104,14 +105,17 @@ export class SalesService {
             {
               model: Student,
               as: 'student',
+              required: true,
               include: [
                 {
                   model: User,
-                  as: 'user'
+                  as: 'user',
+                  required: true
                 },
                 {
                   model: Program,
-                  as: 'program'
+                  as: 'program',
+                  required: true
                 }
               ]
             }
@@ -128,6 +132,7 @@ export class SalesService {
         {
           model: Order,
           as: 'order',
+          required: true,
           include: [
             {
               model: OrderItems,
@@ -136,14 +141,17 @@ export class SalesService {
             {
               model: Student,
               as: 'student',
+              required: true,
               include: [
                 {
                   model: User,
-                  as: 'user'
+                  as: 'user',
+                  required: true
                 },
                 {
                   model: Program,
-                  as: 'program'
+                  as: 'program',
+                  required: true
                 }
               ]
             }

@@ -486,15 +486,12 @@ export class OrderService {
     if (query.search) {
       const search = query.search.trim();
       whereClause[Op.or] = [
-        {id: {[Op.iLike]: `%${search}%`}},
-        // Match student's first or last name (through associated User)
-        {'$student.user.firstName$': {[Op.iLike]: `%${search}%`}},
-        {'$student.user.lastName$': {[Op.iLike]: `%${search}%`}},
-        {'$student.user.username$': {[Op.iLike]: `%${search}%`}},
-
-        // Match program name or acronym
-        {'$student.program.name$': {[Op.iLike]: `%${search}%`}},
-        {'$student.program.acronym$': {[Op.iLike]: `%${search}%`}}
+        {id: {[Op.iLike]: `%${search}%`}}, // match Order ID
+        {'$student.user.firstName$': {[Op.iLike]: `%${search}%`}}, // Match first name of the associated user
+        {'$student.user.lastName$': {[Op.iLike]: `%${search}%`}}, // Match last name of the associated user
+        {'$student.user.username$': {[Op.iLike]: `%${search}%`}}, // Match username of the associated user
+        {'$student.program.name$': {[Op.iLike]: `%${search}%`}}, // Match program name
+        {'$student.program.acronym$': {[Op.iLike]: `%${search}%`}} // Match program acronym
       ];
     }
 
@@ -521,6 +518,7 @@ export class OrderService {
         {
           model: Student,
           as: 'student',
+          required: true,
           attributes: {
             include: ['id', 'level', 'sex']
           },
@@ -528,11 +526,13 @@ export class OrderService {
             {
               model: User,
               as: 'user',
+              required: true,
               attributes: {include: ['firstName', 'lastName', 'username']}
             },
             {
               model: Program,
               as: 'program',
+              required: true,
               attributes: {include: ['name', 'acronym']}
             }
           ]
@@ -540,7 +540,6 @@ export class OrderService {
       ],
       order: [['createdAt', 'DESC']]
     });
-    console.log(page, limit, orderData.length, whereClause);
 
     return {
       data: orderData,
