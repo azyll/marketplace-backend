@@ -39,7 +39,13 @@ export class ReturnedItemService {
         include: [
           {
             model: DB.Product,
-            as: 'product'
+            as: 'product',
+            include: [
+              {
+                model: DB.Department,
+                as: 'department'
+              }
+            ]
           }
         ]
       });
