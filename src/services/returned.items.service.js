@@ -113,7 +113,7 @@ export class ReturnedItemService {
         'announcement',
         productVariant.product.department.name === 'Proware' ? 'students' : 'department students',
         {
-          departmentId,
+          departmentId:productVariant.product.department.id,
           userId: null
         }
       );
